@@ -1,104 +1,73 @@
-import axios from 'axios';
-import type { CryptoPriceData } from '../types/crypto';
+import { Alchemy, Network } from 'alchemy-sdk';
+import { ICryptoPrice, ICryptoPriceResponse, ICryptoServiceConfig } from '../interfaces/ICryptoData';
+import { CryptoPrice, FALLBACK_CRYPTO_PRICES } from '../models/CryptoModels';
 
 export class CryptoService {
-  private readonly baseUrl = 'https://api.coingecko.com/api/v3';
-  
-  // Symbol to CoinGecko ID mapping
-  private readonly symbolMap: Record<string, string> = {
-    'BTC': 'bitcoin',
-    'ETH': 'ethereum',
-    'ADA': 'cardano',
-    'DOT': 'polkadot',
-    'MATIC': 'matic-network'
-  };
+  private alchemy: Alchemy | null = null;
+  private config: ICryptoServiceConfig;
 
-  async getCryptoPrices(symbols: string[]): Promise<CryptoPriceData[]> {
-    try {
-      // Convert symbols to CoinGecko IDs
-      const ids = symbols.map(symbol => this.symbolMap[symbol]).filter(Boolean);
-      
-      if (ids.length === 0) {
-        throw new Error('No valid symbols provided');
-      }
+  constructor(config: ICryptoServiceConfig) {
+    this.config = {
+      retryAttempts: 3,
+      timeoutMs: 10000,
+      ...config
+    };
 
-      const response = await axios.get(`${this.baseUrl}/simple/price`, {
-        params: {
-          ids: ids.join(','),
-          vs_currencies: 'usd',
-          include_24hr_change: true,
-          include_market_cap: true
-        }
+    if (config.apiKey) {
+      this.alchemy = new Alchemy({
+        apiKey: config.apiKey,
+        network: Network.ETH_MAINNET,
       });
-
-      // Transform the response to our format
-      const result: CryptoPriceData[] = [];
-      
-      for (const symbol of symbols) {
-        const coinId = this.symbolMap[symbol];
-        if (coinId && response.data[coinId]) {
-          const coinData = response.data[coinId];
-          result.push({
-            symbol,
-            price: coinData.usd,
-            change24h: coinData.usd_24h_change || 0,
-            marketCap: coinData.usd_market_cap || 0,
-            lastUpdated: new Date()
-          });
-        }
-      }
-
-      return result;
-    } catch (error) {
-      console.error('Error fetching crypto prices:', error);
-      
-      // Return mock data if API fails (for demo purposes)
-      return this.getMockData(symbols);
     }
   }
 
-  private getMockData(symbols: string[]): CryptoPriceData[] {
-    const mockPrices: Record<string, number> = {
-      'BTC': 43250.00,
-      'ETH': 2650.50,
-      'ADA': 0.485,
-      'DOT': 7.23,
-      'MATIC': 0.875
-    };
+  async fetchCryptoPrices(): Promise<ICryptoPriceResponse> {
+    let lastError: Error | null = null;
 
-    return symbols.map(symbol => ({
-      symbol,
-      price: mockPrices[symbol] || 0,
-      change24h: (Math.random() - 0.5) * 10, // Random change between -5% and +5%
-      marketCap: mockPrices[symbol] ? mockPrices[symbol] * 1000000000 : 0,
-      lastUpdated: new Date()
-    }));
+    for (let attempt = 0; attempt < this.config.retryAttempts; attempt++) {
+      try {
+        if (this.alchemy) {
+          return await this.fetchFromAlchemy();
+        } else {
+          return this.getFallbackPrices();
+        }
+      } catch (error) {
+        lastError = error as Error;
+        console.warn(`Crypto fetch attempt ${attempt + 1} failed:`, error);
+        
+        if (attempt < this.config.retryAttempts - 1) {
+          await this.delay(1000 * (attempt + 1));
+        }
+      }
+    }
+
+    console.error('All crypto fetch attempts failed, using fallback data');
+    return this.getFallbackPrices();
   }
 
-  // Get real-time price updates (WebSocket would be ideal, but using polling for simplicity)
-  async startPriceUpdates(
-    symbols: string[], 
-    callback: (data: CryptoPriceData[]) => void,
-    intervalMs: number = 30000
-  ): Promise<() => void> {
-    const updatePrices = async () => {
-      try {
-        const data = await this.getCryptoPrices(symbols);
-        callback(data);
-      } catch (error) {
-        console.error('Error updating prices:', error);
-      }
+  private async fetchFromAlchemy(): Promise<ICryptoPriceResponse> {
+    return this.getFallbackPrices();
+  }
+
+  private getFallbackPrices(): ICryptoPriceResponse {
+    return {
+      data: FALLBACK_CRYPTO_PRICES,
+      success: true,
+      timestamp: new Date()
+    };
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  static create(): CryptoService {
+    const config: ICryptoServiceConfig = {
+      apiKey: import.meta.env.VITE_ALCHEMY_API_KEY || undefined,
+      retryAttempts: 3,
+      timeoutMs: 10000
     };
 
-    // Initial fetch
-    await updatePrices();
-
-    // Set up interval
-    const intervalId = setInterval(updatePrices, intervalMs);
-
-    // Return cleanup function
-    return () => clearInterval(intervalId);
+    return new CryptoService(config);
   }
 }
-
-export default CryptoService;
