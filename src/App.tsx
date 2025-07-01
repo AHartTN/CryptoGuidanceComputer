@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import DSKY from './components/DSKY';
+import DSKYAuthentic from './components/DSKYAuthentic';
 import './App.css';
 
 // Create optimized query client with aggressive caching
@@ -17,7 +17,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="App">
-        <DSKY />
+        <DSKYAuthentic />
       </div>
     </QueryClientProvider>
   );

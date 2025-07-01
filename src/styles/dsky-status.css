@@ -1,0 +1,367 @@
+/* Apollo DSKY Status Component - Responsive */
+
+/* === Status Container === */
+.dsky-status {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--panel-padding);
+  background: var(--dsky-dark);
+  border: var(--panel-border-width) solid var(--dsky-border);
+  border-radius: var(--radius-md);
+  box-shadow: 
+    inset 0 0 10px rgba(0, 0, 0, 0.8),
+    0 0 8px var(--shadow-green);
+  min-height: 120px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* === Status Title === */
+.dsky-status-title {
+  font-family: var(--font-display);
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--dsky-cyan);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  text-shadow: 0 0 8px var(--dsky-cyan);
+  margin-bottom: var(--space-xs);
+  border-bottom: 1px solid var(--dsky-border);
+  padding-bottom: var(--space-xs);
+}
+
+/* === Status Content Area === */
+.dsky-status-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  flex-grow: 1;
+}
+
+/* === Status Row === */
+.dsky-status-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--space-sm);
+  align-items: center;
+  padding: var(--space-xs) 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--dsky-green);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all var(--transition-fast);
+}
+
+.dsky-status-row:last-child {
+  border-bottom: none;
+}
+
+/* === Status Labels === */
+.dsky-status-label {
+  font-weight: 700;
+  color: var(--dsky-amber);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-normal);
+  white-space: nowrap;
+  text-shadow: 0 0 5px var(--dsky-amber);
+}
+
+/* === Status Values === */
+.dsky-status-value {
+  font-weight: 400;
+  color: var(--dsky-green);
+  text-align: center;
+  text-shadow: 0 0 3px var(--dsky-green);
+  word-break: break-word;
+  min-width: 0; /* Allow flex shrinking */
+}
+
+/* === Status Units === */
+.dsky-status-unit {
+  font-weight: 400;
+  color: var(--dsky-white);
+  font-size: calc(var(--font-size-sm) * 0.9);
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+/* === Status States === */
+.dsky-status-value.success {
+  color: var(--dsky-green-bright);
+  text-shadow: 0 0 8px var(--dsky-green);
+}
+
+.dsky-status-value.warning {
+  color: var(--dsky-amber);
+  text-shadow: 0 0 8px var(--dsky-amber);
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.dsky-status-value.error {
+  color: var(--dsky-red);
+  text-shadow: 0 0 8px var(--dsky-red);
+  animation: blink 1s infinite;
+}
+
+.dsky-status-value.loading {
+  color: var(--dsky-cyan);
+  text-shadow: 0 0 8px var(--dsky-cyan);
+  animation: flicker 1s infinite alternate;
+}
+
+/* === Status Indicators === */
+.dsky-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.dsky-status-indicator::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--dsky-green);
+  box-shadow: 0 0 6px var(--shadow-green);
+}
+
+.dsky-status-indicator.warning::before {
+  background: var(--dsky-amber);
+  box-shadow: 0 0 6px var(--shadow-amber);
+}
+
+.dsky-status-indicator.error::before {
+  background: var(--dsky-red);
+  box-shadow: 0 0 6px rgba(255, 51, 51, 0.6);
+}
+
+.dsky-status-indicator.offline::before {
+  background: var(--dsky-border);
+  box-shadow: none;
+}
+
+/* === Message Area === */
+.dsky-status-message {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--dsky-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--dsky-white);
+  text-align: center;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.dsky-status-message.success {
+  border-color: var(--dsky-green);
+  color: var(--dsky-green);
+  background: rgba(0, 255, 65, 0.1);
+}
+
+.dsky-status-message.warning {
+  border-color: var(--dsky-amber);
+  color: var(--dsky-amber);
+  background: rgba(255, 170, 0, 0.1);
+}
+
+.dsky-status-message.error {
+  border-color: var(--dsky-red);
+  color: var(--dsky-red);
+  background: rgba(255, 51, 51, 0.1);
+}
+
+/* === Responsive Design === */
+
+/* Mobile Layout - Stacked and simplified */
+@media (max-width: 767px) {
+  .dsky-status {
+    padding: var(--space-sm);
+    gap: var(--space-xs);
+  }
+  
+  .dsky-status-title {
+    font-size: var(--font-size-sm);
+  }
+  
+  .dsky-status-row {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    gap: var(--space-xs);
+    text-align: center;
+    padding: var(--space-sm);
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: var(--radius-sm);
+    border-bottom: none;
+    margin-bottom: var(--space-xs);
+  }
+  
+  .dsky-status-label {
+    order: 1;
+    font-size: calc(var(--font-size-sm) * 0.9);
+  }
+  
+  .dsky-status-value {
+    order: 2;
+    font-size: var(--font-size-md);
+    font-weight: 700;
+  }
+  
+  .dsky-status-unit {
+    order: 3;
+    font-size: calc(var(--font-size-xs) * 0.9);
+  }
+  
+  .dsky-status-message {
+    font-size: calc(var(--font-size-xs) * 0.9);
+    padding: var(--space-xs);
+  }
+}
+
+/* Tablet Layout - Compact horizontal */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .dsky-status {
+    padding: var(--space-sm);
+  }
+  
+  .dsky-status-title {
+    font-size: calc(var(--font-size-md) * 0.9);
+  }
+  
+  .dsky-status-row {
+    grid-template-columns: minmax(80px, auto) 1fr minmax(40px, auto);
+    gap: var(--space-xs);
+    font-size: calc(var(--font-size-sm) * 0.9);
+  }
+  
+  .dsky-status-message {
+    font-size: calc(var(--font-size-xs) * 0.9);
+  }
+}
+
+/* Desktop Layout - Full horizontal layout */
+@media (min-width: 1024px) {
+  .dsky-status {
+    padding: var(--panel-padding);
+  }
+  
+  .dsky-status-row {
+    grid-template-columns: minmax(120px, auto) 1fr minmax(60px, auto);
+    gap: var(--space-sm);
+  }
+}
+
+/* === Animation Keyframes === */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+@keyframes flicker {
+  0%, 100% { 
+    opacity: 1;
+    text-shadow: 0 0 8px var(--dsky-cyan);
+  }
+  50% { 
+    opacity: 0.7;
+    text-shadow: 0 0 4px var(--dsky-cyan);
+  }
+}
+
+/* === Interactive States === */
+.dsky-status-row:hover {
+  background: rgba(0, 255, 65, 0.05);
+  border-color: var(--dsky-green);
+}
+
+.dsky-status-row.clickable {
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dsky-status-row.clickable:active {
+  transform: scale(0.98);
+}
+
+/* === Accessibility === */
+.dsky-status-row[aria-selected="true"] {
+  background: rgba(0, 255, 65, 0.1);
+  border-color: var(--dsky-green);
+}
+
+.dsky-status-message[role="alert"] {
+  animation: fadeIn var(--transition-normal) ease-in;
+}
+
+/* === High Contrast Support === */
+@media (prefers-contrast: high) {
+  .dsky-status {
+    border-width: 3px;
+  }
+  
+  .dsky-status-row {
+    border-bottom-width: 2px;
+  }
+  
+  .dsky-status-message {
+    border-width: 2px;
+    background: var(--dsky-dark);
+  }
+}
+
+/* === Reduced Motion Support === */
+@media (prefers-reduced-motion: reduce) {
+  .dsky-status-value.warning,
+  .dsky-status-value.error,
+  .dsky-status-value.loading {
+    animation: none;
+  }
+  
+  .dsky-status-row.clickable:active {
+    transform: none;
+  }
+    .dsky-status-message[role="alert"] {
+    animation: none;
+  }
+}
+
+.dsky-status-value {
+  color: var(--dsky-green);
+  font-family: 'Share Tech Mono', monospace;
+  font-weight: 700;
+}
+
+.dsky-status-debug {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: var(--dsky-orange);
+  background: rgba(255, 102, 0, 0.08);
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-family: 'Share Tech Mono', monospace;
+  word-break: break-all;
+}
+
+@media (max-width: 768px) {
+  .dsky-status-section {
+    padding: 12px 8px;
+  }
+  .dsky-status-title {
+    font-size: 1rem;
+  }
+  .dsky-status-row {
+    font-size: 0.85rem;
+  }
+  .dsky-status-debug {
+    font-size: 0.75rem;
+    padding: 6px 6px;
+  }
+}

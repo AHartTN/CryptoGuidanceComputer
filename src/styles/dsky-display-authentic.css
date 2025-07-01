@@ -1,0 +1,147 @@
+/* Apollo DSKY Authentic Display Area - Component-Specific Styles */
+
+/* === Display Labels === */
+.dsky-display-label {
+  color: #00ff41;
+  font-size: clamp(7px, 1.2vmin, 11px);
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow: 0 0 4px #00ff41;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: clamp(1px, 0.25vmin, 2px);
+  padding: clamp(1px, 0.25vmin, 2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* === Display Values === */
+.dsky-display-value {
+  background: #000;
+  color: #00ff41;
+  font-family: 'Courier New', monospace;
+  font-size: clamp(12px, 2vmin, 20px);
+  font-weight: bold;
+  text-align: center;
+  padding: clamp(1px, 0.25vmin, 2px) clamp(2px, 0.5vmin, 4px);
+  border: clamp(1px, 0.25vmin, 2px) solid #333;
+  border-radius: clamp(1px, 0.25vmin, 2px);
+  text-shadow: 0 0 6px #00ff41;
+  min-height: clamp(16px, 2.5vmin, 24px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    inset 0 0 8px rgba(0, 0, 0, 0.8),
+    0 0 4px rgba(0, 255, 65, 0.3);
+  letter-spacing: 1px;
+}
+
+.dsky-display-value.flashing {
+  animation: flash 1s infinite;
+}
+
+.dsky-display-value.input-mode {
+  background: #001100;
+  border-color: #00ff41;
+  animation: input-pulse 2s infinite;
+}
+
+@keyframes flash {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+@keyframes input-pulse {
+  0%, 100% { 
+    box-shadow: 
+      inset 0 0 8px rgba(0, 0, 0, 0.8),
+      0 0 4px rgba(0, 255, 65, 0.3);
+  }
+  50% { 
+    box-shadow: 
+      inset 0 0 8px rgba(0, 0, 0, 0.8),
+      0 0 8px rgba(0, 255, 65, 0.6);
+  }
+}
+
+/* === Specific Display Positioning === */
+.dsky-prog-label { grid-area: prog-label; }
+.dsky-prog-value { grid-area: prog-value; }
+.dsky-verb-label { grid-area: verb-label; }
+.dsky-verb-value { grid-area: verb-value; }
+.dsky-noun-label { grid-area: noun-label; }
+.dsky-noun-value { grid-area: noun-value; }
+
+.dsky-r1-label { grid-area: r1-label; }
+.dsky-r1-value { grid-area: r1-value; }
+.dsky-r2-label { grid-area: r2-label; }
+.dsky-r2-value { grid-area: r2-value; }
+.dsky-r3-label { grid-area: r3-label; }
+.dsky-r3-value { grid-area: r3-value; }
+
+/* === Register Value Specific Styling === */
+.dsky-r1-value, .dsky-r2-value, .dsky-r3-value {
+  font-size: 14px;
+  min-width: 100px;
+}
+
+/* === Seven Segment Display Effect === */
+.dsky-display-value {
+  position: relative;
+}
+
+.dsky-display-value::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 255, 65, 0.1) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+  border-radius: 2px;
+}
+
+/* === Error State === */
+.dsky-display-value.error {
+  color: #ff3300;
+  text-shadow: 0 0 6px #ff3300;
+  border-color: #ff3300;
+  animation: error-flash 0.5s infinite;
+}
+
+@keyframes error-flash {
+  0%, 50% { 
+    background: #000;
+    box-shadow: 
+      inset 0 0 8px rgba(0, 0, 0, 0.8),
+      0 0 4px rgba(255, 51, 0, 0.5);
+  }
+  51%, 100% { 
+    background: #110000;
+    box-shadow: 
+      inset 0 0 8px rgba(0, 0, 0, 0.8),
+      0 0 8px rgba(255, 51, 0, 0.8);
+  }
+}
+
+/* === Blank Display State === */
+.dsky-display-value.blank {
+  color: #003300;
+  text-shadow: none;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+.dsky-display-value.blank::before {
+  background: none;
+}
+
+/* === Display Grid Items (handled by layout CSS) === */

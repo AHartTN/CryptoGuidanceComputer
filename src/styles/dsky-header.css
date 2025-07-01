@@ -1,0 +1,136 @@
+/* Apollo DSKY Header Component Styles */
+
+.dsky-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  background: linear-gradient(145deg, var(--dsky-metal), var(--dsky-panel));
+  border: var(--panel-border-width) solid var(--dsky-border);
+  border-radius: var(--radius-md);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 80px;
+}
+
+.dsky-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--dsky-green), transparent);
+  opacity: 0.3;
+}
+
+.dsky-header-title {
+  font-family: var(--font-display);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--dsky-green);
+  text-shadow: var(--glow-green);
+  letter-spacing: var(--letter-spacing-wide);
+  line-height: var(--line-height-tight);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.dsky-header-subtitle {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+  color: var(--dsky-amber);
+  text-shadow: var(--glow-amber);
+  letter-spacing: var(--letter-spacing-normal);
+  line-height: var(--line-height-normal);
+  margin: var(--space-xs) 0 0 0;
+  opacity: 0.9;
+}
+
+/* Responsive design for header */
+@media (max-width: 768px) {
+  .dsky-header {
+    padding: 15px;
+  }
+  
+  .dsky-title {
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+  }
+  
+  .dsky-subtitle {
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+  }
+  
+  .dsky-model {
+    font-size: 0.7rem;
+  }
+}
+
+/* Responsive Header Adjustments */
+@media (max-width: 767px) {
+  .dsky-header {
+    padding: var(--space-sm);
+  }
+  
+  .dsky-header-title {
+    font-size: var(--font-size-md);
+  }
+  
+  .dsky-header-subtitle {
+    font-size: var(--font-size-xs);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .dsky-header-title {
+    font-size: clamp(1rem, 3vw, 1.3rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .dsky-header {
+    padding: var(--space-lg);
+  }
+}
+
+/* Animation Effects */
+.dsky-header-title.animate-flicker {
+  animation: headerFlicker 2s ease-in-out infinite;
+}
+
+@keyframes headerFlicker {
+  0%, 100% { 
+    opacity: 1; 
+    text-shadow: var(--glow-green);
+  }
+  50% { 
+    opacity: 0.8; 
+    text-shadow: 0 0 5px var(--shadow-green);
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .dsky-header {
+    border-width: 3px;
+  }
+  
+  .dsky-header-title,
+  .dsky-header-subtitle {
+    text-shadow: none;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .dsky-header-title.animate-flicker {
+    animation: none;
+  }
+}

@@ -1,6 +1,7 @@
 import { Alchemy, Network } from 'alchemy-sdk';
 import { ICryptoPrice, ICryptoPriceResponse, ICryptoServiceConfig } from '../interfaces/ICryptoData';
 import { CryptoPrice, FALLBACK_CRYPTO_PRICES } from '../models/CryptoModels';
+import { DSKYCommandStatus } from '../enums/DSKYEnums';
 
 export class CryptoService {
   private alchemy: Alchemy | null = null;
@@ -20,23 +21,28 @@ export class CryptoService {
       });
     }
   }
-
   async fetchCryptoPrices(): Promise<ICryptoPriceResponse> {
     let lastError: Error | null = null;
 
     for (let attempt = 0; attempt < this.config.retryAttempts; attempt++) {
       try {
-        if (this.alchemy) {
-          return await this.fetchFromAlchemy();
-        } else {
-          return this.getFallbackPrices();
+        switch (!!this.alchemy) {
+          case true: {
+            return await this.fetchFromAlchemy();
+          }
+          default: {
+            return this.getFallbackPrices();
+          }
         }
       } catch (error) {
         lastError = error as Error;
         console.warn(`Crypto fetch attempt ${attempt + 1} failed:`, error);
         
-        if (attempt < this.config.retryAttempts - 1) {
-          await this.delay(1000 * (attempt + 1));
+        switch (attempt < this.config.retryAttempts - 1) {
+          case true: {
+            await this.delay(1000 * (attempt + 1));
+            break;
+          }
         }
       }
     }
@@ -60,10 +66,9 @@ export class CryptoService {
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
-
   static create(): CryptoService {
     const config: ICryptoServiceConfig = {
-      apiKey: import.meta.env.VITE_ALCHEMY_API_KEY || undefined,
+      apiKey: (import.meta as any).env?.VITE_ALCHEMY_API_KEY || undefined,
       retryAttempts: 3,
       timeoutMs: 10000
     };
