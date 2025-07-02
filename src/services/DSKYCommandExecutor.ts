@@ -2,10 +2,9 @@
 
 import { DSKYVerb, DSKYNoun, isValidVerbNounCombination } from '../enums/DSKYEnums';
 import { UnifiedWeb3Service } from './UnifiedWeb3Service';
-import { IWalletConnection, IBlockchainData } from '../interfaces/IWeb3Operations';
-import { IDSKYState } from '../hooks/useDSKYState';
-import { IWeb3State } from '../hooks/useWeb3State';
-import { STATUS_MESSAGES } from '../constants/DSKYConstants';
+import { CryptoPriceService } from './CryptoPriceService';
+import type { IWalletConnection, IBlockchainData, IDSKYState, IWeb3State } from '../types';
+import { STATUS_MESSAGES } from '../constants';
 
 export interface ICommandExecutionResult {
   success: boolean;
@@ -15,11 +14,13 @@ export interface ICommandExecutionResult {
 }
 
 export class DSKYCommandExecutor {
-  constructor(private web3Service: UnifiedWeb3Service) {}
+  private cryptoService: CryptoPriceService;
 
-  async execute(
-    verb: string, 
-    noun: string, 
+  constructor(private web3Service: UnifiedWeb3Service) {
+    this.cryptoService = CryptoPriceService.create();
+  }  async execute(
+    verb: string,
+    noun: string,
     currentWeb3State: IWeb3State
   ): Promise<ICommandExecutionResult> {
     try {
@@ -69,10 +70,11 @@ export class DSKYCommandExecutor {
         return await this.handleGasPrice(nounNum);
 
       case DSKYVerb.VERB_WALLET_INFO:
-        return this.handleWalletInfo(nounNum, currentWeb3State);
-
-      case DSKYVerb.VERB_HEALTH_CHECK:
+        return this.handleWalletInfo(nounNum, currentWeb3State);      case DSKYVerb.VERB_HEALTH_CHECK:
         return await this.handleHealthCheck(nounNum);
+
+      case DSKYVerb.VERB_CRYPTO_PRICES:
+        return await this.handleCryptoPrice(nounNum);
 
       default:
         return {
@@ -146,11 +148,12 @@ export class DSKYCommandExecutor {
     }
     return this.invalidNounResult(nounNum);
   }
-
   private async handleGasPrice(nounNum: number): Promise<ICommandExecutionResult> {
     if (nounNum === DSKYNoun.NOUN_GAS_PRICE) {
-      const gasData = await this.web3Service.getGasPrice() as { standard: string };
-      const gasInGwei = parseFloat(gasData.standard) / 1e9;
+      const gasData = await this.web3Service.getGasPrice();
+      const gasInGwei = typeof gasData === 'object' && gasData && 'standard' in gasData 
+        ? parseFloat(gasData.standard as string) / 1e9
+        : 0;
       return {
         success: true,
         statusMessage: STATUS_MESSAGES.GAS_PRICE(gasInGwei),
@@ -185,6 +188,56 @@ export class DSKYCommandExecutor {
       };
     }
     return this.invalidNounResult(nounNum);
+  }
+  private async handleCryptoPrice(nounNum: number): Promise<ICommandExecutionResult> {
+    try {
+      let symbol: string;
+      
+      // Map noun numbers to crypto symbols
+      switch (nounNum) {
+        case DSKYNoun.NOUN_CRYPTO_BITCOIN:
+        case DSKYNoun.NOUN_CRYPTO_01:
+          symbol = 'BTC';
+          break;
+        case DSKYNoun.NOUN_CRYPTO_ETHEREUM:
+        case DSKYNoun.NOUN_CRYPTO_02:
+          symbol = 'ETH';
+          break;
+        case DSKYNoun.NOUN_CRYPTO_CARDANO:
+        case DSKYNoun.NOUN_CRYPTO_05:
+          symbol = 'ADA';
+          break;
+        case DSKYNoun.NOUN_CRYPTO_POLYGON:
+          symbol = 'MATIC';
+          break;
+        case DSKYNoun.NOUN_CRYPTO_CHAINLINK:
+          symbol = 'LINK';
+          break;
+        default:
+          return this.invalidNounResult(nounNum);
+      }
+
+      const cryptoData = await this.cryptoService.getCryptoPrice(symbol);
+      const priceDisplay = cryptoData.price > 1000 
+        ? Math.round(cryptoData.price).toString().slice(0, 5)
+        : cryptoData.price.toFixed(2).slice(0, 5);
+
+      return {
+        success: true,
+        statusMessage: STATUS_MESSAGES.CRYPTO_PRICE(cryptoData.symbol, cryptoData.price),
+        dskyUpdates: { 
+          reg1: cryptoData.symbol,
+          reg2: priceDisplay,
+          reg3: cryptoData.change24h.toFixed(1).slice(0, 5)
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        statusMessage: `Failed to fetch crypto price: ${(error as Error).message}`,
+        dskyUpdates: { oprErr: true }
+      };
+    }
   }
 
   private invalidNounResult(nounNum: number): ICommandExecutionResult {

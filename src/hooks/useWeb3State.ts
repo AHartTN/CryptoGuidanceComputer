@@ -1,22 +1,17 @@
-// Custom hook for Web3 state management following SOLID principles
+/**
+ * @fileoverview Web3 state management hook
+ * @description Optimized Web3 state management following SOLID principles
+ */
 
 import { useState, useCallback } from 'react';
+import type { IWeb3State, IWeb3Actions, IWeb3StateManager } from '../types';
+import { INITIAL_WEB3_STATE } from '../constants';
 
-export interface IWeb3State {
-  isConnected: boolean;
-  account: string | null;
-  network: string | null;
-  balance: string | null;
-}
-
-const INITIAL_WEB3_STATE: IWeb3State = {
-  isConnected: false,
-  account: null,
-  network: null,
-  balance: null
-};
-
-export const useWeb3State = () => {
+/**
+ * Custom hook for Web3 state management
+ * @returns Combined state and actions interface
+ */
+export const useWeb3State = (): IWeb3StateManager => {
   const [state, setState] = useState<IWeb3State>(INITIAL_WEB3_STATE);
 
   const updateConnection = useCallback((account: string, network?: string) => {
@@ -44,12 +39,13 @@ export const useWeb3State = () => {
     setState(INITIAL_WEB3_STATE);
   }, []);
 
-  return {
-    state,
+  const actions: IWeb3Actions = {
     updateConnection,
     updateBalance,
     updateNetwork,
     disconnect,
     reset
   };
+
+  return { state, actions };
 };

@@ -1,159 +1,186 @@
-// Main DSKY hook that combines all functionality following SOLID principles
+/**
+ * @fileoverview Main DSKY hook with optimized state management
+ * @description Central hook combining all DSKY functionality with proper separation of concerns
+ */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useDSKYState } from './useDSKYState';
 import { useWeb3State } from './useWeb3State';
 import { UnifiedWeb3Service } from '../services/UnifiedWeb3Service';
 import { DSKYCommandExecutor } from '../services/DSKYCommandExecutor';
-import { DSKYInputHandler, InputMode } from '../services/DSKYInputHandler';
-import { STATUS_MESSAGES } from '../constants/DSKYConstants';
+import { DSKYInputHandler } from '../services/DSKYInputHandler';
+import type { 
+  InputMode, 
+  IInputState,
+  IDSKYState,
+  IWeb3State,
+  StatusMessageHandler 
+} from '../types';
+import { SUCCESS_MESSAGES, ERROR_MESSAGES, ALCHEMY_CONFIG } from '../constants';
 
-export const useDSKY = () => {
-  // State hooks
-  const dskyState = useDSKYState();
-  const web3State = useWeb3State();
+/**
+ * Main DSKY hook interface
+ */
+interface IUseDSKY {
+  dskyState: IDSKYState;
+  web3State: IWeb3State;
+  inputMode: InputMode;
+  currentInput: string;
+  statusMessages: string[];
+  isProcessing: boolean;
+  handleKeyPress: (key: string) => void;
+}
+
+/**
+ * Main DSKY hook combining all functionality
+ * @returns Consolidated DSKY interface
+ */
+export const useDSKY = (): IUseDSKY => {
+  const dskyStateManager = useDSKYState();
+  const web3StateManager = useWeb3State();
   
-  // Local state
   const [inputMode, setInputMode] = useState<InputMode>(null);
   const [currentInput, setCurrentInput] = useState('');
   const [statusMessages, setStatusMessages] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   
-  // Service references
-  const web3ServiceRef = useRef<UnifiedWeb3Service | null>(null);
-  const commandExecutorRef = useRef<DSKYCommandExecutor | null>(null);
-  const inputHandlerRef = useRef<DSKYInputHandler | null>(null);
+  const servicesRef = useRef({
+    web3Service: null as UnifiedWeb3Service | null,
+    commandExecutor: null as DSKYCommandExecutor | null,
+    inputHandler: null as DSKYInputHandler | null
+  });
+  
+  const actionsRef = useRef({
+    dskyActions: dskyStateManager.actions,
+    web3Actions: web3StateManager.actions,
+    isConnected: false
+  });
 
-  // Add status message helper
-  const addStatusMessage = useCallback((message: string) => {
+  useEffect(() => {
+    actionsRef.current.dskyActions = dskyStateManager.actions;
+  }, [dskyStateManager.actions]);
+  
+  useEffect(() => {
+    actionsRef.current.web3Actions = web3StateManager.actions;
+    actionsRef.current.isConnected = web3StateManager.state.isConnected;
+  }, [web3StateManager.actions, web3StateManager.state.isConnected]);
+
+  const addStatusMessage: StatusMessageHandler = useCallback((message: string) => {
     setStatusMessages(prev => [...prev, message]);
   }, []);
 
-  // Initialize services
   useEffect(() => {
     const initializeServices = async () => {
       try {
-        const alchemyApiKey = 'demo-key';
+        servicesRef.current.web3Service = UnifiedWeb3Service.createForHardhat(ALCHEMY_CONFIG.DEFAULT_API_KEY);
+        servicesRef.current.commandExecutor = new DSKYCommandExecutor(servicesRef.current.web3Service);
+        servicesRef.current.inputHandler = new DSKYInputHandler();
         
-        // Initialize Web3 service
-        web3ServiceRef.current = UnifiedWeb3Service.createForHardhat(alchemyApiKey);
-        
-        // Initialize command executor
-        commandExecutorRef.current = new DSKYCommandExecutor(web3ServiceRef.current);
-        
-        // Initialize input handler
-        inputHandlerRef.current = new DSKYInputHandler();
-        
-        addStatusMessage(STATUS_MESSAGES.WEB3_INITIALIZED);
+        addStatusMessage(SUCCESS_MESSAGES.WEB3_INITIALIZED);
       } catch (error) {
-        addStatusMessage(STATUS_MESSAGES.WEB3_INIT_FAILED(String(error)));
-        dskyState.setStatusLight('oprErr', true);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        addStatusMessage(`${ERROR_MESSAGES.WEB3_NOT_INITIALIZED}: ${errorMessage}`);
+        actionsRef.current.dskyActions.setStatusLight('oprErr', true);
       }
     };
 
     initializeServices();
-  }, [dskyState, addStatusMessage]);
+  }, [addStatusMessage]);
 
-  // Execute command
   const executeCommand = useCallback(async (verb: string, noun: string) => {
-    if (!commandExecutorRef.current) {
-      addStatusMessage(STATUS_MESSAGES.WEB3_NOT_INITIALIZED);
-      dskyState.setStatusLight('oprErr', true);
+    if (!servicesRef.current.commandExecutor) {
+      addStatusMessage(ERROR_MESSAGES.WEB3_NOT_INITIALIZED);
+      actionsRef.current.dskyActions.setStatusLight('oprErr', true);
       return;
     }
 
     setIsProcessing(true);
-    dskyState.setStatusLight('compActy', true);
-    dskyState.setStatusLight('oprErr', false);
+    actionsRef.current.dskyActions.setStatusLight('compActy', true);
+    actionsRef.current.dskyActions.setStatusLight('oprErr', false);
 
     try {
-      const result = await commandExecutorRef.current.execute(verb, noun, web3State.state);
+      const result = await servicesRef.current.commandExecutor.execute(verb, noun, web3StateManager.state);
       
-      // Apply updates
       if (result.dskyUpdates) {
-        dskyState.updateMultipleFields(result.dskyUpdates);
+        actionsRef.current.dskyActions.updateMultipleFields(result.dskyUpdates);
       }
+      
       if (result.web3Updates) {
         if (result.web3Updates.isConnected !== undefined) {
           if (result.web3Updates.isConnected) {
-            web3State.updateConnection(
+            actionsRef.current.web3Actions.updateConnection(
               result.web3Updates.account || '',
               result.web3Updates.network || undefined
             );
           } else {
-            web3State.disconnect();
+            actionsRef.current.web3Actions.disconnect();
           }
         }
         if (result.web3Updates.balance) {
-          web3State.updateBalance(result.web3Updates.balance);
+          actionsRef.current.web3Actions.updateBalance(result.web3Updates.balance);
         }
         if (result.web3Updates.network) {
-          web3State.updateNetwork(result.web3Updates.network);
+          actionsRef.current.web3Actions.updateNetwork(result.web3Updates.network);
         }
       }
       
-      addStatusMessage(result.statusMessage);
+      if (result.statusMessage) {
+        addStatusMessage(result.statusMessage);
+      }
     } catch (error) {
-      addStatusMessage(`Command execution failed: ${error}`);
-      dskyState.setStatusLight('oprErr', true);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      addStatusMessage(`Command execution failed: ${errorMessage}`);
+      actionsRef.current.dskyActions.setStatusLight('oprErr', true);
     } finally {
       setIsProcessing(false);
-      dskyState.setStatusLight('compActy', false);
+      actionsRef.current.dskyActions.setStatusLight('compActy', false);
     }
-  }, [dskyState, web3State, addStatusMessage]);
+  }, [addStatusMessage, web3StateManager.state]);
 
-  // Handle key press
   const handleKeyPress = useCallback((key: string) => {
-    if (!inputHandlerRef.current) return;
+    if (!servicesRef.current.inputHandler) return;
 
-    const result = inputHandlerRef.current.handleKeyPress(
+    const inputState: IInputState = { mode: inputMode, currentInput };
+    const result = servicesRef.current.inputHandler.handleKeyPress(
       key,
-      { mode: inputMode, currentInput },
-      dskyState.state
+      inputState,
+      dskyStateManager.state
     );
 
-    // Update input state
     setInputMode(result.newInputState.mode);
     setCurrentInput(result.newInputState.currentInput);
 
-    // Add status message if provided
     if (result.statusMessage) {
       addStatusMessage(result.statusMessage);
     }
 
-    // Apply DSKY updates if provided
     if (result.dskyUpdates) {
-      dskyState.updateMultipleFields(result.dskyUpdates);
+      actionsRef.current.dskyActions.updateMultipleFields(result.dskyUpdates);
     }
 
-    // Execute command if requested
     if (result.shouldExecuteCommand) {
       executeCommand(result.shouldExecuteCommand.verb, result.shouldExecuteCommand.noun);
     }
-  }, [inputMode, currentInput, dskyState, addStatusMessage, executeCommand]);
+  }, [inputMode, currentInput, addStatusMessage, executeCommand, dskyStateManager.state]);
 
-  // Simulate computer activity and connection status
   useEffect(() => {
     const interval = setInterval(() => {
-      dskyState.updateMultipleFields({
+      actionsRef.current.dskyActions.updateMultipleFields({
         compActy: isProcessing || Math.random() > 0.85,
-        uplinkActy: web3State.state.isConnected
+        uplinkActy: actionsRef.current.isConnected
       });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isProcessing, web3State.state.isConnected, dskyState]);
+  }, [isProcessing]);
 
   return {
-    // State
-    dskyState: dskyState.state,
-    web3State: web3State.state,
+    dskyState: dskyStateManager.state,
+    web3State: web3StateManager.state,
     inputMode,
     currentInput,
     statusMessages,
     isProcessing,
-    
-    // Actions
     handleKeyPress
   };
 };

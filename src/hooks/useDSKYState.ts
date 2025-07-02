@@ -1,54 +1,17 @@
-// Custom hook for DSKY state management following SOLID principles
+/**
+ * @fileoverview DSKY state management hook
+ * @description Optimized state management following SOLID principles
+ */
 
 import { useState, useCallback } from 'react';
+import type { IDSKYState, IDSKYActions, IDSKYStateManager, StatusLightKey } from '../types';
+import { INITIAL_DSKY_STATE, INPUT_CONSTRAINTS } from '../constants';
 
-export interface IDSKYState {
-  verb: string;
-  noun: string;
-  prog: string;
-  reg1: string;
-  reg2: string;
-  reg3: string;
-  compActy: boolean;
-  uplinkActy: boolean;
-  noAtt: boolean;
-  stby: boolean;
-  keyRel: boolean;
-  oprErr: boolean;
-  temp: boolean;
-  gimbalLock: boolean;
-  restart: boolean;
-  tracker: boolean;
-  alt: boolean;
-  vel: boolean;
-  progStatus: boolean;
-  prio: boolean;
-}
-
-const INITIAL_DSKY_STATE: IDSKYState = {
-  verb: '00',
-  noun: '00',
-  prog: '00',
-  reg1: '00000',
-  reg2: '00000',
-  reg3: '00000',
-  compActy: false,
-  uplinkActy: false,
-  noAtt: false,
-  stby: false,
-  keyRel: false,
-  oprErr: false,
-  temp: false,
-  gimbalLock: false,
-  restart: false,
-  tracker: false,
-  alt: false,
-  vel: false,
-  progStatus: false,
-  prio: false
-};
-
-export const useDSKYState = () => {
+/**
+ * Custom hook for DSKY state management
+ * @returns Combined state and actions interface
+ */
+export const useDSKYState = (): IDSKYStateManager => {
   const [state, setState] = useState<IDSKYState>(INITIAL_DSKY_STATE);
 
   const updateField = useCallback((field: keyof IDSKYState, value: string | boolean) => {
@@ -63,20 +26,25 @@ export const useDSKYState = () => {
     setState(INITIAL_DSKY_STATE);
   }, []);
 
-  const setStatusLight = useCallback((light: keyof IDSKYState, active: boolean) => {
+  const setStatusLight = useCallback((light: StatusLightKey, active: boolean) => {
     setState(prev => ({ ...prev, [light]: active }));
   }, []);
 
   const setRegister = useCallback((register: 'reg1' | 'reg2' | 'reg3', value: string) => {
-    setState(prev => ({ ...prev, [register]: value.slice(0, 5).padEnd(5, '0') }));
+    const paddedValue = value
+      .slice(0, INPUT_CONSTRAINTS.REGISTER_LENGTH)
+      .padEnd(INPUT_CONSTRAINTS.REGISTER_LENGTH, INPUT_CONSTRAINTS.REGISTER_PADDING);
+    
+    setState(prev => ({ ...prev, [register]: paddedValue }));
   }, []);
 
-  return {
-    state,
+  const actions: IDSKYActions = {
     updateField,
     updateMultipleFields,
     resetState,
     setStatusLight,
     setRegister
   };
+
+  return { state, actions };
 };

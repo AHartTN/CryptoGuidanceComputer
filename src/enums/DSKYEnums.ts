@@ -468,8 +468,12 @@ export function getProgramEnum(program: string): number {
 export function isValidVerbNounCombination(verb: number, noun: number): boolean {
   // Define valid combinations based on command categories
   switch (verb) {
-    case DSKYVerb.VERB_CONNECT_WALLET:
-      return noun === DSKYNoun.NOUN_SYSTEM_STATUS || noun === DSKYNoun.NOUN_OPERATION_CONNECT;
+    case DSKYVerb.VERB_CONNECT_WALLET: {
+      return noun === DSKYNoun.NOUN_SYSTEM_STATUS || 
+             noun === DSKYNoun.NOUN_OPERATION_CONNECT ||
+             noun === DSKYNoun.NOUN_WALLET_ADDRESS ||
+             noun === DSKYNoun.NOUN_WALLET_STATUS;
+    }
     
     case DSKYVerb.VERB_WALLET_INFO:
     case DSKYVerb.VERB_WALLET_BALANCE:

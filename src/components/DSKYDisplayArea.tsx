@@ -1,25 +1,44 @@
-// DSKY Display Area Component following SOLID principles
+/**
+ * @fileoverview DSKY Display Area Component
+ * @description Renders the main display fields for the Apollo DSKY interface
+ */
 
 import React from 'react';
-import { IDSKYState } from '../hooks/useDSKYState';
-import { InputMode } from '../services/DSKYInputHandler';
-import { DISPLAY_LABELS } from '../constants/DSKYConstants';
+import type { IDSKYState, InputMode } from '../types';
+import { DISPLAY_LABELS } from '../constants';
 
+/**
+ * Props for the DSKY Display Area component
+ */
 interface DSKYDisplayAreaProps {
+  /** Current DSKY state containing all display values */
   dskyState: IDSKYState;
+  /** Current input mode (verb, noun, prog, etc.) */
   inputMode: InputMode;
+  /** Current user input being typed */
   currentInput: string;
 }
 
+/**
+ * Props for individual display field components
+ */
 interface DisplayFieldProps {
+  /** Field label to display */
   label: string;
+  /** Current field value */
   value: string;
+  /** Whether this field is in input mode */
   isInputMode: boolean;
+  /** Current input text to show */
   currentInput: string;
+  /** CSS class name for styling */
   className: string;
 }
 
-const DisplayField: React.FC<DisplayFieldProps> = ({ 
+/**
+ * Individual display field component with memoization for performance
+ */
+const DisplayField = React.memo<DisplayFieldProps>(({ 
   label, 
   value, 
   isInputMode, 
@@ -32,9 +51,14 @@ const DisplayField: React.FC<DisplayFieldProps> = ({
       {isInputMode ? currentInput.padEnd(2, '_') : value}
     </div>
   </>
-);
+));
 
-export const DSKYDisplayArea: React.FC<DSKYDisplayAreaProps> = ({ 
+DisplayField.displayName = 'DisplayField';
+
+/**
+ * Main DSKY Display Area component with optimization
+ */
+export const DSKYDisplayArea = React.memo<DSKYDisplayAreaProps>(({ 
   dskyState, 
   inputMode, 
   currentInput 
@@ -65,14 +89,31 @@ export const DSKYDisplayArea: React.FC<DSKYDisplayAreaProps> = ({
         className="dsky-noun"
       />
       
-      <div className="dsky-display-label dsky-r1-label">{DISPLAY_LABELS.R1}</div>
-      <div className="dsky-display-value dsky-r1-value">{dskyState.reg1}</div>
+      <DisplayField
+        label={DISPLAY_LABELS.R1}
+        value={dskyState.reg1}
+        isInputMode={inputMode === 'data'}
+        currentInput={currentInput}
+        className="dsky-reg1"
+      />
       
-      <div className="dsky-display-label dsky-r2-label">{DISPLAY_LABELS.R2}</div>
-      <div className="dsky-display-value dsky-r2-value">{dskyState.reg2}</div>
+      <DisplayField
+        label={DISPLAY_LABELS.R2}
+        value={dskyState.reg2}
+        isInputMode={false}
+        currentInput=""
+        className="dsky-reg2"
+      />
       
-      <div className="dsky-display-label dsky-r3-label">{DISPLAY_LABELS.R3}</div>
-      <div className="dsky-display-value dsky-r3-value">{dskyState.reg3}</div>
+      <DisplayField
+        label={DISPLAY_LABELS.R3}
+        value={dskyState.reg3}
+        isInputMode={false}
+        currentInput=""
+        className="dsky-reg3"
+      />
     </div>
   );
-};
+});
+
+DSKYDisplayArea.displayName = 'DSKYDisplayArea';

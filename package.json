@@ -6,8 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:ps": "powershell \"tsc -b; if ($?) { vite build }\"",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && robocopy dist U:\\hartonomous.com\\www-root /E /PURGE",
+    "deploy:ps": "powershell \"npm run build; if ($?) { robocopy dist U:\\hartonomous.com\\www-root /E /PURGE }\""
   },
   "dependencies": {
     "@tanstack/react-query": "^5.81.5",

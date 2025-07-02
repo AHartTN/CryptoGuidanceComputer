@@ -75,14 +75,49 @@ body {
   min-height: clamp(50px, 8vmin, 70px);
   height: auto;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   background: #1a1a1a;
   border: clamp(2px, 0.5vmin, 3px) solid #333;
   border-radius: clamp(3px, 0.75vmin, 6px);
-  padding: clamp(4px, 1vmin, 8px);
+  padding: clamp(4px, 1vmin, 8px) clamp(8px, 1.6vmin, 12px);
   gap: clamp(2px, 0.5vmin, 4px);
+}
+
+.dsky-header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(2px, 0.5vmin, 4px);
+}
+
+.dsky-help-button {
+  background: #4a4a4a;
+  border: clamp(2px, 0.4vmin, 3px) solid #666;
+  border-radius: 50%;
+  color: #00ff41;
+  font-size: clamp(14px, 2.8vmin, 20px);
+  font-weight: 900;
+  width: clamp(32px, 6.4vmin, 44px);
+  height: clamp(32px, 6.4vmin, 44px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-family: 'Consolas', 'Monaco', 'Lucida Console', monospace;
+  text-shadow: 0 0 4px #00ff41;
+  flex-shrink: 0;
+}
+
+.dsky-help-button:hover {
+  background: #5a5a5a;
+  border-color: #00ff41;
+  box-shadow: 
+    0 0 8px rgba(0, 255, 65, 0.5),
+    inset 0 0 8px rgba(0, 255, 65, 0.1);
+  transform: scale(1.05);
 }
 
 .dsky-header-title {
@@ -553,31 +588,152 @@ body {
   background: #555;
 }
 
-/* === RESPONSIVE BREAKPOINTS === */
-@media (max-width: 768px) {
-  .dsky-top-row {
-    flex-direction: column;
-    min-height: auto;
-    height: auto;
-  }
-  
-  .dsky-status-indicators {
-    flex: none;
-    height: auto;
-    min-height: clamp(120px, 20vmin, 160px);
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(4, minmax(auto, 1fr));
-  }
+/* === HELP DIALOG === */
+.dsky-help-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: clamp(20px, 4vmin, 40px);
+  font-family: 'Consolas', 'Monaco', 'Lucida Console', monospace;
 }
 
-@media (max-width: 480px) {
-  .dsky-main {
-    width: 95vw;
-    padding: clamp(12px, 2.5vmin, 20px);
-  }
-  
-  .dsky-keypad {
-    min-height: clamp(120px, 20vmin, 160px);
-    height: auto;
-  }
+.dsky-help-dialog {
+  background: #1a1a1a;
+  border: clamp(3px, 0.6vmin, 5px) solid #333;
+  border-radius: clamp(6px, 1.2vmin, 10px);
+  max-width: clamp(600px, 80vw, 900px);
+  max-height: clamp(500px, 80vh, 700px);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 
+    0 0 30px rgba(0, 255, 65, 0.3),
+    inset 0 0 30px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
 }
+
+.dsky-help-header {
+  background: #2a2a2a;
+  padding: clamp(12px, 2.4vmin, 20px);
+  border-bottom: clamp(2px, 0.4vmin, 3px) solid #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dsky-help-header h2 {
+  color: #00ff41;
+  font-size: clamp(16px, 3vmin, 24px);
+  font-weight: 900;
+  margin: 0;
+  text-shadow: 
+    0 0 8px #00ff41,
+    0 0 16px #00ff41,
+    0 1px 0 rgba(0, 0, 0, 0.8);
+  letter-spacing: clamp(0.5px, 0.2vmin, 1px);
+}
+
+.dsky-help-close {
+  background: #ff4444;
+  border: clamp(2px, 0.4vmin, 3px) solid #ff6666;
+  border-radius: clamp(3px, 0.6vmin, 5px);
+  color: #fff;
+  font-size: clamp(18px, 3.6vmin, 28px);
+  font-weight: 900;
+  width: clamp(32px, 6.4vmin, 48px);
+  height: clamp(32px, 6.4vmin, 48px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-family: 'Consolas', 'Monaco', 'Lucida Console', monospace;
+}
+
+.dsky-help-close:hover {
+  background: #ff6666;
+  box-shadow: 0 0 10px rgba(255, 68, 68, 0.6);
+  transform: scale(1.05);
+}
+
+.dsky-help-nav {
+  background: #2a2a2a;
+  border-bottom: clamp(1px, 0.2vmin, 2px) solid #333;
+  display: flex;
+  padding: 0;
+  overflow-x: auto;
+}
+
+.dsky-help-nav-btn {
+  background: #3a3a3a;
+  border: none;
+  border-right: clamp(1px, 0.2vmin, 2px) solid #333;
+  color: #ccc;
+  font-size: clamp(12px, 2.4vmin, 18px);
+  font-weight: 700;
+  padding: clamp(10px, 2vmin, 16px) clamp(16px, 3.2vmin, 24px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Consolas', 'Monaco', 'Lucida Console', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex: 1;
+  min-width: fit-content;
+}
+
+.dsky-help-nav-btn:hover {
+  background: #4a4a4a;
+  color: #00ff41;
+}
+
+.dsky-help-nav-btn.active {
+  background: #00ff41;
+  color: #000;
+  box-shadow: 
+    0 0 8px rgba(0, 255, 65, 0.4),
+    inset 0 0 8px rgba(0, 0, 0, 0.2);
+  font-weight: 900;
+}
+
+.dsky-help-content {
+  flex: 1;
+  padding: clamp(16px, 3.2vmin, 24px);
+  overflow-y: auto;
+  background: #0a0a0a;
+  color: #ccc;
+  line-height: 1.6;
+}
+
+.dsky-help-content h3 {
+  color: #00ff41;
+  font-size: clamp(14px, 2.8vmin, 20px);
+  font-weight: 900;
+  margin: 0 0 clamp(12px, 2.4vmin, 18px) 0;
+  text-shadow: 
+    0 0 6px #00ff41,
+    0 0 12px #00ff41,
+    0 1px 0 rgba(0, 0, 0, 0.8);
+}
+
+.dsky-help-content h4 {
+  color: #ffaa00;
+  font-size: clamp(12px, 2.4vmin, 16px);
+  font-weight: 800;
+  margin: clamp(16px, 3.2vmin, 24px) 0 clamp(8px, 1.6vmin, 12px) 0;
+  text-shadow: 0 0 4px #ffaa00;
+}
+
+.dsky-help-content p {
+  margin: clamp(8px, 1.6vmin, 12px) 0;
+  font-size: clamp(11px, 2.2vmin, 14px);
+}
+
+.dsky-help-content ul, .ds
