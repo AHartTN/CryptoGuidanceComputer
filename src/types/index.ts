@@ -479,3 +479,97 @@ export type AsyncOperation<T = void> = () => Promise<T>;
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
+
+// ================================================================================================
+// DYNAMIC COIN SYSTEM TYPES
+// ================================================================================================
+
+/**
+ * Individual coin information
+ */
+export interface ICoinInfo {
+  /** Unique coin identifier (e.g., 'bitcoin', 'ethereum') */
+  id: string;
+  /** Display symbol (e.g., 'BTC', 'ETH') */
+  symbol: string;
+  /** Full coin name */
+  name: string;
+  /** Current price in USD */
+  currentPrice?: number;
+  /** Market cap rank */
+  marketCapRank?: number;
+  /** 24h price change percentage */
+  priceChange24h?: number;
+  /** Whether coin is flagged for batch operations */
+  isFlagged: boolean;
+  /** Dynamically assigned noun number */
+  nounNumber: number;
+  /** Last price update timestamp */
+  lastUpdated?: Date;
+}
+
+/**
+ * Coin list management state
+ */
+export interface ICoinListState {
+  /** Available coins mapped by noun number */
+  coinsByNoun: Map<number, ICoinInfo>;
+  /** Available coins mapped by coin ID */
+  coinsById: Map<string, ICoinInfo>;
+  /** Flagged coins for batch operations */
+  flaggedCoins: Set<string>;
+  /** Next available noun number for assignment */
+  nextNounNumber: number;
+  /** Whether coin list is loaded */
+  isLoaded: boolean;
+  /** Last update timestamp */
+  lastUpdated?: Date;
+}
+
+/**
+ * Batch price result
+ */
+export interface IBatchPriceResult {
+  /** Coin ID */
+  coinId: string;
+  /** Coin symbol */
+  symbol: string;
+  /** Current price */
+  price: number;
+  /** Price change 24h */
+  priceChange24h: number;
+  /** Update timestamp */
+  timestamp: Date;
+  /** Whether fetch was successful */
+  success: boolean;
+  /** Error message if fetch failed */
+  error?: string;
+}
+
+/**
+ * Coin list actions interface
+ */
+export interface ICoinListActions {
+  /** Load available coins from API */
+  loadCoinList: () => Promise<void>;
+  /** Flag/unflag a coin for batch operations */
+  toggleCoinFlag: (coinId: string) => void;
+  /** Clear all coin flags */
+  clearAllFlags: () => void;
+  /** Get coin by noun number */
+  getCoinByNoun: (nounNumber: number) => ICoinInfo | undefined;
+  /** Get coin by ID */
+  getCoinById: (coinId: string) => ICoinInfo | undefined;
+  /** Get all flagged coins */
+  getFlaggedCoins: () => ICoinInfo[];
+  /** Update coin price */
+  updateCoinPrice: (coinId: string, priceData: Partial<ICoinInfo>) => void;
+}
+
+/**
+ * Combined coin list state and actions
+ */
+export interface ICoinListManager {
+  state: ICoinListState;
+  actions: ICoinListActions;
+}

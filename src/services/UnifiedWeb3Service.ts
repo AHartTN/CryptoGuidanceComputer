@@ -5,12 +5,11 @@
 
 export class UnifiedWeb3Service {
   private isConnected = false;
-
-  static createForHardhat(apiKey: string): UnifiedWeb3Service {
+  static createForHardhat(_apiKey: string): UnifiedWeb3Service {
     return new UnifiedWeb3Service();
   }
 
-  static createForMainnet(apiKey: string): UnifiedWeb3Service {
+  static createForMainnet(_apiKey: string): UnifiedWeb3Service {
     return new UnifiedWeb3Service();
   }
 
@@ -27,8 +26,7 @@ export class UnifiedWeb3Service {
   async disconnect(): Promise<void> {
     this.isConnected = false;
   }
-
-  async getBalance(address: string): Promise<string> {
+  async getBalance(_address: string): Promise<string> {
     return '1.5';
   }
 

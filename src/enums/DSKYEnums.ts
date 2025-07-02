@@ -26,12 +26,16 @@ export const DSKYVerb = {
   VERB_BLOCK_SPECIFIC: 23, // 23 - Display specific block info
   VERB_GAS_PRICES: 24,    // 24 - Display gas prices
   VERB_NETWORK_STATUS: 25, // 25 - Display network status
-  
-  // === CRYPTO PRICES (31-39) ===
-  VERB_CRYPTO_PRICES: 31, // 31 - Display cryptocurrency prices
-  VERB_CRYPTO_DETAIL: 32, // 32 - Display detailed crypto info
+    // === CRYPTO PRICES (31-39) ===
+  VERB_CRYPTO_PRICES: 31, // 31 - Display cryptocurrency prices (deprecated - use dynamic system)
+  VERB_CRYPTO_DETAIL: 32, // 32 - Display detailed crypto info (deprecated - use dynamic system)
   VERB_CRYPTO_HISTORY: 33, // 33 - Display price history
   VERB_CRYPTO_COMPARE: 34, // 34 - Compare cryptocurrencies
+  VERB_GET_COIN_LIST: 35,  // 35 - Retrieve available coins list
+  VERB_GET_COIN_PRICE: 36, // 36 - Get price for specific coin (use with dynamic noun)
+  VERB_FLAG_COIN: 37,      // 37 - Flag/unflag coin for batch operations
+  VERB_BATCH_PRICES: 38,   // 38 - Retrieve prices for all flagged coins
+  VERB_CLEAR_FLAGS: 39,    // 39 - Clear all coin flags
   
   // === TRANSACTIONS (41-49) ===
   VERB_SEND_ETH: 41,      // 41 - Send ETH transaction
@@ -75,24 +79,29 @@ export const DSKYNoun = {
   NOUN_GAS_PRICE: 23,      // 23 - Current gas price
   NOUN_CHAIN_ID: 24,       // 24 - Chain ID
   NOUN_NETWORK_NAME: 25,   // 25 - Network name
-    // === CRYPTOCURRENCY DATA (31-49) ===
-  NOUN_CRYPTO_BITCOIN: 31, // 31 - Bitcoin (BTC)
-  NOUN_CRYPTO_ETHEREUM: 32, // 32 - Ethereum (ETH)
-  NOUN_CRYPTO_CHAINLINK: 33, // 33 - Chainlink (LINK)
-  NOUN_CRYPTO_POLYGON: 34,  // 34 - Polygon (MATIC)
-  NOUN_CRYPTO_UNISWAP: 35,  // 35 - Uniswap (UNI)
-  NOUN_CRYPTO_CARDANO: 36,  // 36 - Cardano (ADA)
-  NOUN_CRYPTO_SOLANA: 37,   // 37 - Solana (SOL)
-  NOUN_CRYPTO_DOGECOIN: 38, // 38 - Dogecoin (DOGE)
-  NOUN_CRYPTO_LITECOIN: 39, // 39 - Litecoin (LTC)
-  NOUN_CRYPTO_TOP10: 40,    // 40 - Top 10 cryptocurrencies
+  // === CRYPTOCURRENCY DATA (31-49) - Static/Legacy ===
+  NOUN_CRYPTO_BITCOIN: 31, // 31 - Bitcoin (BTC) - Legacy
+  NOUN_CRYPTO_ETHEREUM: 32, // 32 - Ethereum (ETH) - Legacy
+  NOUN_CRYPTO_CHAINLINK: 33, // 33 - Chainlink (LINK) - Legacy
+  NOUN_CRYPTO_POLYGON: 34,  // 34 - Polygon (MATIC) - Legacy
+  NOUN_CRYPTO_UNISWAP: 35,  // 35 - Uniswap (UNI) - Legacy
+  NOUN_CRYPTO_CARDANO: 36,  // 36 - Cardano (ADA) - Legacy
+  NOUN_CRYPTO_SOLANA: 37,   // 37 - Solana (SOL) - Legacy
+  NOUN_CRYPTO_DOGECOIN: 38, // 38 - Dogecoin (DOGE) - Legacy
+  NOUN_CRYPTO_LITECOIN: 39, // 39 - Litecoin (LTC) - Legacy
+  NOUN_CRYPTO_TOP10: 40,    // 40 - Top 10 cryptocurrencies - Legacy
   
-  // === INDIVIDUAL CRYPTO SHORTHAND ===
-  NOUN_CRYPTO_01: 41,      // 41 - Bitcoin (BTC)
-  NOUN_CRYPTO_02: 42,      // 42 - Ethereum (ETH)
-  NOUN_CRYPTO_03: 43,      // 43 - Binance Coin (BNB)
-  NOUN_CRYPTO_04: 44,      // 44 - XRP (XRP)
-  NOUN_CRYPTO_05: 45,      // 45 - Cardano (ADA)
+  // === CRYPTO OPERATIONS (41-49) ===
+  NOUN_COIN_LIST: 41,       // 41 - Available coins list
+  NOUN_FLAGGED_COINS: 42,   // 42 - Flagged coins for batch operations
+  NOUN_BATCH_RESULTS: 43,   // 43 - Batch price retrieval results
+  NOUN_COIN_FLAGS: 44,      // 44 - Coin flag status
+  
+  // === DYNAMIC CRYPTO NOUNS (200-999) ===
+  // Range 200-999 reserved for dynamically mapped coin nouns
+  // These will be populated at runtime based on available coins
+  NOUN_DYNAMIC_COIN_START: 200, // 200 - Start of dynamic coin range
+  NOUN_DYNAMIC_COIN_END: 999,   // 999 - End of dynamic coin range
   
   // === TRANSACTION DATA (51-59) ===
   NOUN_TX_PENDING: 51,     // 51 - Pending transactions
@@ -474,16 +483,34 @@ export function isValidVerbNounCombination(verb: number, noun: number): boolean 
              noun === DSKYNoun.NOUN_WALLET_ADDRESS ||
              noun === DSKYNoun.NOUN_WALLET_STATUS;
     }
-    
-    case DSKYVerb.VERB_WALLET_INFO:
+      case DSKYVerb.VERB_WALLET_INFO:
     case DSKYVerb.VERB_WALLET_BALANCE:
     case DSKYVerb.VERB_WALLET_TOKENS:
       return (noun >= DSKYNoun.NOUN_WALLET_ADDRESS && noun <= DSKYNoun.NOUN_WALLET_NFTS) ||
              noun === DSKYNoun.NOUN_WALLET_STATUS;
     
+    // Legacy crypto price verbs
     case DSKYVerb.VERB_CRYPTO_PRICES:
     case DSKYVerb.VERB_CRYPTO_DETAIL:
       return (noun >= DSKYNoun.NOUN_CRYPTO_BITCOIN && noun <= DSKYNoun.NOUN_CRYPTO_TOP10);
+    
+    // New dynamic crypto system verbs
+    case DSKYVerb.VERB_GET_COIN_LIST:
+      return noun === DSKYNoun.NOUN_COIN_LIST;
+    
+    case DSKYVerb.VERB_GET_COIN_PRICE:
+      return (noun >= DSKYNoun.NOUN_DYNAMIC_COIN_START && noun <= DSKYNoun.NOUN_DYNAMIC_COIN_END) ||
+             (noun >= DSKYNoun.NOUN_CRYPTO_BITCOIN && noun <= DSKYNoun.NOUN_CRYPTO_TOP10);
+    
+    case DSKYVerb.VERB_FLAG_COIN:
+      return (noun >= DSKYNoun.NOUN_DYNAMIC_COIN_START && noun <= DSKYNoun.NOUN_DYNAMIC_COIN_END) ||
+             (noun >= DSKYNoun.NOUN_CRYPTO_BITCOIN && noun <= DSKYNoun.NOUN_CRYPTO_TOP10);
+    
+    case DSKYVerb.VERB_BATCH_PRICES:
+      return noun === DSKYNoun.NOUN_FLAGGED_COINS || noun === DSKYNoun.NOUN_BATCH_RESULTS;
+    
+    case DSKYVerb.VERB_CLEAR_FLAGS:
+      return noun === DSKYNoun.NOUN_COIN_FLAGS || noun === DSKYNoun.NOUN_FLAGGED_COINS;
     
     case DSKYVerb.VERB_BLOCK_INFO:
     case DSKYVerb.VERB_BLOCK_CURRENT:

@@ -6,14 +6,17 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useDSKYState } from './useDSKYState';
 import { useWeb3State } from './useWeb3State';
+import { useCoinList } from './useCoinList';
 import { UnifiedWeb3Service } from '../services/UnifiedWeb3Service';
 import { DSKYCommandExecutor } from '../services/DSKYCommandExecutor';
 import { DSKYInputHandler } from '../services/DSKYInputHandler';
+import { DynamicCryptoPriceService } from '../services/DynamicCryptoPriceService';
 import type { 
   InputMode, 
   IInputState,
   IDSKYState,
   IWeb3State,
+  ICoinListManager,
   StatusMessageHandler 
 } from '../types';
 import { SUCCESS_MESSAGES, ERROR_MESSAGES, ALCHEMY_CONFIG } from '../constants';
@@ -24,6 +27,7 @@ import { SUCCESS_MESSAGES, ERROR_MESSAGES, ALCHEMY_CONFIG } from '../constants';
 interface IUseDSKY {
   dskyState: IDSKYState;
   web3State: IWeb3State;
+  coinListManager: ICoinListManager;
   inputMode: InputMode;
   currentInput: string;
   statusMessages: string[];
@@ -38,6 +42,7 @@ interface IUseDSKY {
 export const useDSKY = (): IUseDSKY => {
   const dskyStateManager = useDSKYState();
   const web3StateManager = useWeb3State();
+  const coinListManager = useCoinList();
   
   const [inputMode, setInputMode] = useState<InputMode>(null);
   const [currentInput, setCurrentInput] = useState('');
@@ -47,7 +52,8 @@ export const useDSKY = (): IUseDSKY => {
   const servicesRef = useRef({
     web3Service: null as UnifiedWeb3Service | null,
     commandExecutor: null as DSKYCommandExecutor | null,
-    inputHandler: null as DSKYInputHandler | null
+    inputHandler: null as DSKYInputHandler | null,
+    cryptoPriceService: null as DynamicCryptoPriceService | null
   });
   
   const actionsRef = useRef({
@@ -66,26 +72,33 @@ export const useDSKY = (): IUseDSKY => {
   }, [web3StateManager.actions, web3StateManager.state.isConnected]);
 
   const addStatusMessage: StatusMessageHandler = useCallback((message: string) => {
-    setStatusMessages(prev => [...prev, message]);
-  }, []);
+    setStatusMessages(prev => [...prev, message]);  }, []);
 
   useEffect(() => {
     const initializeServices = async () => {
       try {
         servicesRef.current.web3Service = UnifiedWeb3Service.createForHardhat(ALCHEMY_CONFIG.DEFAULT_API_KEY);
-        servicesRef.current.commandExecutor = new DSKYCommandExecutor(servicesRef.current.web3Service);
+        servicesRef.current.commandExecutor = new DSKYCommandExecutor(
+          servicesRef.current.web3Service,
+          coinListManager
+        );
         servicesRef.current.inputHandler = new DSKYInputHandler();
+        servicesRef.current.cryptoPriceService = new DynamicCryptoPriceService();
+        
+        // Initialize coin list
+        await coinListManager.actions.loadCoinList();
         
         addStatusMessage(SUCCESS_MESSAGES.WEB3_INITIALIZED);
+        addStatusMessage('Dynamic coin system initialized');
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         addStatusMessage(`${ERROR_MESSAGES.WEB3_NOT_INITIALIZED}: ${errorMessage}`);
         actionsRef.current.dskyActions.setStatusLight('oprErr', true);
       }
     };
-
+    
     initializeServices();
-  }, [addStatusMessage]);
+  }, [addStatusMessage, coinListManager]);
 
   const executeCommand = useCallback(async (verb: string, noun: string) => {
     if (!servicesRef.current.commandExecutor) {
@@ -173,10 +186,10 @@ export const useDSKY = (): IUseDSKY => {
 
     return () => clearInterval(interval);
   }, [isProcessing]);
-
   return {
     dskyState: dskyStateManager.state,
     web3State: web3StateManager.state,
+    coinListManager,
     inputMode,
     currentInput,
     statusMessages,

@@ -3,14 +3,11 @@
 import { STATUS_MESSAGES, INPUT_CONFIG, BUTTON_LABELS } from '../constants';
 import type { IDSKYState, InputMode, IInputState, IInputResult } from '../types';
 
-export class DSKYInputHandler {
-  handleKeyPress(
+export class DSKYInputHandler {  handleKeyPress(
     key: string, 
     currentInputState: IInputState, 
     currentDSKYState: IDSKYState
   ): IInputResult {
-    const { mode, currentInput } = currentInputState;
-
     switch (key) {
       case BUTTON_LABELS.VERB:
         return this.handleModeKey('verb');

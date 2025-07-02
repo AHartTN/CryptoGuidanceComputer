@@ -88,13 +88,12 @@ export const DSKYDisplayArea = React.memo<DSKYDisplayAreaProps>(({
         currentInput={currentInput}
         className="dsky-noun"
       />
-      
-      <DisplayField
+        <DisplayField
         label={DISPLAY_LABELS.R1}
         value={dskyState.reg1}
         isInputMode={inputMode === 'data'}
         currentInput={currentInput}
-        className="dsky-reg1"
+        className="dsky-r1"
       />
       
       <DisplayField
@@ -102,7 +101,7 @@ export const DSKYDisplayArea = React.memo<DSKYDisplayAreaProps>(({
         value={dskyState.reg2}
         isInputMode={false}
         currentInput=""
-        className="dsky-reg2"
+        className="dsky-r2"
       />
       
       <DisplayField
@@ -110,7 +109,7 @@ export const DSKYDisplayArea = React.memo<DSKYDisplayAreaProps>(({
         value={dskyState.reg3}
         isInputMode={false}
         currentInput=""
-        className="dsky-reg3"
+        className="dsky-r3"
       />
     </div>
   );

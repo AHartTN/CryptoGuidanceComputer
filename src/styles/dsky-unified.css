@@ -238,13 +238,13 @@ body {
   background: #000;
   border: clamp(2px, 0.5vmin, 3px) solid #333;
   border-radius: clamp(2px, 0.5vmin, 4px);
-  padding: clamp(12px, 2.2vmin, 18px);
-  display: grid;
+  padding: clamp(12px, 2.2vmin, 18px);  display: grid;
   grid-template-areas:
     "prog-label prog-value verb-label verb-value noun-label noun-value"
     "r1-label r1-value r1-value r1-value r1-value r1-value"
     "r2-label r2-value r2-value r2-value r2-value r2-value"
-    "r3-label r3-value r3-value r3-value r3-value r3-value";  grid-template-columns: minmax(40px, 1fr) minmax(60px, 1.5fr) minmax(40px, 1fr) minmax(60px, 1.5fr) minmax(40px, 1fr) minmax(60px, 1.5fr);
+    "r3-label r3-value r3-value r3-value r3-value r3-value";
+  grid-template-columns: minmax(40px, 1fr) minmax(60px, 1.5fr) minmax(40px, 1fr) minmax(60px, 1.5fr) minmax(40px, 1fr) minmax(60px, 1.5fr);
   grid-template-rows: 1fr repeat(3, 1.2fr);
   gap: clamp(6px, 1.4vmin, 12px);
   align-items: center;
