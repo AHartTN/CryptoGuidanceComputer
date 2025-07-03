@@ -143,7 +143,7 @@ const DSKY = React.memo(() => {
       <DSKYOutput 
         web3State={web3State}
         statusMessages={statusMessages}
-        showRealTimeData={realTimeEnabled && ProductionConfig.getFeatureFlag('enableRealTimeData')}
+        realTimeData={realTimeData}
       />
       {showHelp && (
         <DSKYHelpDialog 

@@ -5,7 +5,9 @@
 
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import DSKY from './features/dsky/components/DSKY';
+import LogViewer from './components/LogViewer';
 import './App.css';
 
 const queryClient = new QueryClient({
@@ -25,9 +27,12 @@ const queryClient = new QueryClient({
 const App = React.memo(() => {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="App">
-        <DSKY />
-      </div>
+      <Router>
+        <Routes>
+          <Route path="/" element={<div className="App"><DSKY /></div>} />
+          <Route path="/logs" element={<LogViewer />} />
+        </Routes>
+      </Router>
     </QueryClientProvider>
   );
 });

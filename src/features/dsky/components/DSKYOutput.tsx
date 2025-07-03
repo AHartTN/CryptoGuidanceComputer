@@ -5,7 +5,6 @@
 
 import React, { useMemo } from 'react';
 import type { IPriceAlert } from '../../../interfaces/IPriceAlert';
-import { useRealTimeData } from '../../../hooks/useRealTimeData';
 import type { DSKYOutputProps } from '../../../interfaces/DSKYOutputProps';
 
 /**
@@ -14,18 +13,8 @@ import type { DSKYOutputProps } from '../../../interfaces/DSKYOutputProps';
 export const DSKYOutput = React.memo<DSKYOutputProps>(({ 
   web3State, 
   statusMessages, 
-  showRealTimeData = true 
-}) => {  // Real-time data hook
-  const realTimeData = useRealTimeData({
-    enablePriceFeeds: showRealTimeData,
-    enableBlockchainEvents: showRealTimeData,
-    priceSymbols: ['BTC', 'ETH', 'MATIC'],
-    watchedAddresses: [],
-    autoConnect: showRealTimeData,
-    maxEventHistory: 100,
-    maxDSKYUpdates: 50
-  });
-
+  realTimeData
+}) => {
   /**
    * Format account address for display
    */
@@ -53,29 +42,35 @@ export const DSKYOutput = React.memo<DSKYOutputProps>(({
    * Format real-time block data
    */
   const blockDisplay = useMemo(() => {
-    if (!realTimeData.data.latestBlock) return 'NO DATA';
-    return `#${realTimeData.data.latestBlock.number} (${new Date(realTimeData.data.latestBlock.timestamp).toLocaleTimeString()})`;
-  }, [realTimeData.data.latestBlock]);
+    if (!realTimeData.latestBlock) return 'NO DATA';
+    return `#${realTimeData.latestBlock.number} (${new Date(realTimeData.latestBlock.timestamp).toLocaleTimeString()})`;
+  }, [realTimeData.latestBlock]);
 
   /**
    * Format gas prices for display
    */
   const gasDisplay = useMemo(() => {
-    if (!realTimeData.data.gasPrices) return 'NO DATA';
-    return `${realTimeData.data.gasPrices.standard} GWEI`;
-  }, [realTimeData.data.gasPrices]);
+    if (!realTimeData.latestGasPrices) return 'NO DATA';
+    return `${realTimeData.latestGasPrices.standard} GWEI`;
+  }, [realTimeData.latestGasPrices]);
 
   /**
    * Get recent price updates
    */
   const priceUpdates = useMemo(() => {
-    const prices = Array.from(realTimeData.data.prices.entries()).slice(0, 3);
+    const prices = Array.from(realTimeData.prices.entries()).slice(0, 3);
     return prices.map(([symbol, data]) => ({
       symbol,
       price: data.price,
       change: data.changePercent24h
     }));
-  }, [realTimeData.data.prices]);
+  }, [realTimeData.prices]);
+
+  // Alerts
+  const alerts = realTimeData.priceAlerts || [];
+
+  const showRealTimeData = realTimeData.isConnected;
+
   return (
     <div className="dsky-output">
       <div className="dsky-output-section">
@@ -128,11 +123,11 @@ export const DSKYOutput = React.memo<DSKYOutputProps>(({
             </div>
           </div>
 
-          {realTimeData.data.alerts.length > 0 && (
+          {alerts.length > 0 && (
             <div className="dsky-output-section">
               <div className="dsky-output-label">ALERTS</div>
               <div className="dsky-output-alert-list">
-                {realTimeData.data.alerts.slice(-2).map((alert: IPriceAlert, index: number) => (
+                {alerts.slice(-2).map((alert: IPriceAlert, index: number) => (
                   <div key={`alert-${index}`} className="dsky-alert-item">
                     {alert.symbol}: {alert.condition} ${alert.threshold}
                   </div>

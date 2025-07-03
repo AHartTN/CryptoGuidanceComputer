@@ -9,9 +9,10 @@ import { DynamicCryptoPriceService } from '../../../services/crypto/DynamicCrypt
 import type { IInputState } from '../../../interfaces/IInputState';
 import type { IWeb3State } from '../../../interfaces/IWeb3State';
 import type { ICoinListManager } from '../../../interfaces/ICoinListManager';
-import type { IDSKYState, InputMode } from '../../../interfaces/IDSKYState';
+import type { IDSKYState } from '../../../interfaces/IDSKYState';
 import { STATUS_MESSAGES, ALCHEMY_CONFIG } from '../../../constants/DSKYConstants';
 import type { StatusMessageHandler } from '../../../types/StatusMessageHandler';
+import { InputMode } from '../../../interfaces/InputMode';
 
 interface IUseDSKY {
   dskyState: IDSKYState;
@@ -29,7 +30,7 @@ export const useDSKY = (): IUseDSKY => {
   const web3StateManager = useWeb3State();
   const coinListManager = useCoinList();
   
-  const [inputMode, setInputMode] = useState<InputMode>(null);
+  const [inputMode, setInputMode] = useState(InputMode.None);
   const [currentInput, setCurrentInput] = useState('');
   const [statusMessages, setStatusMessages] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -56,7 +57,10 @@ export const useDSKY = (): IUseDSKY => {
     actionsRef.current.isConnected = web3StateManager.state.isConnected;
   }, [web3StateManager.actions, web3StateManager.state.isConnected]);
   const addStatusMessage: StatusMessageHandler = useCallback((message: string) => {
-    setStatusMessages(prev => [...prev, message]);
+    setStatusMessages(prev => {
+      const capped = [...prev, message];
+      return capped.length > 50 ? capped.slice(-50) : capped;
+    });
   }, []);
 
   useEffect(() => {

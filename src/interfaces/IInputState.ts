@@ -1,4 +1,6 @@
+import { InputMode } from './InputMode';
+
 export interface IInputState {
-  mode: import('../interfaces/IDSKYState').InputMode;
+  mode: InputMode;
   currentInput: string;
 }

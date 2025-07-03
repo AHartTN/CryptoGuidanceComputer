@@ -1,9 +1,10 @@
 import React from 'react';
 import { IDSKYDisplay } from '../../../interfaces/IDSKYCore';
+import { InputMode } from '../../../interfaces/InputMode';
 
 interface DSKYProgVerbNounProps {
   display: IDSKYDisplay;
-  inputMode: 'verb' | 'noun' | 'data' | null;
+  inputMode: InputMode;
   currentInput: string;
 }
 
@@ -16,20 +17,20 @@ const DSKYProgVerbNoun: React.FC<DSKYProgVerbNounProps> = ({
     { 
       label: 'PROG', 
       value: display.prog, 
-      isInputMode: false,
-      displayValue: display.prog 
+      isInputMode: inputMode === InputMode.Prog,
+      displayValue: inputMode === InputMode.Prog ? currentInput : display.prog 
     },
     { 
       label: 'VERB', 
       value: display.verb, 
-      isInputMode: inputMode === 'verb',
-      displayValue: inputMode === 'verb' ? currentInput : display.verb 
+      isInputMode: inputMode === InputMode.Verb,
+      displayValue: inputMode === InputMode.Verb ? currentInput : display.verb 
     },
     { 
       label: 'NOUN', 
       value: display.noun, 
-      isInputMode: inputMode === 'noun',
-      displayValue: inputMode === 'noun' ? currentInput : display.noun 
+      isInputMode: inputMode === InputMode.Noun,
+      displayValue: inputMode === InputMode.Noun ? currentInput : display.noun 
     }
   ];
 

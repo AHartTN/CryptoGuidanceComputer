@@ -8,6 +8,7 @@ import type { OptimizedStatusIndicatorsProps } from '../../interfaces/OptimizedS
 import type { OptimizedDisplayAreaProps } from '../../interfaces/OptimizedDisplayAreaProps';
 import type { OptimizedKeypadProps } from '../../interfaces/OptimizedKeypadProps';
 import type { OptimizedOutputProps } from '../../interfaces/OptimizedOutputProps';
+import { InputMode } from '../../interfaces/InputMode';
 
 // Status Indicators Performance Optimized
 export const OptimizedStatusIndicators = memo<OptimizedStatusIndicatorsProps>(({ dskyState }) => {
@@ -92,19 +93,19 @@ export const OptimizedDisplayArea = memo<OptimizedDisplayAreaProps>(({
     prog: {
       label: 'PROG',
       value: dskyState.prog,
-      isInputMode: inputMode === 'prog',
+      isInputMode: inputMode === InputMode.Prog,
       className: 'dsky-prog'
     },
     verb: {
       label: 'VERB',
       value: dskyState.verb,
-      isInputMode: inputMode === 'verb',
+      isInputMode: inputMode === InputMode.Verb,
       className: 'dsky-verb'
     },
     noun: {
       label: 'NOUN',
       value: dskyState.noun,
-      isInputMode: inputMode === 'noun',
+      isInputMode: inputMode === InputMode.Noun,
       className: 'dsky-noun'
     }
   }), [dskyState.prog, dskyState.verb, dskyState.noun, inputMode]);

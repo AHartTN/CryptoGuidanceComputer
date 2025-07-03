@@ -3,9 +3,6 @@
  * @description Core DSKY display and input state interfaces
  */
 
-/** Input modes for the DSKY interface */
-export type InputMode = 'verb' | 'noun' | 'prog' | 'data' | null;
-
 /** Status light identifiers */
 export type StatusLightKey = 
   | 'compActy' | 'uplinkActy' | 'noAtt' | 'stby' | 'keyRel' | 'oprErr' 

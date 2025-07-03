@@ -1,6 +1,4 @@
 // DSKY State interface for cross-module imports
-export type InputMode = 'verb' | 'noun' | 'prog' | 'data' | null;
-
 export interface IDSKYState {
   prog: string;
   verb: string;

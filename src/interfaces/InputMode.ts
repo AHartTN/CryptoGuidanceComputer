@@ -1,2 +1,8 @@
-// InputMode type for DSKY input state
-export type InputMode = 'verb' | 'noun' | 'prog' | 'data' | null;
+// InputMode enum for DSKY input state
+export enum InputMode {
+  Verb = 'verb',
+  Noun = 'noun',
+  Prog = 'prog',
+  Data = 'data',
+  None = 'none'
+}

@@ -1,3 +1,5 @@
+// DEPRECATED: This file is a duplicate/simplified version. Use UnifiedWeb3Service.ts instead. Marked for deletion.
+
 /**
  * @fileoverview Simplified Unified Web3 Service
  * @description Basic Web3 service with mock implementations for stable compilation

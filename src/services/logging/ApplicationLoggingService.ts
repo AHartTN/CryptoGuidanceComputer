@@ -3,6 +3,7 @@
 
 import { CacheService, CacheStrategy } from '../cache/CacheService';
 import type { ILogMetadata } from '../../interfaces/ILogMetadata';
+import { addLogToDb } from '../../utils/logDb';
 
 /** Log Levels */
 export enum LogLevel {
@@ -409,13 +410,13 @@ export class ApplicationLoggingService {
   }
 
   /** Core logging method */
-  private log(
+  private async log(
     level: LogLevel,
     category: LogCategory,
     message: string,
     metadata?: ILogMetadata,
     stack?: string
-  ): void {
+  ): Promise<void> {
     // Check if logging is enabled for this level and category
     if (level < this.config.minLevel || !this.config.enabledCategories.includes(category)) {
       return;
@@ -438,6 +439,9 @@ export class ApplicationLoggingService {
 
     // Cache recent entry
     this.cache.set(`log:${entry.id}`, entry);
+
+    // Write to IndexedDB for client-side log viewer
+    addLogToDb(entry).catch(() => {});
 
     // Trigger callbacks
     if (this.onLogEntry) {
@@ -464,7 +468,7 @@ export class ApplicationLoggingService {
     if (this.config.enableConsoleOutput) {
       this.addLogTarget({
         name: 'console',
-        minLevel: LogLevel.DEBUG,
+        minLevel: LogLevel.WARN, // Only show warnings and errors in the console
         categories: Object.values(LogCategory),
         format: this.consoleFormat,
         output: (formatted, entry) => {

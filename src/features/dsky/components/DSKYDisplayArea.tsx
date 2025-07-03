@@ -7,6 +7,7 @@ import React from 'react';
 import { DISPLAY_LABELS } from '../../../constants/DSKYConstants';
 import type { DSKYDisplayAreaProps } from '../../../interfaces/DSKYDisplayAreaProps';
 import type { DisplayFieldProps } from '../../../interfaces/DisplayFieldProps';
+import { InputMode } from '../../../interfaces/InputMode';
 
 /**
  * Individual display field component with memoization for performance
@@ -41,7 +42,7 @@ export const DSKYDisplayArea = React.memo<DSKYDisplayAreaProps>(({
       <DisplayField
         label={DISPLAY_LABELS.PROG}
         value={dskyState.prog}
-        isInputMode={inputMode === 'prog'}
+        isInputMode={inputMode === InputMode.Prog}
         currentInput={currentInput}
         className="dsky-prog"
       />
@@ -49,7 +50,7 @@ export const DSKYDisplayArea = React.memo<DSKYDisplayAreaProps>(({
       <DisplayField
         label={DISPLAY_LABELS.VERB}
         value={dskyState.verb}
-        isInputMode={inputMode === 'verb'}
+        isInputMode={inputMode === InputMode.Verb}
         currentInput={currentInput}
         className="dsky-verb"
       />
@@ -57,14 +58,14 @@ export const DSKYDisplayArea = React.memo<DSKYDisplayAreaProps>(({
       <DisplayField
         label={DISPLAY_LABELS.NOUN}
         value={dskyState.noun}
-        isInputMode={inputMode === 'noun'}
+        isInputMode={inputMode === InputMode.Noun}
         currentInput={currentInput}
         className="dsky-noun"
       />
         <DisplayField
         label={DISPLAY_LABELS.R1}
         value={dskyState.reg1}
-        isInputMode={inputMode === 'data'}
+        isInputMode={inputMode === InputMode.Data}
         currentInput={currentInput}
         className="dsky-r1"
       />

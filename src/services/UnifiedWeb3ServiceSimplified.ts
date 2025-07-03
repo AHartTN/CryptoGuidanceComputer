@@ -3,6 +3,8 @@
  * @description Lightweight Web3 service for Apollo DSKY cryptocurrency operations
  */
 
+// DEPRECATED: This file is a duplicate/simplified version. Use UnifiedWeb3Service.ts instead. Marked for deletion.
+
 import type { IWalletConnection } from '../interfaces/IWalletConnection';
 import type { IBlockchainData } from '../interfaces/IBlockchainData';
 import type { ITransactionRequest } from '../interfaces/ITransactionRequest';
