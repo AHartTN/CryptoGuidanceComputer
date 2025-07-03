@@ -1,9 +1,9 @@
-export interface IBatchPriceResult {
-  coinId: string;
-  symbol: string;
-  price: number;
-  priceChange24h: number;
-  timestamp: Date;
-  success: boolean;
-  error?: string;
-}
+/**
+ * @file IBatchPriceResult.ts
+ * @description Type alias for batch crypto price results, used for clarity in batch operations.
+ */
+
+import type { ICryptoPriceData } from "./ICryptoPriceData";
+
+// If IBatchPriceResult is now redundant, re-export ICryptoPriceData for batch results
+export type IBatchPriceResult = ICryptoPriceData;

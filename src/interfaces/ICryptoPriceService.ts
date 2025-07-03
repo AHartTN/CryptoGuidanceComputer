@@ -1,4 +1,4 @@
-import type { ICryptoPriceData } from './ICryptoPriceData';
+import type { ICryptoPriceData } from "./ICryptoPriceData";
 
 export interface ICryptoPriceService {
   getPrice(symbol: string): Promise<ICryptoPriceData>;

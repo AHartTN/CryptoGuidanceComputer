@@ -39,7 +39,7 @@ export const DSKYVerb = {
   VERB_ERROR_DISPLAY: 93,
   VERB_STATUS_DISPLAY: 94,
   VERB_SYSTEM_CMD: 95,
-  VERB_SYSTEM_SHUTDOWN: 99
+  VERB_SYSTEM_SHUTDOWN: 99,
 } as const;
 
 export const DSKYNoun = {
@@ -91,7 +91,7 @@ export const DSKYNoun = {
   NOUN_OPERATION_TEST: 104,
   NOUN_OPERATION_BACKUP: 105,
   NOUN_OPERATION_RESTORE: 106,
-  NOUN_SYSTEM_RESET: 199
+  NOUN_SYSTEM_RESET: 199,
 } as const;
 
 export const DSKYProgram = {
@@ -124,40 +124,68 @@ export const DSKYProgram = {
   PROG_DATA_CLEANUP: 92,
   PROG_LOG_ROTATION: 93,
   PROG_BACKUP_ALL: 94,
-  PROG_EMERGENCY_STOP: 99
+  PROG_EMERGENCY_STOP: 99,
 } as const;
 
 export function getVerbEnum(verb: string): number {
   const verbNum = parseInt(verb);
   switch (verbNum) {
-    case 1: return DSKYVerb.VERB_CONNECT_WALLET;
-    case 2: return DSKYVerb.VERB_HEALTH_CHECK;
-    case 3: return DSKYVerb.VERB_RESET_SYSTEM;
-    case 4: return DSKYVerb.VERB_TEST_SYSTEM;
-    case 11: return DSKYVerb.VERB_WALLET_INFO;
-    case 12: return DSKYVerb.VERB_WALLET_BALANCE;
-    case 13: return DSKYVerb.VERB_WALLET_TOKENS;
-    case 14: return DSKYVerb.VERB_WALLET_NFTS;
-    case 15: return DSKYVerb.VERB_SWITCH_NETWORK;
-    case 21: return DSKYVerb.VERB_BLOCK_INFO;
-    case 22: return DSKYVerb.VERB_BLOCK_CURRENT;
-    case 23: return DSKYVerb.VERB_BLOCK_SPECIFIC;
-    case 24: return DSKYVerb.VERB_GAS_PRICES;
-    case 25: return DSKYVerb.VERB_NETWORK_STATUS;
-    case 31: return DSKYVerb.VERB_CRYPTO_PRICES;
-    case 32: return DSKYVerb.VERB_CRYPTO_DETAIL;
-    case 33: return DSKYVerb.VERB_CRYPTO_HISTORY;
-    case 34: return DSKYVerb.VERB_CRYPTO_COMPARE;
-    case 41: return DSKYVerb.VERB_SEND_ETH;
-    case 42: return DSKYVerb.VERB_SEND_TOKEN;
-    case 43: return DSKYVerb.VERB_TRANSACTION_INFO;
-    case 44: return DSKYVerb.VERB_TRANSACTION_HISTORY;
-    case 91: return DSKYVerb.VERB_CONFIG_DISPLAY;
-    case 92: return DSKYVerb.VERB_LOG_DISPLAY;
-    case 93: return DSKYVerb.VERB_ERROR_DISPLAY;
-    case 94: return DSKYVerb.VERB_STATUS_DISPLAY;
-    case 99: return DSKYVerb.VERB_SYSTEM_SHUTDOWN;
-    default: return DSKYVerb.VERB_NONE;
+    case 1:
+      return DSKYVerb.VERB_CONNECT_WALLET;
+    case 2:
+      return DSKYVerb.VERB_HEALTH_CHECK;
+    case 3:
+      return DSKYVerb.VERB_RESET_SYSTEM;
+    case 4:
+      return DSKYVerb.VERB_TEST_SYSTEM;
+    case 11:
+      return DSKYVerb.VERB_WALLET_INFO;
+    case 12:
+      return DSKYVerb.VERB_WALLET_BALANCE;
+    case 13:
+      return DSKYVerb.VERB_WALLET_TOKENS;
+    case 14:
+      return DSKYVerb.VERB_WALLET_NFTS;
+    case 15:
+      return DSKYVerb.VERB_SWITCH_NETWORK;
+    case 21:
+      return DSKYVerb.VERB_BLOCK_INFO;
+    case 22:
+      return DSKYVerb.VERB_BLOCK_CURRENT;
+    case 23:
+      return DSKYVerb.VERB_BLOCK_SPECIFIC;
+    case 24:
+      return DSKYVerb.VERB_GAS_PRICES;
+    case 25:
+      return DSKYVerb.VERB_NETWORK_STATUS;
+    case 31:
+      return DSKYVerb.VERB_CRYPTO_PRICES;
+    case 32:
+      return DSKYVerb.VERB_CRYPTO_DETAIL;
+    case 33:
+      return DSKYVerb.VERB_CRYPTO_HISTORY;
+    case 34:
+      return DSKYVerb.VERB_CRYPTO_COMPARE;
+    case 41:
+      return DSKYVerb.VERB_SEND_ETH;
+    case 42:
+      return DSKYVerb.VERB_SEND_TOKEN;
+    case 43:
+      return DSKYVerb.VERB_TRANSACTION_INFO;
+    case 44:
+      return DSKYVerb.VERB_TRANSACTION_HISTORY;
+    case 91:
+      return DSKYVerb.VERB_CONFIG_DISPLAY;
+    case 92:
+      return DSKYVerb.VERB_LOG_DISPLAY;
+    case 93:
+      return DSKYVerb.VERB_ERROR_DISPLAY;
+    case 94:
+      return DSKYVerb.VERB_STATUS_DISPLAY;
+    case 99:
+      return DSKYVerb.VERB_SYSTEM_SHUTDOWN;
+    default:
+      return DSKYVerb.VERB_NONE;
   }
 }
 
@@ -166,81 +194,126 @@ export function getNounEnum(noun: string, verb: number): number {
   switch (verb) {
     case DSKYVerb.VERB_CONNECT_WALLET:
       switch (nounNum) {
-        case 1: return DSKYNoun.NOUN_SYSTEM_STATUS;
-        case 101: return DSKYNoun.NOUN_OPERATION_CONNECT;
-        default: return DSKYNoun.NOUN_SYSTEM_STATUS;
+        case 1:
+          return DSKYNoun.NOUN_SYSTEM_STATUS;
+        case 101:
+          return DSKYNoun.NOUN_OPERATION_CONNECT;
+        default:
+          return DSKYNoun.NOUN_SYSTEM_STATUS;
       }
     case DSKYVerb.VERB_WALLET_INFO:
       switch (nounNum) {
-        case 1: return DSKYNoun.NOUN_WALLET_ADDRESS;
-        case 2: return DSKYNoun.NOUN_WALLET_BALANCE;
-        case 3: return DSKYNoun.NOUN_WALLET_TOKENS;
-        case 11: return DSKYNoun.NOUN_WALLET_ADDRESS;
-        case 12: return DSKYNoun.NOUN_WALLET_BALANCE;
-        case 13: return DSKYNoun.NOUN_WALLET_TOKENS;
-        case 14: return DSKYNoun.NOUN_WALLET_NFTS;
-        default: return DSKYNoun.NOUN_WALLET_STATUS;
+        case 1:
+          return DSKYNoun.NOUN_WALLET_ADDRESS;
+        case 2:
+          return DSKYNoun.NOUN_WALLET_BALANCE;
+        case 3:
+          return DSKYNoun.NOUN_WALLET_TOKENS;
+        case 11:
+          return DSKYNoun.NOUN_WALLET_ADDRESS;
+        case 12:
+          return DSKYNoun.NOUN_WALLET_BALANCE;
+        case 13:
+          return DSKYNoun.NOUN_WALLET_TOKENS;
+        case 14:
+          return DSKYNoun.NOUN_WALLET_NFTS;
+        default:
+          return DSKYNoun.NOUN_WALLET_STATUS;
       }
     case DSKYVerb.VERB_BLOCK_CURRENT:
     case DSKYVerb.VERB_BLOCK_INFO:
       switch (nounNum) {
-        case 1: return DSKYNoun.NOUN_CURRENT_BLOCK;
-        case 2: return DSKYNoun.NOUN_BLOCK_TIME;
-        case 3: return DSKYNoun.NOUN_GAS_PRICE;
-        case 21: return DSKYNoun.NOUN_CURRENT_BLOCK;
-        case 22: return DSKYNoun.NOUN_BLOCK_TIME;
-        case 23: return DSKYNoun.NOUN_GAS_PRICE;
-        case 24: return DSKYNoun.NOUN_CHAIN_ID;
-        case 25: return DSKYNoun.NOUN_NETWORK_NAME;
-        default: return DSKYNoun.NOUN_CURRENT_BLOCK;
+        case 1:
+          return DSKYNoun.NOUN_CURRENT_BLOCK;
+        case 2:
+          return DSKYNoun.NOUN_BLOCK_TIME;
+        case 3:
+          return DSKYNoun.NOUN_GAS_PRICE;
+        case 21:
+          return DSKYNoun.NOUN_CURRENT_BLOCK;
+        case 22:
+          return DSKYNoun.NOUN_BLOCK_TIME;
+        case 23:
+          return DSKYNoun.NOUN_GAS_PRICE;
+        case 24:
+          return DSKYNoun.NOUN_CHAIN_ID;
+        case 25:
+          return DSKYNoun.NOUN_NETWORK_NAME;
+        default:
+          return DSKYNoun.NOUN_CURRENT_BLOCK;
       }
     case DSKYVerb.VERB_CRYPTO_PRICES:
     case DSKYVerb.VERB_CRYPTO_DETAIL:
       switch (nounNum) {
         case 1:
-        case 31: return DSKYNoun.NOUN_CRYPTO_BITCOIN;
+        case 31:
+          return DSKYNoun.NOUN_CRYPTO_BITCOIN;
         case 2:
-        case 32: return DSKYNoun.NOUN_CRYPTO_ETHEREUM;
+        case 32:
+          return DSKYNoun.NOUN_CRYPTO_ETHEREUM;
         case 3:
-        case 33: return DSKYNoun.NOUN_CRYPTO_CHAINLINK;
+        case 33:
+          return DSKYNoun.NOUN_CRYPTO_CHAINLINK;
         case 4:
-        case 34: return DSKYNoun.NOUN_CRYPTO_POLYGON;
+        case 34:
+          return DSKYNoun.NOUN_CRYPTO_POLYGON;
         case 5:
-        case 35: return DSKYNoun.NOUN_CRYPTO_UNISWAP;
+        case 35:
+          return DSKYNoun.NOUN_CRYPTO_UNISWAP;
         case 6:
-        case 36: return DSKYNoun.NOUN_CRYPTO_CARDANO;
+        case 36:
+          return DSKYNoun.NOUN_CRYPTO_CARDANO;
         case 7:
-        case 37: return DSKYNoun.NOUN_CRYPTO_SOLANA;
+        case 37:
+          return DSKYNoun.NOUN_CRYPTO_SOLANA;
         case 8:
-        case 38: return DSKYNoun.NOUN_CRYPTO_DOGECOIN;
+        case 38:
+          return DSKYNoun.NOUN_CRYPTO_DOGECOIN;
         case 9:
-        case 39: return DSKYNoun.NOUN_CRYPTO_LITECOIN;
+        case 39:
+          return DSKYNoun.NOUN_CRYPTO_LITECOIN;
         case 10:
-        case 40: return DSKYNoun.NOUN_CRYPTO_TOP10;
-        default: return DSKYNoun.NOUN_CRYPTO_BITCOIN;
+        case 40:
+          return DSKYNoun.NOUN_CRYPTO_TOP10;
+        default:
+          return DSKYNoun.NOUN_CRYPTO_BITCOIN;
       }
     case DSKYVerb.VERB_RESET_SYSTEM:
       switch (nounNum) {
-        case 1: return DSKYNoun.NOUN_SYSTEM_STATUS;
-        case 102: return DSKYNoun.NOUN_OPERATION_RESET;
-        case 103: return DSKYNoun.NOUN_OPERATION_RESET;
-        default: return DSKYNoun.NOUN_OPERATION_RESET;
+        case 1:
+          return DSKYNoun.NOUN_SYSTEM_STATUS;
+        case 102:
+          return DSKYNoun.NOUN_OPERATION_RESET;
+        case 103:
+          return DSKYNoun.NOUN_OPERATION_RESET;
+        default:
+          return DSKYNoun.NOUN_OPERATION_RESET;
       }
     case DSKYVerb.VERB_STATUS_DISPLAY:
       switch (nounNum) {
-        case 1: return DSKYNoun.NOUN_SYSTEM_STATUS;
-        case 2: return DSKYNoun.NOUN_WALLET_STATUS;
-        case 3: return DSKYNoun.NOUN_NETWORK_STATUS;
-        case 4: return DSKYNoun.NOUN_ERROR_STATUS;
-        case 5: return DSKYNoun.NOUN_HEALTH_STATUS;
-        default: return DSKYNoun.NOUN_SYSTEM_STATUS;
+        case 1:
+          return DSKYNoun.NOUN_SYSTEM_STATUS;
+        case 2:
+          return DSKYNoun.NOUN_WALLET_STATUS;
+        case 3:
+          return DSKYNoun.NOUN_NETWORK_STATUS;
+        case 4:
+          return DSKYNoun.NOUN_ERROR_STATUS;
+        case 5:
+          return DSKYNoun.NOUN_HEALTH_STATUS;
+        default:
+          return DSKYNoun.NOUN_SYSTEM_STATUS;
       }
     default:
       switch (nounNum) {
-        case 1: return DSKYNoun.NOUN_SYSTEM_STATUS;
-        case 2: return DSKYNoun.NOUN_WALLET_STATUS;
-        case 3: return DSKYNoun.NOUN_NETWORK_STATUS;
-        default: return DSKYNoun.NOUN_NONE;
+        case 1:
+          return DSKYNoun.NOUN_SYSTEM_STATUS;
+        case 2:
+          return DSKYNoun.NOUN_WALLET_STATUS;
+        case 3:
+          return DSKYNoun.NOUN_NETWORK_STATUS;
+        default:
+          return DSKYNoun.NOUN_NONE;
       }
   }
 }
@@ -248,57 +321,102 @@ export function getNounEnum(noun: string, verb: number): number {
 export function getProgramEnum(program: string): number {
   const progNum = parseInt(program);
   switch (progNum) {
-    case 1: return DSKYProgram.PROG_STARTUP;
-    case 2: return DSKYProgram.PROG_CONNECT_ALL;
-    case 3: return DSKYProgram.PROG_HEALTH_CHECK;
-    case 4: return DSKYProgram.PROG_RESET_ALL;
-    case 11: return DSKYProgram.PROG_WALLET_SETUP;
-    case 12: return DSKYProgram.PROG_WALLET_BACKUP;
-    case 13: return DSKYProgram.PROG_MULTI_WALLET;
-    case 21: return DSKYProgram.PROG_PORTFOLIO_VIEW;
-    case 22: return DSKYProgram.PROG_PRICE_MONITOR;
-    case 23: return DSKYProgram.PROG_TRADING_ANALYSIS;
-    case 24: return DSKYProgram.PROG_RISK_ASSESSMENT;
-    case 31: return DSKYProgram.PROG_DEFI_DASHBOARD;
-    case 32: return DSKYProgram.PROG_YIELD_FARMING;
-    case 33: return DSKYProgram.PROG_LIQUIDITY_MINING;
-    case 34: return DSKYProgram.PROG_STAKING_REWARDS;
-    case 99: return DSKYProgram.PROG_EMERGENCY_STOP;
-    default: return DSKYProgram.PROG_NONE;
+    case 1:
+      return DSKYProgram.PROG_STARTUP;
+    case 2:
+      return DSKYProgram.PROG_CONNECT_ALL;
+    case 3:
+      return DSKYProgram.PROG_HEALTH_CHECK;
+    case 4:
+      return DSKYProgram.PROG_RESET_ALL;
+    case 11:
+      return DSKYProgram.PROG_WALLET_SETUP;
+    case 12:
+      return DSKYProgram.PROG_WALLET_BACKUP;
+    case 13:
+      return DSKYProgram.PROG_MULTI_WALLET;
+    case 21:
+      return DSKYProgram.PROG_PORTFOLIO_VIEW;
+    case 22:
+      return DSKYProgram.PROG_PRICE_MONITOR;
+    case 23:
+      return DSKYProgram.PROG_TRADING_ANALYSIS;
+    case 24:
+      return DSKYProgram.PROG_RISK_ASSESSMENT;
+    case 31:
+      return DSKYProgram.PROG_DEFI_DASHBOARD;
+    case 32:
+      return DSKYProgram.PROG_YIELD_FARMING;
+    case 33:
+      return DSKYProgram.PROG_LIQUIDITY_MINING;
+    case 34:
+      return DSKYProgram.PROG_STAKING_REWARDS;
+    case 99:
+      return DSKYProgram.PROG_EMERGENCY_STOP;
+    default:
+      return DSKYProgram.PROG_NONE;
   }
 }
 
-export function isValidVerbNounCombination(verb: number, noun: number): boolean {
+export function isValidVerbNounCombination(
+  verb: number,
+  noun: number,
+): boolean {
   switch (verb) {
     case DSKYVerb.VERB_CONNECT_WALLET: {
-      return noun === DSKYNoun.NOUN_SYSTEM_STATUS ||
-             noun === DSKYNoun.NOUN_OPERATION_CONNECT ||
-             noun === DSKYNoun.NOUN_WALLET_ADDRESS ||
-             noun === DSKYNoun.NOUN_WALLET_STATUS;
+      return (
+        noun === DSKYNoun.NOUN_SYSTEM_STATUS ||
+        noun === DSKYNoun.NOUN_OPERATION_CONNECT ||
+        noun === DSKYNoun.NOUN_WALLET_ADDRESS ||
+        noun === DSKYNoun.NOUN_WALLET_STATUS
+      );
     }
     case DSKYVerb.VERB_WALLET_INFO:
     case DSKYVerb.VERB_WALLET_BALANCE:
     case DSKYVerb.VERB_WALLET_TOKENS:
-      return (noun >= DSKYNoun.NOUN_WALLET_ADDRESS && noun <= DSKYNoun.NOUN_WALLET_NFTS) ||
-             noun === DSKYNoun.NOUN_WALLET_STATUS;
+      return (
+        (noun >= DSKYNoun.NOUN_WALLET_ADDRESS &&
+          noun <= DSKYNoun.NOUN_WALLET_NFTS) ||
+        noun === DSKYNoun.NOUN_WALLET_STATUS
+      );
     case DSKYVerb.VERB_CRYPTO_PRICES:
     case DSKYVerb.VERB_CRYPTO_DETAIL:
-      return (noun >= DSKYNoun.NOUN_CRYPTO_BITCOIN && noun <= DSKYNoun.NOUN_CRYPTO_TOP10);
+      return (
+        noun >= DSKYNoun.NOUN_CRYPTO_BITCOIN &&
+        noun <= DSKYNoun.NOUN_CRYPTO_TOP10
+      );
     case DSKYVerb.VERB_GET_COIN_LIST:
       return noun === DSKYNoun.NOUN_COIN_LIST;
     case DSKYVerb.VERB_GET_COIN_PRICE:
-      return (noun >= DSKYNoun.NOUN_DYNAMIC_COIN_START && noun <= DSKYNoun.NOUN_DYNAMIC_COIN_END) ||
-             (noun >= DSKYNoun.NOUN_CRYPTO_BITCOIN && noun <= DSKYNoun.NOUN_CRYPTO_TOP10);
+      return (
+        (noun >= DSKYNoun.NOUN_DYNAMIC_COIN_START &&
+          noun <= DSKYNoun.NOUN_DYNAMIC_COIN_END) ||
+        (noun >= DSKYNoun.NOUN_CRYPTO_BITCOIN &&
+          noun <= DSKYNoun.NOUN_CRYPTO_TOP10)
+      );
     case DSKYVerb.VERB_FLAG_COIN:
-      return (noun >= DSKYNoun.NOUN_DYNAMIC_COIN_START && noun <= DSKYNoun.NOUN_DYNAMIC_COIN_END) ||
-             (noun >= DSKYNoun.NOUN_CRYPTO_BITCOIN && noun <= DSKYNoun.NOUN_CRYPTO_TOP10);
+      return (
+        (noun >= DSKYNoun.NOUN_DYNAMIC_COIN_START &&
+          noun <= DSKYNoun.NOUN_DYNAMIC_COIN_END) ||
+        (noun >= DSKYNoun.NOUN_CRYPTO_BITCOIN &&
+          noun <= DSKYNoun.NOUN_CRYPTO_TOP10)
+      );
     case DSKYVerb.VERB_BATCH_PRICES:
-      return noun === DSKYNoun.NOUN_FLAGGED_COINS || noun === DSKYNoun.NOUN_BATCH_RESULTS;
+      return (
+        noun === DSKYNoun.NOUN_FLAGGED_COINS ||
+        noun === DSKYNoun.NOUN_BATCH_RESULTS
+      );
     case DSKYVerb.VERB_CLEAR_FLAGS:
-      return noun === DSKYNoun.NOUN_COIN_FLAGS || noun === DSKYNoun.NOUN_FLAGGED_COINS;
+      return (
+        noun === DSKYNoun.NOUN_COIN_FLAGS ||
+        noun === DSKYNoun.NOUN_FLAGGED_COINS
+      );
     case DSKYVerb.VERB_BLOCK_INFO:
     case DSKYVerb.VERB_BLOCK_CURRENT:
-      return (noun >= DSKYNoun.NOUN_CURRENT_BLOCK && noun <= DSKYNoun.NOUN_NETWORK_NAME);
+      return (
+        noun >= DSKYNoun.NOUN_CURRENT_BLOCK &&
+        noun <= DSKYNoun.NOUN_NETWORK_NAME
+      );
     default:
       return true;
   }

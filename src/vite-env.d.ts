@@ -1,6 +1,7 @@
-/// <reference types="vite/client" />
+/**
+ * TypeScript environment declarations for Vite.
+ *
+ * @file vite-env.d.ts
+ */
 
-declare module "*.css" {
-  const content: Record<string, string>;
-  export default content;
-}
+/// <reference types="vite/client" />

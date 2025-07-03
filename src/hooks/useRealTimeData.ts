@@ -1,11 +1,20 @@
 // Apollo DSKY - Real-time Data Hook
 // Enterprise-grade React hook for real-time data management
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { RealTimeIntegrationService, IRealTimeEvent, IDSKYUpdate } from '../services/realtime/RealTimeIntegrationService';
-import type { IPriceData } from '../services/realtime/RealTimePriceFeedService';
-import type { IPriceAlert } from '../interfaces/IPriceAlert';
-import { IBlockEvent, ITransactionEvent, IGasPriceEvent, INetworkStatsEvent } from '../services/realtime/RealTimeBlockchainService';
+import { useState, useEffect, useCallback, useRef } from "react";
+import {
+  RealTimeIntegrationService,
+  IRealTimeEvent,
+  IDSKYUpdate,
+} from "../services/realtime/RealTimeIntegrationService";
+import type { ICryptoPriceData } from "../interfaces/ICryptoPriceData";
+import type { IPriceAlert } from "../interfaces/IPriceAlert";
+import {
+  IBlockEvent,
+  ITransactionEvent,
+  IGasPriceEvent,
+  INetworkStatsEvent,
+} from "../services/realtime/RealTimeBlockchainService";
 
 /** Real-time Data State */
 export interface IRealTimeDataState {
@@ -16,26 +25,26 @@ export interface IRealTimeDataState {
     blockchain: boolean;
     overall: boolean;
   };
-  
+
   // Price data
-  prices: Map<string, IPriceData>;
+  prices: Map<string, ICryptoPriceData>;
   priceAlerts: IPriceAlert[];
-  
+
   // Blockchain data
   latestBlock: IBlockEvent | null;
   latestGasPrices: IGasPriceEvent | null;
   latestNetworkStats: INetworkStatsEvent | null;
   recentTransactions: ITransactionEvent[];
-  
+
   // Events
   recentEvents: IRealTimeEvent[];
-  
+
   // DSKY integration
   dskyUpdates: IDSKYUpdate[];
-  
+
   // Statistics
   stats: Record<string, unknown> | null;
-  
+
   // Loading and error states
   isLoading: boolean;
   error: string | null;
@@ -53,21 +62,23 @@ export interface IUseRealTimeDataConfig {
 }
 
 /** Real-time Data Hook */
-export function useRealTimeData(config: IUseRealTimeDataConfig = {
-  enablePriceFeeds: true,
-  enableBlockchainEvents: true,
-  watchedAddresses: [],
-  priceSymbols: ['BTC', 'ETH', 'ADA', 'DOT', 'MATIC'],
-  autoConnect: true,
-  maxEventHistory: 100,
-  maxDSKYUpdates: 50
-}) {
+export function useRealTimeData(
+  config: IUseRealTimeDataConfig = {
+    enablePriceFeeds: true,
+    enableBlockchainEvents: true,
+    watchedAddresses: [],
+    priceSymbols: ["BTC", "ETH", "ADA", "DOT", "MATIC"],
+    autoConnect: true,
+    maxEventHistory: 100,
+    maxDSKYUpdates: 50,
+  },
+) {
   const [state, setState] = useState<IRealTimeDataState>({
     isConnected: false,
     connectionStatus: {
       priceFeeds: false,
       blockchain: false,
-      overall: false
+      overall: false,
     },
     prices: new Map(),
     priceAlerts: [],
@@ -79,7 +90,7 @@ export function useRealTimeData(config: IUseRealTimeDataConfig = {
     dskyUpdates: [],
     stats: null,
     isLoading: false,
-    error: null
+    error: null,
   });
 
   const serviceRef = useRef<RealTimeIntegrationService | null>(null);
@@ -90,56 +101,74 @@ export function useRealTimeData(config: IUseRealTimeDataConfig = {
     if (serviceRef.current) return;
 
     try {
-      setState(prev => ({ ...prev, isLoading: true, error: null }));
+      setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
       // Create integration service
-      serviceRef.current = RealTimeIntegrationService.createForDSKY(config.watchedAddresses);
+      serviceRef.current = RealTimeIntegrationService.createForDSKY(
+        config.watchedAddresses,
+      );
 
       // Set up event callbacks
       serviceRef.current.setEventCallbacks({
         onDataUpdate: (event) => {
           if (!mountedRef.current) return;
-          
-          setState(prev => ({
+
+          setState((prev) => ({
             ...prev,
-            recentEvents: [...prev.recentEvents.slice(-(config.maxEventHistory - 1)), event]
+            recentEvents: [
+              ...prev.recentEvents.slice(-(config.maxEventHistory - 1)),
+              event,
+            ],
           }));
         },
-        
+
         onDSKYUpdate: (updates) => {
           if (!mountedRef.current) return;
-          
-          setState(prev => ({
+
+          setState((prev) => ({
             ...prev,
-            dskyUpdates: [...prev.dskyUpdates.slice(-(config.maxDSKYUpdates - updates.length)), ...updates]
+            dskyUpdates: [
+              ...prev.dskyUpdates.slice(
+                -(config.maxDSKYUpdates - updates.length),
+              ),
+              ...updates,
+            ],
           }));
         },
-        
+
         onAlert: (alert, data) => {
           if (!mountedRef.current) return;
-          
-          console.log('[RealTimeData] Price alert triggered:', alert.symbol, data.price);
+
+          console.log(
+            "[RealTimeData] Price alert triggered:",
+            alert.symbol,
+            data.price,
+          );
         },
-        
+
         onConnectionChange: (service, connected) => {
           if (!mountedRef.current) return;
-          
-          setState(prev => {
+          setState((prev) => {
             const newConnectionStatus = { ...prev.connectionStatus };
-            if (service === 'PRICE_FEED') {
-              newConnectionStatus.priceFeeds = connected;
-            } else if (service === 'BLOCKCHAIN') {
-              newConnectionStatus.blockchain = connected;
+            switch (service) {
+              case RealTimeServiceType.PriceFeed:
+                newConnectionStatus.priceFeeds = connected;
+                break;
+              case RealTimeServiceType.Blockchain:
+                newConnectionStatus.blockchain = connected;
+                break;
+              default:
+                break;
             }
-            newConnectionStatus.overall = newConnectionStatus.priceFeeds && newConnectionStatus.blockchain;
-            
+            newConnectionStatus.overall =
+              newConnectionStatus.priceFeeds && newConnectionStatus.blockchain;
             return {
               ...prev,
               connectionStatus: newConnectionStatus,
-              isConnected: newConnectionStatus.overall
+              isConnected: newConnectionStatus.overall,
             };
           });
-        }
+        },
       });
 
       // Initialize the service
@@ -155,16 +184,18 @@ export function useRealTimeData(config: IUseRealTimeDataConfig = {
         await serviceRef.current.watchAddresses(config.watchedAddresses);
       }
 
-      setState(prev => ({ ...prev, isLoading: false }));
-
+      setState((prev) => ({ ...prev, isLoading: false }));
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to initialize real-time data';
-      setState(prev => ({ 
-        ...prev, 
-        isLoading: false, 
-        error: errorMessage 
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to initialize real-time data";
+      setState((prev) => ({
+        ...prev,
+        isLoading: false,
+        error: errorMessage,
       }));
-      console.error('[RealTimeData] Initialization failed:', error);
+      console.error("[RealTimeData] Initialization failed:", error);
     }
   }, [config]);
 
@@ -179,42 +210,42 @@ export function useRealTimeData(config: IUseRealTimeDataConfig = {
       await serviceRef.current.dispose();
       serviceRef.current = null;
     }
-    
-    setState(prev => ({
+
+    setState((prev) => ({
       ...prev,
       isConnected: false,
       connectionStatus: {
         priceFeeds: false,
         blockchain: false,
-        overall: false
-      }
+        overall: false,
+      },
     }));
   }, []);
 
   /** Add price alert */
   const addPriceAlert = useCallback((alert: IPriceAlert) => {
     if (!serviceRef.current) return;
-    
+
     serviceRef.current.addPriceAlert(alert);
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      priceAlerts: [...prev.priceAlerts, alert]
+      priceAlerts: [...prev.priceAlerts, alert],
     }));
   }, []);
 
   /** Remove price alert */
   const removePriceAlert = useCallback((alertId: string) => {
     if (!serviceRef.current) return;
-    
+
     serviceRef.current.removePriceAlert(alertId);
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      priceAlerts: prev.priceAlerts.filter(alert => alert.id !== alertId)
+      priceAlerts: prev.priceAlerts.filter((alert) => alert.id !== alertId),
     }));
   }, []);
 
   /** Get current price for symbol */
-  const getCurrentPrice = useCallback((symbol: string): IPriceData | null => {
+  const getCurrentPrice = useCallback((symbol: string): ICryptoPriceData | null => {
     if (!serviceRef.current) return null;
     return serviceRef.current.getCurrentPrice(symbol);
   }, []);
@@ -243,8 +274,8 @@ export function useRealTimeData(config: IUseRealTimeDataConfig = {
       if (!serviceRef.current || !mountedRef.current) return;
 
       // Update prices
-      const newPrices = new Map<string, IPriceData>();
-      config.priceSymbols.forEach(symbol => {
+      const newPrices = new Map<string, ICryptoPriceData>();
+      config.priceSymbols.forEach((symbol) => {
         const price = serviceRef.current!.getCurrentPrice(symbol);
         if (price) {
           newPrices.set(symbol, price);
@@ -257,14 +288,14 @@ export function useRealTimeData(config: IUseRealTimeDataConfig = {
       const stats = serviceRef.current.getStats();
       const connectionStatus = serviceRef.current.getConnectionStatus();
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         prices: newPrices,
         latestBlock,
         latestGasPrices,
         stats,
         connectionStatus,
-        isConnected: connectionStatus.overall
+        isConnected: connectionStatus.overall,
       }));
     }, 1000); // Update every second
 
@@ -293,16 +324,16 @@ export function useRealTimeData(config: IUseRealTimeDataConfig = {
   return {
     // State
     ...state,
-    
+
     // Additional properties for compatibility
     data: {
       latestBlock: state.latestBlock,
       gasPrices: state.latestGasPrices,
       prices: state.prices,
-      alerts: state.priceAlerts
+      alerts: state.priceAlerts,
     },
     watchedAddresses: config.watchedAddresses,
-    
+
     // Actions
     connect,
     disconnect,
@@ -311,20 +342,20 @@ export function useRealTimeData(config: IUseRealTimeDataConfig = {
     addWatchedAddress: (address: string) => {
       config.watchedAddresses = [...config.watchedAddresses, address];
     },
-    
+
     // Getters
     getCurrentPrice,
     getLatestBlock,
     getLatestGasPrices,
     getStats,
-    
+
     // Service reference (for advanced usage)
-    service: serviceRef.current
+    service: serviceRef.current,
   };
 }
 
 /** Hook for price data only */
-export function usePriceData(symbols: string[] = ['BTC', 'ETH']) {
+export function usePriceData(symbols: string[] = ["BTC", "ETH"]) {
   return useRealTimeData({
     enablePriceFeeds: true,
     enableBlockchainEvents: false,
@@ -332,7 +363,7 @@ export function usePriceData(symbols: string[] = ['BTC', 'ETH']) {
     priceSymbols: symbols,
     autoConnect: true,
     maxEventHistory: 50,
-    maxDSKYUpdates: 25
+    maxDSKYUpdates: 25,
   });
 }
 
@@ -345,7 +376,7 @@ export function useBlockchainData(watchedAddresses: string[] = []) {
     priceSymbols: [],
     autoConnect: true,
     maxEventHistory: 50,
-    maxDSKYUpdates: 25
+    maxDSKYUpdates: 25,
   });
 }
 
@@ -355,54 +386,63 @@ export function useDSKYRealTime(watchedAddresses: string[] = []) {
     enablePriceFeeds: true,
     enableBlockchainEvents: true,
     watchedAddresses,
-    priceSymbols: ['BTC', 'ETH', 'ADA', 'DOT', 'MATIC', 'LINK', 'UNI', 'AAVE'],
+    priceSymbols: ["BTC", "ETH", "ADA", "DOT", "MATIC", "LINK", "UNI", "AAVE"],
     autoConnect: true,
     maxEventHistory: 100,
-    maxDSKYUpdates: 50
+    maxDSKYUpdates: 50,
   });
 
   /** Get formatted price for DSKY display */
-  const getFormattedPrice = useCallback((symbol: string): string => {
-    const price = realTimeData.getCurrentPrice(symbol);
-    if (!price) return 'N/A';
-    
-    // Format price for DSKY 7-segment display
-    if (price.price >= 1000) {
-      return price.price.toFixed(0);
-    } else if (price.price >= 1) {
-      return price.price.toFixed(2);
-    } else {
-      return price.price.toFixed(4);
-    }
-  }, [realTimeData]);
+  const getFormattedPrice = useCallback(
+    (symbol: string): string => {
+      const price = realTimeData.getCurrentPrice(symbol);
+      if (!price) return "N/A";
+
+      // Format price for DSKY 7-segment display
+      if (price.price >= 1000) {
+        return price.price.toFixed(0);
+      } else if (price.price >= 1) {
+        return price.price.toFixed(2);
+      } else {
+        return price.price.toFixed(4);
+      }
+    },
+    [realTimeData],
+  );
 
   /** Get formatted block number for DSKY display */
   const getFormattedBlockNumber = useCallback((): string => {
     const block = realTimeData.getLatestBlock();
-    return block ? block.number.toString() : '0';
+    return block ? block.number.toString() : "0";
   }, [realTimeData]);
 
   /** Get formatted gas price for DSKY display */
   const getFormattedGasPrice = useCallback((): string => {
     const gas = realTimeData.getLatestGasPrices();
-    return gas ? parseFloat(gas.standard).toFixed(1) : '0';
+    return gas ? parseFloat(gas.standard).toFixed(1) : "0";
   }, [realTimeData]);
 
   /** Get connection indicator for DSKY */
   const getConnectionIndicator = useCallback((): string => {
     const status = realTimeData.connectionStatus;
-    if (status.overall) return 'CONN';
-    if (status.priceFeeds || status.blockchain) return 'PART';
-    return 'DISC';
+    if (status.overall) return "CONN";
+    if (status.priceFeeds || status.blockchain) return "PART";
+    return "DISC";
   }, [realTimeData.connectionStatus]);
 
   return {
     ...realTimeData,
-    
+
     // DSKY-specific formatters
     getFormattedPrice,
     getFormattedBlockNumber,
     getFormattedGasPrice,
-    getConnectionIndicator
+    getConnectionIndicator,
   };
+}
+
+// Add enum for service types
+export enum RealTimeServiceType {
+  PriceFeed = "PRICE_FEED",
+  Blockchain = "BLOCKCHAIN",
 }

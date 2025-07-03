@@ -3,11 +3,11 @@
  * @description Optimized Web3 state management following SOLID principles
  */
 
-import { useState, useCallback } from 'react';
-import type { IWeb3State } from '../interfaces/IWeb3State';
-import type { IWeb3Actions } from '../interfaces/IWeb3Actions';
-import type { IWeb3StateManager } from '../interfaces/IWeb3StateManager';
-import { INITIAL_WEB3_STATE } from '../constants/INITIAL_WEB3_STATE.ts';
+import { useState, useCallback } from "react";
+import type { IWeb3State } from "../interfaces/IWeb3State";
+import type { IWeb3Actions } from "../interfaces/IWeb3Actions";
+import type { IWeb3StateManager } from "../interfaces/IWeb3StateManager";
+import { INITIAL_WEB3_STATE } from "../constants/INITIAL_WEB3_STATE.ts";
 
 /**
  * Custom hook for Web3 state management
@@ -21,7 +21,7 @@ export const useWeb3State = (): IWeb3StateManager => {
       ...prev,
       isConnected: true,
       account,
-      network: network || prev.network
+      network: network || prev.network,
     }));
   }, []);
 
@@ -46,7 +46,7 @@ export const useWeb3State = (): IWeb3StateManager => {
     updateBalance,
     updateNetwork,
     disconnect,
-    reset
+    reset,
   };
 
   return { state, actions };

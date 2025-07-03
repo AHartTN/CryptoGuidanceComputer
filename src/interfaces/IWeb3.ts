@@ -1,6 +1,11 @@
-import type { WalletProviderType } from '../enums/WalletProviderType';
-import type { BlockchainErrorType } from '../enums/BlockchainErrorType';
-import type { IMetaMaskEthereumProvider } from './IMetaMaskEthereumProvider';
+/**
+ * @file IWeb3.ts
+ * @description Web3 and blockchain interface definitions for providers, wallets, and blockchain operations.
+ */
+
+import type { WalletProviderType } from "../enums/WalletProviderType";
+import type { BlockchainErrorType } from "../enums/BlockchainErrorType";
+import type { IMetaMaskEthereumProvider } from "./IMetaMaskEthereumProvider";
 
 /**
  * @fileoverview Web3 and Blockchain Interface Definitions
@@ -116,6 +121,6 @@ export interface ITransactionResult {
   hash: string;
   blockNumber?: number;
   gasUsed?: string;
-  status: 'pending' | 'confirmed' | 'failed';
+  status: "pending" | "confirmed" | "failed";
   timestamp?: number;
 }

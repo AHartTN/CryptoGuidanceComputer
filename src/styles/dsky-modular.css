@@ -1,54 +1,44 @@
-/* Apollo DSKY Modular CSS Architecture */
+@import "./responsive-base.css";
+@import "./dsky-layout.css";
 
-/* === Base System (Required First) === */
-@import './responsive-base.css';
-@import './dsky-layout.css';
+@import "./dsky-header.css";
+@import "./dsky-warning-lights.css";
+@import "./dsky-prog-verb-noun.css";
+@import "./dsky-registers.css";
+@import "./dsky-keypad.css";
 
-/* === Component Modules === */
-@import './dsky-header.css';
-@import './dsky-warning-lights.css';
-@import './dsky-prog-verb-noun.css';
-@import './dsky-registers.css';
-@import './dsky-keypad.css';
-@import './dsky-status.css';
 
-/* === Global Responsive Overrides === */
-
-/* === Print Styles === */
 @media print {
   .dsky-container {
     min-height: unset;
     background: white;
     color: black;
   }
-  
+
   .dsky-main {
     box-shadow: none;
     border-color: black;
   }
-  
+
   .dsky-button,
   .dsky-warning-light {
     display: none;
   }
-  
+
   .animate-flicker,
   .animate-pulse {
     animation: none;
   }
 }
 
-/* === Dark Mode Support === */
 @media (prefers-color-scheme: light) {
-  /* Future light theme overrides if needed */
 }
 
-/* === Container Queries (Future Support) === */
 @supports (container-type: inline-size) {
   .dsky-main {
     container-type: inline-size;
   }
-  
+
   @container (max-width: 500px) {
     .dsky-main {
       grid-template-areas:
@@ -60,13 +50,13 @@
       grid-template-columns: 1fr;
     }
   }
-  
+
   @container (min-width: 501px) and (max-width: 800px) {
     .dsky-main {
       grid-template-columns: minmax(80px, auto) 1fr minmax(180px, auto);
     }
   }
-  
+
   @container (min-width: 801px) {
     .dsky-main {
       grid-template-columns: minmax(100px, 15%) 1fr minmax(250px, 30%);
@@ -74,7 +64,6 @@
   }
 }
 
-/* === Utility Classes === */
 .dsky-hidden {
   display: none !important;
 }
@@ -95,7 +84,6 @@
   border: 0;
 }
 
-/* === Component State Classes === */
 .dsky-component-loading {
   opacity: 0.7;
   pointer-events: none;
@@ -117,7 +105,6 @@
   filter: grayscale(50%);
 }
 
-/* === Responsive Component Visibility === */
 @media (max-width: 767px) {
   .dsky-desktop-only {
     display: none !important;
@@ -136,7 +123,6 @@
   }
 }
 
-/* === Global Animation Controls === */
 .dsky-no-animations * {
   animation: none !important;
   transition: none !important;
@@ -147,13 +133,11 @@
   transition-duration: 0.01ms !important;
 }
 
-/* === Focus Management === */
 .dsky-focus-trap {
   outline: 2px solid var(--dsky-green);
   outline-offset: 2px;
 }
 
-/* === High Performance Mode === */
 .dsky-performance-mode .dsky-display-value::before,
 .dsky-performance-mode .dsky-header::before,
 .dsky-performance-mode .animate-flicker,
@@ -162,7 +146,6 @@
   animation: none;
 }
 
-/* === Error Recovery Styles === */
 .dsky-error-boundary {
   padding: var(--space-lg);
   text-align: center;
@@ -184,7 +167,6 @@
   margin-bottom: var(--space-sm);
 }
 
-/* === Debug Mode === */
 .dsky-debug .dsky-main > * {
   outline: 1px dashed rgba(255, 0, 255, 0.5);
 }
@@ -201,11 +183,3 @@
   z-index: 1000;
   pointer-events: none;
 }
-
-/* === Critical CSS Inline Hint === */
-/* 
-  The following styles should be inlined for critical rendering path:
-  - responsive-base.css (variables and reset)
-  - dsky-layout.css (main grid structure)
-  - Basic component structure without animations
-*/

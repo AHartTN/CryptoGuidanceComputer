@@ -3,11 +3,11 @@
  * @description Complex multi-step programs for blockchain operations
  */
 
-import { DSKYVerb, DSKYNoun, DSKYProgram } from '../../enums/DSKYEnums';
-import { UnifiedWeb3Service } from '../web3/UnifiedWeb3Service';
-import { CacheService, CacheManager } from '../cache/CacheService';
-import type { IWeb3State } from '../../interfaces/IWeb3State';
-import { retryWithBackoff, withTimeout } from '../../utils/asyncUtils';
+import { DSKYVerb, DSKYNoun, DSKYProgram } from "../../enums/DSKYEnums";
+import { Web3Service } from "../web3/UnifiedWeb3Service";
+import { CacheService, CacheManager } from "../cache/CacheService";
+import type { IWeb3State } from "../../interfaces/IWeb3State";
+import { retryWithBackoff, withTimeout } from "../../utils/asyncUtils";
 
 export interface IProgramStep {
   verb: number;
@@ -24,7 +24,7 @@ export interface IProgramDefinition {
   name: string;
   description: string;
   steps: IProgramStep[];
-  category: 'SYSTEM' | 'WALLET' | 'TRADING' | 'DEFI' | 'ANALYTICS' | 'SECURITY';
+  category: "SYSTEM" | "WALLET" | "TRADING" | "DEFI" | "ANALYTICS" | "SECURITY";
   estimatedDuration: number;
   requirements?: string[];
 }
@@ -56,12 +56,15 @@ export interface IProgramStatistics {
   totalExecutions: number;
   successRate: number;
   averageDuration: number;
-  programStats: Map<number, {
-    executions: number;
-    successes: number;
-    averageDuration: number;
-    totalDuration: number;
-  }>;
+  programStats: Map<
+    number,
+    {
+      executions: number;
+      successes: number;
+      averageDuration: number;
+      totalDuration: number;
+    }
+  >;
 }
 
 export class DSKYProgramService {
@@ -69,12 +72,12 @@ export class DSKYProgramService {
   private executionHistory: IProgramExecutionResult[] = [];
   private cache: CacheService;
 
-  constructor(private web3Service: UnifiedWeb3Service) {
-    this.cache = CacheManager.getCache('dsky-programs', {
+  constructor(private web3Service: Web3Service) {
+    this.cache = CacheManager.getCache("dsky-programs", {
       maxSize: 100,
       defaultTTL: 300000, // 5 minutes
     });
-    
+
     this.initializePrograms();
   }
 
@@ -82,122 +85,256 @@ export class DSKYProgramService {
     // System Programs
     this.registerProgram({
       id: DSKYProgram.PROG_STARTUP,
-      name: 'System Startup',
-      description: 'Complete system initialization sequence',
-      category: 'SYSTEM',
+      name: "System Startup",
+      description: "Complete system initialization sequence",
+      category: "SYSTEM",
       estimatedDuration: 15000,
       steps: [
-        { verb: DSKYVerb.VERB_HEALTH_CHECK, noun: DSKYNoun.NOUN_SYSTEM_STATUS, description: 'System health check' },
-        { verb: DSKYVerb.VERB_CONNECT_WALLET, noun: DSKYNoun.NOUN_WALLET_ADDRESS, description: 'Connect wallet' },
-        { verb: DSKYVerb.VERB_NETWORK_STATUS, noun: DSKYNoun.NOUN_NETWORK_NAME, description: 'Verify network' },
-        { verb: DSKYVerb.VERB_WALLET_BALANCE, noun: DSKYNoun.NOUN_WALLET_BALANCE, description: 'Load balance' }
-      ]
+        {
+          verb: DSKYVerb.VERB_HEALTH_CHECK,
+          noun: DSKYNoun.NOUN_SYSTEM_STATUS,
+          description: "System health check",
+        },
+        {
+          verb: DSKYVerb.VERB_CONNECT_WALLET,
+          noun: DSKYNoun.NOUN_WALLET_ADDRESS,
+          description: "Connect wallet",
+        },
+        {
+          verb: DSKYVerb.VERB_NETWORK_STATUS,
+          noun: DSKYNoun.NOUN_NETWORK_NAME,
+          description: "Verify network",
+        },
+        {
+          verb: DSKYVerb.VERB_WALLET_BALANCE,
+          noun: DSKYNoun.NOUN_WALLET_BALANCE,
+          description: "Load balance",
+        },
+      ],
     });
 
     this.registerProgram({
       id: DSKYProgram.PROG_HEALTH_CHECK,
-      name: 'Complete Health Check',
-      description: 'Comprehensive system and network diagnostics',
-      category: 'SYSTEM',
+      name: "Complete Health Check",
+      description: "Comprehensive system and network diagnostics",
+      category: "SYSTEM",
       estimatedDuration: 10000,
       steps: [
-        { verb: DSKYVerb.VERB_HEALTH_CHECK, noun: DSKYNoun.NOUN_SYSTEM_STATUS, description: 'Internal health' },
-        { verb: DSKYVerb.VERB_NETWORK_STATUS, noun: DSKYNoun.NOUN_NETWORK_NAME, description: 'Network status' },
-        { verb: DSKYVerb.VERB_BLOCK_CURRENT, noun: DSKYNoun.NOUN_CURRENT_BLOCK, description: 'Latest block' },
-        { verb: DSKYVerb.VERB_GAS_PRICES, noun: DSKYNoun.NOUN_GAS_PRICE, description: 'Gas prices' }
-      ]
+        {
+          verb: DSKYVerb.VERB_HEALTH_CHECK,
+          noun: DSKYNoun.NOUN_SYSTEM_STATUS,
+          description: "Internal health",
+        },
+        {
+          verb: DSKYVerb.VERB_NETWORK_STATUS,
+          noun: DSKYNoun.NOUN_NETWORK_NAME,
+          description: "Network status",
+        },
+        {
+          verb: DSKYVerb.VERB_BLOCK_CURRENT,
+          noun: DSKYNoun.NOUN_CURRENT_BLOCK,
+          description: "Latest block",
+        },
+        {
+          verb: DSKYVerb.VERB_GAS_PRICES,
+          noun: DSKYNoun.NOUN_GAS_PRICE,
+          description: "Gas prices",
+        },
+      ],
     });
 
     // Wallet Programs
     this.registerProgram({
       id: DSKYProgram.PROG_WALLET_SETUP,
-      name: 'Complete Wallet Setup',
-      description: 'Full wallet connection and configuration',
-      category: 'WALLET',
+      name: "Complete Wallet Setup",
+      description: "Full wallet connection and configuration",
+      category: "WALLET",
       estimatedDuration: 20000,
-      requirements: ['MetaMask installed'],
+      requirements: ["MetaMask installed"],
       steps: [
-        { verb: DSKYVerb.VERB_CONNECT_WALLET, noun: DSKYNoun.NOUN_WALLET_ADDRESS, description: 'Connect wallet' },
-        { verb: DSKYVerb.VERB_WALLET_INFO, noun: DSKYNoun.NOUN_WALLET_ADDRESS, description: 'Get wallet info' },
-        { verb: DSKYVerb.VERB_WALLET_BALANCE, noun: DSKYNoun.NOUN_WALLET_BALANCE, description: 'Load balance' },
-        { verb: DSKYVerb.VERB_NETWORK_STATUS, noun: DSKYNoun.NOUN_NETWORK_NAME, description: 'Verify network' }
-      ]
+        {
+          verb: DSKYVerb.VERB_CONNECT_WALLET,
+          noun: DSKYNoun.NOUN_WALLET_ADDRESS,
+          description: "Connect wallet",
+        },
+        {
+          verb: DSKYVerb.VERB_WALLET_INFO,
+          noun: DSKYNoun.NOUN_WALLET_ADDRESS,
+          description: "Get wallet info",
+        },
+        {
+          verb: DSKYVerb.VERB_WALLET_BALANCE,
+          noun: DSKYNoun.NOUN_WALLET_BALANCE,
+          description: "Load balance",
+        },
+        {
+          verb: DSKYVerb.VERB_NETWORK_STATUS,
+          noun: DSKYNoun.NOUN_NETWORK_NAME,
+          description: "Verify network",
+        },
+      ],
     });
 
     // Trading Programs
     this.registerProgram({
       id: DSKYProgram.PROG_PORTFOLIO_VIEW,
-      name: 'Portfolio Overview',
-      description: 'Complete portfolio analysis and monitoring',
-      category: 'TRADING',
+      name: "Portfolio Overview",
+      description: "Complete portfolio analysis and monitoring",
+      category: "TRADING",
       estimatedDuration: 25000,
-      requirements: ['Connected wallet'],
+      requirements: ["Connected wallet"],
       steps: [
-        { verb: DSKYVerb.VERB_WALLET_BALANCE, noun: DSKYNoun.NOUN_WALLET_BALANCE, description: 'ETH balance' },
-        { verb: DSKYVerb.VERB_DISPLAY_CRYPTO, noun: DSKYNoun.NOUN_WALLET_BALANCE, description: 'Token balances' },
-        { verb: DSKYVerb.VERB_CRYPTO_PRICES, noun: DSKYNoun.NOUN_CRYPTO_BITCOIN, description: 'BTC price' },
-        { verb: DSKYVerb.VERB_CRYPTO_PRICES, noun: DSKYNoun.NOUN_CRYPTO_ETHEREUM, description: 'ETH price' },
-        { verb: DSKYVerb.VERB_CRYPTO_PRICES, noun: DSKYNoun.NOUN_CRYPTO_TOP10, description: 'Top 10 prices' }
-      ]
+        {
+          verb: DSKYVerb.VERB_WALLET_BALANCE,
+          noun: DSKYNoun.NOUN_WALLET_BALANCE,
+          description: "ETH balance",
+        },
+        {
+          verb: DSKYVerb.VERB_DISPLAY_CRYPTO,
+          noun: DSKYNoun.NOUN_WALLET_BALANCE,
+          description: "Token balances",
+        },
+        {
+          verb: DSKYVerb.VERB_CRYPTO_PRICES,
+          noun: DSKYNoun.NOUN_CRYPTO_BITCOIN,
+          description: "BTC price",
+        },
+        {
+          verb: DSKYVerb.VERB_CRYPTO_PRICES,
+          noun: DSKYNoun.NOUN_CRYPTO_ETHEREUM,
+          description: "ETH price",
+        },
+        {
+          verb: DSKYVerb.VERB_CRYPTO_PRICES,
+          noun: DSKYNoun.NOUN_CRYPTO_TOP10,
+          description: "Top 10 prices",
+        },
+      ],
     });
 
     this.registerProgram({
       id: DSKYProgram.PROG_PRICE_MONITOR,
-      name: 'Real-time Price Monitor',
-      description: 'Continuous price monitoring with alerts',
-      category: 'TRADING',
+      name: "Real-time Price Monitor",
+      description: "Continuous price monitoring with alerts",
+      category: "TRADING",
       estimatedDuration: 30000,
       steps: [
-        { verb: DSKYVerb.VERB_CRYPTO_PRICES, noun: DSKYNoun.NOUN_CRYPTO_BITCOIN, description: 'Monitor BTC' },
-        { verb: DSKYVerb.VERB_CRYPTO_PRICES, noun: DSKYNoun.NOUN_CRYPTO_ETHEREUM, description: 'Monitor ETH' },
-        { verb: DSKYVerb.VERB_CRYPTO_HISTORY, noun: DSKYNoun.NOUN_CRYPTO_BITCOIN, description: 'BTC trends' },
-        { verb: DSKYVerb.VERB_CRYPTO_HISTORY, noun: DSKYNoun.NOUN_CRYPTO_ETHEREUM, description: 'ETH trends' }
-      ]
+        {
+          verb: DSKYVerb.VERB_CRYPTO_PRICES,
+          noun: DSKYNoun.NOUN_CRYPTO_BITCOIN,
+          description: "Monitor BTC",
+        },
+        {
+          verb: DSKYVerb.VERB_CRYPTO_PRICES,
+          noun: DSKYNoun.NOUN_CRYPTO_ETHEREUM,
+          description: "Monitor ETH",
+        },
+        {
+          verb: DSKYVerb.VERB_CRYPTO_HISTORY,
+          noun: DSKYNoun.NOUN_CRYPTO_BITCOIN,
+          description: "BTC trends",
+        },
+        {
+          verb: DSKYVerb.VERB_CRYPTO_HISTORY,
+          noun: DSKYNoun.NOUN_CRYPTO_ETHEREUM,
+          description: "ETH trends",
+        },
+      ],
     });
 
-    // DeFi Programs  
+    // DeFi Programs
     this.registerProgram({
       id: DSKYProgram.PROG_DEFI_DASHBOARD,
-      name: 'DeFi Dashboard',
-      description: 'Complete DeFi protocol overview',
-      category: 'DEFI',
+      name: "DeFi Dashboard",
+      description: "Complete DeFi protocol overview",
+      category: "DEFI",
       estimatedDuration: 35000,
-      requirements: ['Connected wallet', 'DeFi tokens'],
-      steps: [        { verb: DSKYVerb.VERB_DISPLAY_CRYPTO, noun: DSKYNoun.NOUN_WALLET_BALANCE, description: 'DeFi balances' },
-        { verb: DSKYVerb.VERB_DEFI_OPERATIONS, noun: DSKYNoun.NOUN_WALLET_TOKENS, description: 'Pool info' },
-        { verb: DSKYVerb.VERB_STAKING_INFO, noun: DSKYNoun.NOUN_WALLET_TOKENS, description: 'Yield rates' },
-        { verb: DSKYVerb.VERB_STAKING_INFO, noun: DSKYNoun.NOUN_WALLET_TOKENS, description: 'Staking positions' }
-      ]
+      requirements: ["Connected wallet", "DeFi tokens"],
+      steps: [
+        {
+          verb: DSKYVerb.VERB_DISPLAY_CRYPTO,
+          noun: DSKYNoun.NOUN_WALLET_BALANCE,
+          description: "DeFi balances",
+        },
+        {
+          verb: DSKYVerb.VERB_DEFI_OPERATIONS,
+          noun: DSKYNoun.NOUN_WALLET_TOKENS,
+          description: "Pool info",
+        },
+        {
+          verb: DSKYVerb.VERB_STAKING_INFO,
+          noun: DSKYNoun.NOUN_WALLET_TOKENS,
+          description: "Yield rates",
+        },
+        {
+          verb: DSKYVerb.VERB_STAKING_INFO,
+          noun: DSKYNoun.NOUN_WALLET_TOKENS,
+          description: "Staking positions",
+        },
+      ],
     });
 
     // Analytics Programs
     this.registerProgram({
       id: DSKYProgram.PROG_FULL_ANALYTICS,
-      name: 'Complete Analytics Suite',
-      description: 'Comprehensive data analysis and reporting',
-      category: 'ANALYTICS',
+      name: "Complete Analytics Suite",
+      description: "Comprehensive data analysis and reporting",
+      category: "ANALYTICS",
       estimatedDuration: 45000,
-      requirements: ['Historical data access'],
+      requirements: ["Historical data access"],
       steps: [
-        { verb: DSKYVerb.VERB_CRYPTO_HISTORY, noun: DSKYNoun.NOUN_CRYPTO_BITCOIN, description: 'BTC analysis' },
-        { verb: DSKYVerb.VERB_CRYPTO_HISTORY, noun: DSKYNoun.NOUN_CRYPTO_ETHEREUM, description: 'ETH analysis' },
-        { verb: DSKYVerb.VERB_BLOCK_INFO, noun: DSKYNoun.NOUN_CURRENT_BLOCK, description: 'Block analysis' },        { verb: DSKYVerb.VERB_TRANSACTION_INFO, noun: DSKYNoun.NOUN_GAS_PRICE, description: 'TX analysis' },
-        { verb: DSKYVerb.VERB_TRANSACTION_INFO, noun: DSKYNoun.NOUN_GAS_PRICE, description: 'Gas analysis' }
-      ]
+        {
+          verb: DSKYVerb.VERB_CRYPTO_HISTORY,
+          noun: DSKYNoun.NOUN_CRYPTO_BITCOIN,
+          description: "BTC analysis",
+        },
+        {
+          verb: DSKYVerb.VERB_CRYPTO_HISTORY,
+          noun: DSKYNoun.NOUN_CRYPTO_ETHEREUM,
+          description: "ETH analysis",
+        },
+        {
+          verb: DSKYVerb.VERB_BLOCK_INFO,
+          noun: DSKYNoun.NOUN_CURRENT_BLOCK,
+          description: "Block analysis",
+        },
+        {
+          verb: DSKYVerb.VERB_TRANSACTION_INFO,
+          noun: DSKYNoun.NOUN_GAS_PRICE,
+          description: "TX analysis",
+        },
+        {
+          verb: DSKYVerb.VERB_TRANSACTION_INFO,
+          noun: DSKYNoun.NOUN_GAS_PRICE,
+          description: "Gas analysis",
+        },
+      ],
     });
 
     // Security Programs
     this.registerProgram({
       id: DSKYProgram.PROG_SECURITY_AUDIT,
-      name: 'Security Audit',
-      description: 'Security assessment and vulnerability check',
-      category: 'SECURITY',
+      name: "Security Audit",
+      description: "Security assessment and vulnerability check",
+      category: "SECURITY",
       estimatedDuration: 20000,
       steps: [
-        { verb: DSKYVerb.VERB_WALLET_INFO, noun: DSKYNoun.NOUN_WALLET_ADDRESS, description: 'Wallet security' },
-        { verb: DSKYVerb.VERB_NETWORK_STATUS, noun: DSKYNoun.NOUN_NETWORK_NAME, description: 'Network security' },
-        { verb: DSKYVerb.VERB_HEALTH_CHECK, noun: DSKYNoun.NOUN_SYSTEM_STATUS, description: 'System security' }
-      ]
+        {
+          verb: DSKYVerb.VERB_WALLET_INFO,
+          noun: DSKYNoun.NOUN_WALLET_ADDRESS,
+          description: "Wallet security",
+        },
+        {
+          verb: DSKYVerb.VERB_NETWORK_STATUS,
+          noun: DSKYNoun.NOUN_NETWORK_NAME,
+          description: "Network security",
+        },
+        {
+          verb: DSKYVerb.VERB_HEALTH_CHECK,
+          noun: DSKYNoun.NOUN_SYSTEM_STATUS,
+          description: "System security",
+        },
+      ],
     });
   }
 
@@ -225,8 +362,12 @@ export class DSKYProgramService {
   /**
    * Get programs by category
    */
-  getProgramsByCategory(category: IProgramDefinition['category']): IProgramDefinition[] {
-    return Array.from(this.programs.values()).filter(p => p.category === category);
+  getProgramsByCategory(
+    category: IProgramDefinition["category"],
+  ): IProgramDefinition[] {
+    return Array.from(this.programs.values()).filter(
+      (p) => p.category === category,
+    );
   }
 
   /**
@@ -235,7 +376,11 @@ export class DSKYProgramService {
   async executeProgram(
     programId: number,
     web3State: IWeb3State,
-    progressCallback?: (step: number, total: number, description: string) => void
+    progressCallback?: (
+      step: number,
+      total: number,
+      description: string,
+    ) => void,
   ): Promise<IProgramExecutionResult> {
     const program = this.programs.get(programId);
     if (!program) {
@@ -248,7 +393,7 @@ export class DSKYProgramService {
       results: new Map(),
       startTime: Date.now(),
       web3State,
-      cache: this.cache
+      cache: this.cache,
     };
 
     const result: IProgramExecutionResult = {
@@ -256,7 +401,7 @@ export class DSKYProgramService {
       programId,
       stepResults: [],
       totalDuration: 0,
-      partialResults: false
+      partialResults: false,
     };
 
     try {
@@ -275,12 +420,14 @@ export class DSKYProgramService {
         try {
           const stepResult = await this.executeStep(step, context);
           result.stepResults.push(stepResult as IProgramStepResult);
-          context.results.set(`step_${i}`, stepResult);        } catch (stepError) {
+          context.results.set(`step_${i}`, stepResult);
+        } catch (stepError) {
           console.error(`Program ${programId} step ${i} failed:`, stepError);
-          const errorMessage = stepError instanceof Error ? stepError.message : String(stepError);
+          const errorMessage =
+            stepError instanceof Error ? stepError.message : String(stepError);
           result.stepResults.push({ error: errorMessage });
           result.partialResults = true;
-          
+
           // Continue with non-critical steps
           if (!this.isCriticalStep(step)) {
             continue;
@@ -290,8 +437,10 @@ export class DSKYProgramService {
         }
       }
 
-      result.success = true;    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      result.success = true;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       result.error = errorMessage;
       result.success = false;
     }
@@ -303,7 +452,7 @@ export class DSKYProgramService {
     if (result.success) {
       this.cache.set(`program_${programId}_result`, result, {
         ttl: 300000, // 5 minutes
-        tags: ['program_results', `program_${programId}`]
+        tags: ["program_results", `program_${programId}`],
       });
     }
 
@@ -313,9 +462,12 @@ export class DSKYProgramService {
   /**
    * Execute a single program step
    */
-  private async executeStep(step: IProgramStep, context: IProgramExecutionContext): Promise<unknown> {
+  private async executeStep(
+    step: IProgramStep,
+    context: IProgramExecutionContext,
+  ): Promise<unknown> {
     const cacheKey = `step_${step.verb}_${step.noun}_${context.web3State.account}`;
-    
+
     // Check cache first
     const cached = context.cache.get(cacheKey);
     if (cached) {
@@ -331,13 +483,13 @@ export class DSKYProgramService {
 
     const result = await retryWithBackoff(
       () => withTimeout(operation(), step.timeout || 10000),
-      step.retries || 2
+      step.retries || 2,
     );
 
     // Cache successful results
     context.cache.set(cacheKey, result, {
       ttl: 60000, // 1 minute for step results
-      tags: ['step_results']
+      tags: ["step_results"],
     });
 
     return result;
@@ -346,52 +498,63 @@ export class DSKYProgramService {
   /**
    * Simulate step execution (to be replaced with actual implementation)
    */
-  private async simulateStepExecution(step: IProgramStep, context: IProgramExecutionContext): Promise<unknown> {
+  private async simulateStepExecution(
+    step: IProgramStep,
+    context: IProgramExecutionContext,
+  ): Promise<unknown> {
     // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 2000 + 500));
+    await new Promise((resolve) =>
+      setTimeout(resolve, Math.random() * 2000 + 500),
+    );
 
     // Return mock data based on step type
     switch (step.verb) {
       case DSKYVerb.VERB_HEALTH_CHECK:
-        return { status: 'healthy', latency: Math.random() * 100 };
-        
+        return { status: "healthy", latency: Math.random() * 100 };
+
       case DSKYVerb.VERB_CONNECT_WALLET:
-        return { address: context.web3State.account || '0x1234...5678' };
-        
+        return { address: context.web3State.account || "0x1234...5678" };
+
       case DSKYVerb.VERB_WALLET_BALANCE:
         return { balance: (Math.random() * 10).toFixed(4) };
-        
+
       case DSKYVerb.VERB_CRYPTO_PRICES:
         return { price: (Math.random() * 50000 + 30000).toFixed(2) };
-        
+
       default:
-        return { result: 'success', data: `Executed V${step.verb}N${step.noun}` };
+        return {
+          result: "success",
+          data: `Executed V${step.verb}N${step.noun}`,
+        };
     }
   }
 
   /**
    * Check program requirements
    */
-  private async checkRequirements(requirements: string[], web3State: IWeb3State): Promise<void> {
+  private async checkRequirements(
+    requirements: string[],
+    web3State: IWeb3State,
+  ): Promise<void> {
     for (const requirement of requirements) {
       switch (requirement) {
-        case 'MetaMask installed':
+        case "MetaMask installed":
           if (!this.web3Service.isWalletInstalled()) {
-            throw new Error('MetaMask is not installed');
+            throw new Error("MetaMask is not installed");
           }
           break;
-          
-        case 'Connected wallet':
+
+        case "Connected wallet":
           if (!web3State.isConnected) {
-            throw new Error('Wallet is not connected');
+            throw new Error("Wallet is not connected");
           }
           break;
-          
-        case 'DeFi tokens':
+
+        case "DeFi tokens":
           // Check for DeFi token balances
           break;
-          
-        case 'Historical data access':
+
+        case "Historical data access":
           // Check API access
           break;
       }
@@ -404,9 +567,9 @@ export class DSKYProgramService {
     // Steps that are required for program to continue
     const criticalVerbs: number[] = [
       DSKYVerb.VERB_CONNECT_WALLET,
-      DSKYVerb.VERB_HEALTH_CHECK
+      DSKYVerb.VERB_HEALTH_CHECK,
     ];
-    
+
     return criticalVerbs.includes(step.verb);
   }
 
@@ -425,17 +588,20 @@ export class DSKYProgramService {
       totalExecutions: this.executionHistory.length,
       successRate: 0,
       averageDuration: 0,
-      programStats: new Map()
+      programStats: new Map(),
     };
 
     if (this.executionHistory.length === 0) {
       return stats;
     }
 
-    const successful = this.executionHistory.filter(r => r.success).length;
+    const successful = this.executionHistory.filter((r) => r.success).length;
     stats.successRate = successful / this.executionHistory.length;
-    
-    const totalDuration = this.executionHistory.reduce((sum, r) => sum + r.totalDuration, 0);
+
+    const totalDuration = this.executionHistory.reduce(
+      (sum, r) => sum + r.totalDuration,
+      0,
+    );
     stats.averageDuration = totalDuration / this.executionHistory.length;
 
     // Per-program statistics
@@ -445,15 +611,16 @@ export class DSKYProgramService {
           executions: 0,
           successes: 0,
           averageDuration: 0,
-          totalDuration: 0
+          totalDuration: 0,
         });
       }
-      
+
       const programStat = stats.programStats.get(result.programId);
       programStat.executions++;
       programStat.totalDuration += result.totalDuration;
-      programStat.averageDuration = programStat.totalDuration / programStat.executions;
-      
+      programStat.averageDuration =
+        programStat.totalDuration / programStat.executions;
+
       if (result.success) {
         programStat.successes++;
       }

@@ -1,34 +1,34 @@
 // Apollo DSKY - Wallet Provider Interface
 // Enterprise-grade wallet abstraction following SOLID principles
 
-import { IWalletConnection, ITransactionRequest } from './IWeb3Operations';
+import { IWalletConnection, ITransactionRequest } from "./IWeb3Operations";
 
 /** Wallet Provider Types */
 export enum WalletProviderType {
-  MetaMask = 'METAMASK',
-  WalletConnect = 'WALLET_CONNECT',
-  Phantom = 'PHANTOM',
-  Coinbase = 'COINBASE',
-  Browser = 'BROWSER'
+  MetaMask = "METAMASK",
+  WalletConnect = "WALLET_CONNECT",
+  Phantom = "PHANTOM",
+  Coinbase = "COINBASE",
+  Browser = "BROWSER",
 }
 
 /** Wallet Connection Status */
 export enum WalletConnectionStatus {
-  Disconnected = 'DISCONNECTED',
-  Connecting = 'CONNECTING',
-  Connected = 'CONNECTED',
-  Error = 'ERROR'
+  Disconnected = "DISCONNECTED",
+  Connecting = "CONNECTING",
+  Connected = "CONNECTED",
+  Error = "ERROR",
 }
 
 /** Wallet Error Types */
 export enum WalletErrorType {
-  NotInstalled = 'NOT_INSTALLED',
-  UserRejected = 'USER_REJECTED',
-  UnauthorizedMethod = 'UNAUTHORIZED_METHOD',
-  DisconnectedFromChain = 'DISCONNECTED_FROM_CHAIN',
-  ChainNotAdded = 'CHAIN_NOT_ADDED',
-  NetworkError = 'NETWORK_ERROR',
-  UnknownError = 'UNKNOWN_ERROR'
+  NotInstalled = "NOT_INSTALLED",
+  UserRejected = "USER_REJECTED",
+  UnauthorizedMethod = "UNAUTHORIZED_METHOD",
+  DisconnectedFromChain = "DISCONNECTED_FROM_CHAIN",
+  ChainNotAdded = "CHAIN_NOT_ADDED",
+  NetworkError = "NETWORK_ERROR",
+  UnknownError = "UNKNOWN_ERROR",
 }
 
 export interface IWalletError {

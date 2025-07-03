@@ -1,6 +1,9 @@
-import { Alchemy, Network } from 'alchemy-sdk';
-import { ICryptoPriceResponse, ICryptoServiceConfig } from '../interfaces/ICryptoData';
-import { FALLBACK_CRYPTO_PRICES } from '../models/CryptoModels';
+import { Alchemy, Network } from "alchemy-sdk";
+import {
+  ICryptoPriceResponse,
+  ICryptoServiceConfig,
+} from "../interfaces/ICryptoData";
+import { FALLBACK_CRYPTO_PRICES } from "../models/CryptoModels";
 
 export class CryptoService {
   private alchemy: Alchemy | null = null;
@@ -10,7 +13,7 @@ export class CryptoService {
     this.config = {
       retryAttempts: 3,
       timeoutMs: 10000,
-      ...config
+      ...config,
     };
 
     if (config.apiKey) {
@@ -33,7 +36,7 @@ export class CryptoService {
         }
       } catch (error) {
         console.warn(`Crypto fetch attempt ${attempt + 1} failed:`, error);
-        
+
         switch (attempt < this.config.retryAttempts - 1) {
           case true: {
             await this.delay(1000 * (attempt + 1));
@@ -43,7 +46,7 @@ export class CryptoService {
       }
     }
 
-    console.error('All crypto fetch attempts failed, using fallback data');
+    console.error("All crypto fetch attempts failed, using fallback data");
     return this.getFallbackPrices();
   }
 
@@ -55,18 +58,22 @@ export class CryptoService {
     return {
       data: FALLBACK_CRYPTO_PRICES,
       success: true,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
   static create(): CryptoService {
     const config: ICryptoServiceConfig = {
-      apiKey: (typeof import.meta.env !== 'undefined' && import.meta.env.VITE_ALCHEMY_API_KEY) ? import.meta.env.VITE_ALCHEMY_API_KEY : undefined,
+      apiKey:
+        typeof import.meta.env !== "undefined" &&
+        import.meta.env.VITE_ALCHEMY_API_KEY
+          ? import.meta.env.VITE_ALCHEMY_API_KEY
+          : undefined,
       retryAttempts: 3,
-      timeoutMs: 10000
+      timeoutMs: 10000,
     };
 
     return new CryptoService(config);

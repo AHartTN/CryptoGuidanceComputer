@@ -1,0 +1,84 @@
+/* Styles for RealTimeDashboard component */
+.connection-status {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 1.08rem;
+}
+.status-label {
+  color: #aaa;
+  font-weight: 600;
+  min-width: 90px;
+}
+.status-indicator {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #00ff41;
+  transition: color 0.2s;
+}
+.status-indicator.offline {
+  color: #ff0080;
+}
+.price-grid {
+  margin-top: 1.5rem;
+}
+.price-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.price-item {
+  background: #181c20;
+  border: 1px solid #23272f;
+  border-radius: 6px;
+  padding: 0.7rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.price-header {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+.price-symbol {
+  font-family: 'Share Tech Mono', monospace;
+  color: #00ff41;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+.price-value {
+  font-family: 'Share Tech Mono', monospace;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+.price-details {
+  display: flex;
+  gap: 1.2rem;
+  font-size: 0.98rem;
+}
+.price-change.positive {
+  color: #00ff41;
+}
+.price-change.negative {
+  color: #ff0080;
+}
+.price-volume {
+  color: #aaa;
+}
+.blockchain-info {
+  margin-top: 2rem;
+  background: #181c20;
+  border: 1px solid #23272f;
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  font-size: 1.02rem;
+  color: #00ff41;
+}

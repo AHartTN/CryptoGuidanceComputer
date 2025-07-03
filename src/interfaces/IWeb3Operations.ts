@@ -1,4 +1,9 @@
-import type { IMetaMaskEthereumProvider } from './IMetaMaskEthereumProvider';
+/**
+ * @file IWeb3Operations.ts
+ * @description Interfaces for Web3 wallet connection, blockchain data, transaction requests, and token balances.
+ */
+
+import type { IMetaMaskEthereumProvider } from "./IMetaMaskEthereumProvider";
 
 export interface IWalletConnection {
   address: string;

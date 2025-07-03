@@ -1,0 +1,58 @@
+/* Styles for LogViewer component */
+.log-viewer-container {
+  background: #111;
+  color: #eee;
+  padding: 16px;
+  font-family: monospace;
+  min-height: 100vh;
+}
+.log-viewer-btn {
+  margin-right: 8px;
+  padding: 4px 12px;
+  border: 1px solid #00ff41;
+  background: #23272f;
+  color: #00ff41;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.log-viewer-btn:last-child {
+  margin-right: 0;
+}
+.log-viewer-btn:hover {
+  background: #00ff41;
+  color: #23272f;
+}
+.log-viewer-table-wrapper {
+  margin-top: 16px;
+}
+.log-viewer-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.log-viewer-table-header-row {
+  background: #222;
+}
+.log-viewer-table-header {
+  color: #fff;
+  padding: 6px 8px;
+  text-align: left;
+}
+.log-viewer-table-row {
+  background: #181818;
+}
+.log-viewer-table-level {
+  font-weight: bold;
+}
+.log-level-0 { color: #888; }
+.log-level-1 { color: #00bfff; }
+.log-level-2 { color: #ff8000; }
+.log-level-3 { color: #ff0080; }
+.log-level-4 { color: #ff0000; }
+.log-viewer-table-message {
+  max-width: 600px;
+  word-break: break-word;
+}

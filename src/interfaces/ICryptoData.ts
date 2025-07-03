@@ -1,14 +1,7 @@
-export interface ICryptoPrice {
-  id: string;
-  name: string;
-  symbol: string;
-  price: number;
-  change24h: number;
-  lastUpdated: Date;
-}
+import type { ICryptoPriceData } from "./ICryptoPriceData";
 
 export interface ICryptoPriceResponse {
-  data: ICryptoPrice[];
+  data: ICryptoPriceData[];
   success: boolean;
   error?: string;
   timestamp: Date;

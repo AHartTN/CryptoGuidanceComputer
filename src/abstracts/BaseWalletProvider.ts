@@ -1,6 +1,3 @@
-// Apollo DSKY - Base Wallet Provider Abstract Class
-// Enterprise-grade base implementation following DRY principles
-
 import {
   IWalletProvider,
   IWalletProviderConfig,
@@ -9,23 +6,26 @@ import {
   WalletProviderType,
   WalletConnectionStatus,
   WalletErrorType,
-  IWalletError
-} from '../interfaces/IWalletProvider';
-import { IWalletConnection, ITransactionRequest } from '../interfaces/IWeb3Operations';
+  IWalletError,
+} from "../interfaces/IWalletProvider";
+import {
+  IWalletConnection,
+  ITransactionRequest,
+} from "../interfaces/IWeb3Operations";
 
 export abstract class BaseWalletProvider implements IWalletProvider {
-  protected _status: WalletConnectionStatus = WalletConnectionStatus.Disconnected;
+  protected _status: WalletConnectionStatus =
+    WalletConnectionStatus.Disconnected;
   protected _connection: IWalletConnection | null = null;
   protected _lastHealthCheck: number = 0;
-  protected readonly _healthCheckInterval: number = 30000; // 30 seconds
+  protected readonly _healthCheckInterval: number = 30000;
 
   constructor(
     public readonly config: IWalletProviderConfig,
     public readonly type: WalletProviderType,
-    public readonly capabilities: IWalletCapabilities
+    public readonly capabilities: IWalletCapabilities,
   ) {}
 
-  // Abstract methods that must be implemented by concrete providers
   abstract isAvailable(): boolean;
   abstract isInstalled(): boolean;
   abstract getVersion(): Promise<string>;
@@ -34,7 +34,6 @@ export abstract class BaseWalletProvider implements IWalletProvider {
   abstract sendTransaction(request: ITransactionRequest): Promise<string>;
   abstract signMessage(message: string): Promise<string>;
 
-  // Concrete implementations with common logic
   get status(): WalletConnectionStatus {
     return this._status;
   }
@@ -47,17 +46,16 @@ export abstract class BaseWalletProvider implements IWalletProvider {
   async reconnect(): Promise<IWalletConnection> {
     if (this._connection) {
       try {
-        // Try to verify existing connection
         const accounts = await this.requestAccounts();
         if (accounts.length > 0) {
           this._status = WalletConnectionStatus.Connected;
           return this._connection;
         }
       } catch (_error) {
-        // Connection is stale, need to reconnect
+        // intentionally ignored
       }
     }
-    
+
     return this.connect();
   }
 
@@ -65,16 +63,15 @@ export abstract class BaseWalletProvider implements IWalletProvider {
     if (!this._connection) {
       return null;
     }
-    
+
     try {
-      // Verify connection is still valid
       const accounts = await this.requestAccounts();
       if (accounts.length === 0) {
         this._connection = null;
         this._status = WalletConnectionStatus.Disconnected;
         return null;
       }
-      
+
       return this._connection;
     } catch (_error) {
       this._connection = null;
@@ -85,11 +82,10 @@ export abstract class BaseWalletProvider implements IWalletProvider {
 
   async switchAccount(address: string): Promise<void> {
     this.validateAddress(address);
-    
-    // Default implementation - most wallets don't support programmatic account switching
+
     throw this.createError(
-      WalletErrorType.UnauthorizedMethod, 
-      'Account switching not supported by this wallet'
+      WalletErrorType.UnauthorizedMethod,
+      "Account switching not supported by this wallet",
     );
   }
 
@@ -97,31 +93,28 @@ export abstract class BaseWalletProvider implements IWalletProvider {
     if (!this.capabilities.canSwitchChains) {
       throw this.createError(
         WalletErrorType.UnauthorizedMethod,
-        'Network switching not supported by this wallet'
+        "Network switching not supported by this wallet",
       );
     }
-    
+
     this.validateNetworkRequest(request);
-    // Implementation depends on wallet type
   }
 
   async addNetwork(request: INetworkSwitchRequest): Promise<void> {
     if (!this.capabilities.canAddChains) {
       throw this.createError(
         WalletErrorType.UnauthorizedMethod,
-        'Adding networks not supported by this wallet'
+        "Adding networks not supported by this wallet",
       );
     }
-    
+
     this.validateNetworkRequest(request);
-    // Implementation depends on wallet type
   }
 
   async getCurrentNetwork(): Promise<{ chainId: string; chainName: string }> {
-    // Default implementation - to be overridden
     throw this.createError(
       WalletErrorType.UnauthorizedMethod,
-      'Getting current network not implemented'
+      "Getting current network not implemented",
     );
   }
 
@@ -129,24 +122,22 @@ export abstract class BaseWalletProvider implements IWalletProvider {
     if (!this.capabilities.supportsTypedData) {
       throw this.createError(
         WalletErrorType.UnauthorizedMethod,
-        'Typed data signing not supported by this wallet'
+        "Typed data signing not supported by this wallet",
       );
     }
-    // Implementation depends on wallet type
     throw this.createError(
       WalletErrorType.UnauthorizedMethod,
-      'Typed data signing not implemented'
+      "Typed data signing not implemented",
     );
   }
 
   async healthCheck(): Promise<boolean> {
     const now = Date.now();
-    
-    // Use cached result if recent
+
     if (now - this._lastHealthCheck < this._healthCheckInterval) {
       return this._status === WalletConnectionStatus.Connected;
     }
-    
+
     try {
       const connection = await this.getConnection();
       this._lastHealthCheck = now;
@@ -164,56 +155,64 @@ export abstract class BaseWalletProvider implements IWalletProvider {
     rdns?: string;
   }> {
     const version = await this.getVersion();
-    
+
     return {
       name: this.type,
       version,
       icon: undefined,
-      rdns: undefined
+      rdns: undefined,
     };
   }
 
-  // Event handling - default implementations (no-op)
-  onAccountsChanged(_callback: (accounts: string[]) => void): void {
-    // To be implemented by specific providers
-  }
+  onAccountsChanged(_callback: (accounts: string[]) => void): void {}
 
-  onChainChanged(_callback: (chainId: string) => void): void {
-    // To be implemented by specific providers
-  }
+  onChainChanged(_callback: (chainId: string) => void): void {}
 
-  onConnect(_callback: (connectInfo: IWalletConnection) => void): void {
-    // To be implemented by specific providers
-  }
+  onConnect(_callback: (connectInfo: IWalletConnection) => void): void {}
 
-  onDisconnect(_callback: (error: IWalletError | null) => void): void {
-    // To be implemented by specific providers
-  }
+  onDisconnect(_callback: (error: IWalletError | null) => void): void {}
 
-  // Protected utility methods
-  protected createError(type: WalletErrorType, message: string, code?: number, data?: unknown): IWalletError {
+  protected createError(
+    type: WalletErrorType,
+    message: string,
+    code?: number,
+    data?: unknown,
+  ): IWalletError {
     return {
       type,
       message,
       code,
-      data
+      data,
     };
   }
 
   protected validateAddress(address: string): void {
-    if (!address || typeof address !== 'string') {
-      throw this.createError(WalletErrorType.UnknownError, 'Invalid address format');
+    if (!address || typeof address !== "string") {
+      throw this.createError(
+        WalletErrorType.UnknownError,
+        "Invalid address format",
+      );
     }
-    
-    // Basic hex validation
+
     if (!/^0x[a-fA-F0-9]{40}$/.test(address)) {
-      throw this.createError(WalletErrorType.UnknownError, `Invalid Ethereum address: ${address}`);
+      throw this.createError(
+        WalletErrorType.UnknownError,
+        `Invalid Ethereum address: ${address}`,
+      );
     }
   }
 
   protected validateNetworkRequest(request: INetworkSwitchRequest): void {
-    if (!request || !request.chainId || !request.chainName || !request.rpcUrls?.length) {
-      throw this.createError(WalletErrorType.UnknownError, 'Invalid network configuration');
+    if (
+      !request ||
+      !request.chainId ||
+      !request.chainName ||
+      !request.rpcUrls?.length
+    ) {
+      throw this.createError(
+        WalletErrorType.UnknownError,
+        "Invalid network configuration",
+      );
     }
   }
 
@@ -226,27 +225,27 @@ export abstract class BaseWalletProvider implements IWalletProvider {
   }
 
   protected async delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   protected async executeWithRetry<T>(
     operation: () => Promise<T>,
-    retries: number = this.config.retryAttempts
+    retries: number = this.config.retryAttempts,
   ): Promise<T> {
     let lastError: Error;
-    
+
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {
         return await operation();
       } catch (_error) {
         lastError = _error as Error;
-        
+
         if (attempt < retries) {
-          await this.delay(Math.pow(2, attempt) * 1000); // Exponential backoff
+          await this.delay(Math.pow(2, attempt) * 1000);
         }
       }
     }
-    
+
     throw lastError!;
   }
 }

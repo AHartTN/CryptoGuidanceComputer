@@ -1,3 +1,5 @@
+import type { IDSKYWarningLights } from "./IDSKYCore";
+
 // DSKY State interface for cross-module imports
 export interface IDSKYState {
   prog: string;
@@ -20,6 +22,10 @@ export interface IDSKYState {
   vel: boolean;
   progStatus: boolean;
   prio: boolean;
+  warningLights: IDSKYWarningLights;
 }
 
-export type StatusLightKey = keyof Omit<IDSKYState, 'prog' | 'verb' | 'noun' | 'reg1' | 'reg2' | 'reg3'>;
+export type StatusLightKey = keyof Omit<
+  IDSKYState,
+  "prog" | "verb" | "noun" | "reg1" | "reg2" | "reg3"
+>;

@@ -1,14 +1,14 @@
 // Apollo DSKY - Production Configuration Service
 // Environment-specific configuration management for production deployment
 
-import { CacheService, CacheStrategy } from '../cache/CacheService';
+import { CacheService, CacheStrategy } from "../cache/CacheService";
 
 /** Environment Types */
 export enum Environment {
-  DEVELOPMENT = 'development',
-  STAGING = 'staging',
-  PRODUCTION = 'production',
-  TEST = 'test'
+  DEVELOPMENT = "development",
+  STAGING = "staging",
+  PRODUCTION = "production",
+  TEST = "test",
 }
 
 /** Feature Flags */
@@ -100,7 +100,7 @@ export interface IAppConfig {
     remoteEndpoint?: string;
   };
   ui: {
-    theme: 'apollo' | 'dark' | 'light';
+    theme: "apollo" | "dark" | "light";
     enableAnimations: boolean;
     enableSounds: boolean;
     enableAccessibility: boolean;
@@ -125,13 +125,15 @@ export class ProductionConfigurationService {
       defaultTTL: 3600000, // 1 hour
       maxSize: 1000,
       strategy: CacheStrategy.LRU,
-      enableMetrics: true
+      enableMetrics: true,
     });
 
     this.environment = this.detectEnvironment();
     this.config = this.loadConfiguration();
-    
-    console.log(`[ProductionConfig] Initialized for ${this.environment} environment`);
+
+    console.log(
+      `[ProductionConfig] Initialized for ${this.environment} environment`,
+    );
   }
 
   /** Get current environment */
@@ -147,7 +149,7 @@ export class ProductionConfigurationService {
   /** Get feature flag */
   getFeatureFlag(flag: keyof IFeatureFlags): boolean {
     const override = this.overrides.get(flag as string);
-    if (typeof override === 'boolean') {
+    if (typeof override === "boolean") {
       return override;
     }
     return this.config.featureFlags[flag];
@@ -159,9 +161,9 @@ export class ProductionConfigurationService {
   }
 
   /** Get API endpoint */
-  getApiEndpoint(service: keyof IApiConfig['endpoints']): string {
+  getApiEndpoint(service: keyof IApiConfig["endpoints"]): string {
     const override = this.overrides.get(service as string);
-    if (typeof override === 'string') {
+    if (typeof override === "string") {
       return override;
     }
     return this.config.api.endpoints[service];
@@ -222,7 +224,7 @@ export class ProductionConfigurationService {
       version: this.config.version,
       buildTimestamp: this.config.buildTimestamp,
       environment: this.environment,
-      buildDate: new Date(this.config.buildTimestamp).toISOString()
+      buildDate: new Date(this.config.buildTimestamp).toISOString(),
     };
   }
 
@@ -237,36 +239,36 @@ export class ProductionConfigurationService {
 
     // Validate API configuration
     if (!this.config.api.baseUrl) {
-      errors.push('API base URL is required');
+      errors.push("API base URL is required");
     }
 
     if (this.config.api.timeout < 1000) {
-      warnings.push('API timeout is very low (< 1000ms)');
+      warnings.push("API timeout is very low (< 1000ms)");
     }
 
     // Validate Web3 configuration
     if (!this.config.web3.defaultNetwork) {
-      errors.push('Default Web3 network is required');
+      errors.push("Default Web3 network is required");
     }
 
     if (this.isProduction() && !this.config.web3.alchemyApiKey) {
-      warnings.push('Alchemy API key not configured for production');
+      warnings.push("Alchemy API key not configured for production");
     }
 
     // Validate security configuration
     if (this.isProduction() && !this.config.security.enableCSP) {
-      warnings.push('Content Security Policy not enabled for production');
+      warnings.push("Content Security Policy not enabled for production");
     }
 
     // Validate performance configuration
     if (this.isProduction() && !this.config.performance.enableMonitoring) {
-      warnings.push('Performance monitoring not enabled for production');
+      warnings.push("Performance monitoring not enabled for production");
     }
 
     return {
       isValid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     };
   }
 
@@ -290,13 +292,13 @@ export class ProductionConfigurationService {
   private loadConfiguration(): IAppConfig {
     const baseConfig = this.getBaseConfiguration();
     const envConfig = this.getEnvironmentConfig();
-    
+
     // Merge configurations
     const config = this.deepMerge(baseConfig, envConfig);
-    
+
     // Apply environment variables
     this.applyEnvironmentVariables(config);
-    
+
     return config;
   }
 
@@ -306,28 +308,28 @@ export class ProductionConfigurationService {
     const nodeEnv = import.meta.env.MODE;
     if (nodeEnv) {
       switch (nodeEnv.toLowerCase()) {
-        case 'development':
+        case "development":
           return Environment.DEVELOPMENT;
-        case 'staging':
+        case "staging":
           return Environment.STAGING;
-        case 'production':
+        case "production":
           return Environment.PRODUCTION;
-        case 'test':
+        case "test":
           return Environment.TEST;
       }
     }
 
     // Check hostname
     const hostname = window.location.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    if (hostname === "localhost" || hostname === "127.0.0.1") {
       return Environment.DEVELOPMENT;
     }
-    
-    if (hostname.includes('staging')) {
+
+    if (hostname.includes("staging")) {
       return Environment.STAGING;
     }
-    
-    if (hostname.includes('test')) {
+
+    if (hostname.includes("test")) {
       return Environment.TEST;
     }
 
@@ -339,7 +341,7 @@ export class ProductionConfigurationService {
   private getBaseConfiguration(): IAppConfig {
     return {
       environment: this.environment,
-      version: '1.0.0',
+      version: "1.0.0",
       buildTimestamp: Date.now(),
       featureFlags: {
         enableRealTimeData: true,
@@ -351,21 +353,21 @@ export class ProductionConfigurationService {
         enableCaching: true,
         enableServiceWorker: true,
         enableOfflineMode: false,
-        enableSecurityFeatures: true
+        enableSecurityFeatures: true,
       },
       api: {
-        baseUrl: '',
+        baseUrl: "",
         timeout: 30000,
         retryAttempts: 3,
         rateLimitPerMinute: 60,
         enableCORS: true,
         enableCompression: true,
         endpoints: {
-          alchemy: 'https://eth-mainnet.alchemyapi.io/v2',
-          coinGecko: 'https://api.coingecko.com/api/v3',
-          hardhat: 'http://192.168.1.2:8545',
-          websocket: 'wss://eth-mainnet.alchemyapi.io/v2'
-        }
+          alchemy: "https://eth-mainnet.alchemyapi.io/v2",
+          coinGecko: "https://api.coingecko.com/api/v3",
+          hardhat: "http://192.168.1.2:8545",
+          websocket: "wss://eth-mainnet.alchemyapi.io/v2",
+        },
       },
       cache: {
         enabled: true,
@@ -373,7 +375,7 @@ export class ProductionConfigurationService {
         maxKeys: 10000,
         enablePersistence: true,
         compressionEnabled: true,
-        encryptionEnabled: false
+        encryptionEnabled: false,
       },
       performance: {
         enableMonitoring: true,
@@ -381,9 +383,9 @@ export class ProductionConfigurationService {
         alertThresholds: {
           responseTime: 5000,
           memoryUsage: 80,
-          errorRate: 5
+          errorRate: 5,
         },
-        enableResourceMonitoring: true
+        enableResourceMonitoring: true,
       },
       security: {
         enableCSP: true,
@@ -393,28 +395,28 @@ export class ProductionConfigurationService {
         rateLimiting: {
           enabled: true,
           windowMs: 60000,
-          maxRequests: 100
+          maxRequests: 100,
         },
         inputValidation: {
           enabled: true,
           sanitizeHtml: true,
-          validateAddresses: true
-        }
+          validateAddresses: true,
+        },
       },
       logging: {
-        level: 'info',
-        enableRemoteLogging: false
+        level: "info",
+        enableRemoteLogging: false,
       },
       ui: {
-        theme: 'apollo',
+        theme: "apollo",
         enableAnimations: true,
         enableSounds: false,
-        enableAccessibility: true
+        enableAccessibility: true,
       },
       web3: {
-        defaultNetwork: 'hardhat',
-        supportedNetworks: ['hardhat', 'ethereum', 'polygon']
-      }
+        defaultNetwork: "hardhat",
+        supportedNetworks: ["hardhat", "ethereum", "polygon"],
+      },
     };
   }
 
@@ -431,20 +433,21 @@ export class ProductionConfigurationService {
         enableCaching: true,
         enableServiceWorker: false,
         enableOfflineMode: false,
-        enableSecurityFeatures: false
-      },      api: {
-        baseUrl: 'http://localhost:3001',
+        enableSecurityFeatures: false,
+      },
+      api: {
+        baseUrl: "http://localhost:3001",
         timeout: 10000,
         retryAttempts: 1,
         rateLimitPerMinute: 1000,
         enableCORS: true,
         enableCompression: true,
         endpoints: {
-          alchemy: 'http://192.168.1.2:8545',
-          coinGecko: 'https://api.coingecko.com/api/v3',
-          hardhat: 'http://192.168.1.2:8545',
-          websocket: 'ws://192.168.1.2:8545'
-        }
+          alchemy: "http://192.168.1.2:8545",
+          coinGecko: "https://api.coingecko.com/api/v3",
+          hardhat: "http://192.168.1.2:8545",
+          websocket: "ws://192.168.1.2:8545",
+        },
       },
       performance: {
         enableMonitoring: true,
@@ -452,14 +455,14 @@ export class ProductionConfigurationService {
         alertThresholds: {
           responseTime: 10000,
           memoryUsage: 90,
-          errorRate: 10
+          errorRate: 10,
         },
-        enableResourceMonitoring: true
+        enableResourceMonitoring: true,
       },
       logging: {
-        level: 'debug',
-        enableRemoteLogging: false
-      }
+        level: "debug",
+        enableRemoteLogging: false,
+      },
     };
   }
 
@@ -476,7 +479,7 @@ export class ProductionConfigurationService {
         enableCaching: true,
         enableServiceWorker: true,
         enableOfflineMode: false,
-        enableSecurityFeatures: true
+        enableSecurityFeatures: true,
       },
       performance: {
         enableMonitoring: true,
@@ -484,14 +487,14 @@ export class ProductionConfigurationService {
         alertThresholds: {
           responseTime: 7000,
           memoryUsage: 85,
-          errorRate: 8
+          errorRate: 8,
         },
-        enableResourceMonitoring: true
+        enableResourceMonitoring: true,
       },
       logging: {
-        level: 'info',
-        enableRemoteLogging: true
-      }
+        level: "info",
+        enableRemoteLogging: true,
+      },
     };
   }
 
@@ -508,7 +511,7 @@ export class ProductionConfigurationService {
         enableCaching: true,
         enableServiceWorker: true,
         enableOfflineMode: true,
-        enableSecurityFeatures: true
+        enableSecurityFeatures: true,
       },
       performance: {
         enableMonitoring: true,
@@ -516,9 +519,9 @@ export class ProductionConfigurationService {
         alertThresholds: {
           responseTime: 5000,
           memoryUsage: 80,
-          errorRate: 5
+          errorRate: 5,
         },
-        enableResourceMonitoring: true
+        enableResourceMonitoring: true,
       },
       security: {
         enableCSP: true,
@@ -528,18 +531,18 @@ export class ProductionConfigurationService {
         rateLimiting: {
           enabled: true,
           windowMs: 60000,
-          maxRequests: 60
+          maxRequests: 60,
         },
         inputValidation: {
           enabled: true,
           sanitizeHtml: true,
-          validateAddresses: true
-        }
+          validateAddresses: true,
+        },
       },
       logging: {
-        level: 'warn',
-        enableRemoteLogging: true
-      }
+        level: "warn",
+        enableRemoteLogging: true,
+      },
     };
   }
 
@@ -556,25 +559,26 @@ export class ProductionConfigurationService {
         enableCaching: false,
         enableServiceWorker: false,
         enableOfflineMode: false,
-        enableSecurityFeatures: false
-      },      api: {
-        baseUrl: 'https://api.production.com',
+        enableSecurityFeatures: false,
+      },
+      api: {
+        baseUrl: "https://api.production.com",
         timeout: 5000,
         retryAttempts: 0,
         rateLimitPerMinute: 10000,
         enableCORS: false,
         enableCompression: true,
         endpoints: {
-          alchemy: 'https://eth-mainnet.alchemyapi.io/v2',
-          coinGecko: 'https://api.coingecko.com/api/v3',
-          hardhat: 'https://mainnet.infura.io/v3',
-          websocket: 'wss://eth-mainnet.alchemyapi.io/v2'
-        }
+          alchemy: "https://eth-mainnet.alchemyapi.io/v2",
+          coinGecko: "https://api.coingecko.com/api/v3",
+          hardhat: "https://mainnet.infura.io/v3",
+          websocket: "wss://eth-mainnet.alchemyapi.io/v2",
+        },
       },
       logging: {
-        level: 'error',
-        enableRemoteLogging: false
-      }
+        level: "error",
+        enableRemoteLogging: false,
+      },
     };
   }
 
@@ -586,7 +590,8 @@ export class ProductionConfigurationService {
     }
 
     if (import.meta.env.VITE_WALLETCONNECT_PROJECT_ID) {
-      config.web3.walletConnectProjectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
+      config.web3.walletConnectProjectId =
+        import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
     }
 
     // API Configuration
@@ -595,49 +600,63 @@ export class ProductionConfigurationService {
     }
 
     // Feature Flags
-    if (import.meta.env.VITE_ENABLE_DEBUG === 'true') {
+    if (import.meta.env.VITE_ENABLE_DEBUG === "true") {
       config.featureFlags.enableDebugMode = true;
     }
 
     // Performance Configuration
     if (import.meta.env.VITE_PERFORMANCE_SAMPLE_RATE) {
-      config.performance.sampleRate = parseFloat(import.meta.env.VITE_PERFORMANCE_SAMPLE_RATE);
+      config.performance.sampleRate = parseFloat(
+        import.meta.env.VITE_PERFORMANCE_SAMPLE_RATE,
+      );
     }
   }
 
   /** Deep merge objects */
-  private deepMerge(target: IAppConfig, source: Partial<IAppConfig>): IAppConfig {
+  private deepMerge(
+    target: IAppConfig,
+    source: Partial<IAppConfig>,
+  ): IAppConfig {
     const result: IAppConfig = { ...target };
-    (Object.keys(source) as (keyof IAppConfig)[]).forEach(key => {
+    (Object.keys(source) as (keyof IAppConfig)[]).forEach((key) => {
       const sourceValue = source[key];
       if (sourceValue === undefined) return;
-      if (typeof sourceValue === 'object' && !Array.isArray(sourceValue)) {
-        if (key === 'featureFlags') {
-          result.featureFlags = { ...target.featureFlags, ...source.featureFlags };
-        } else if (key === 'api') {
+      if (typeof sourceValue === "object" && !Array.isArray(sourceValue)) {
+        if (key === "featureFlags") {
+          result.featureFlags = {
+            ...target.featureFlags,
+            ...source.featureFlags,
+          };
+        } else if (key === "api") {
           result.api = { ...target.api, ...source.api };
           if (source.api && source.api.endpoints) {
-            result.api.endpoints = { ...target.api.endpoints, ...source.api.endpoints };
+            result.api.endpoints = {
+              ...target.api.endpoints,
+              ...source.api.endpoints,
+            };
           }
-        } else if (key === 'cache') {
+        } else if (key === "cache") {
           result.cache = { ...target.cache, ...source.cache };
-        } else if (key === 'performance') {
+        } else if (key === "performance") {
           result.performance = { ...target.performance, ...source.performance };
-        } else if (key === 'security') {
+        } else if (key === "security") {
           result.security = { ...target.security, ...source.security };
-        } else if (key === 'logging') {
+        } else if (key === "logging") {
           result.logging = { ...target.logging, ...source.logging };
-        } else if (key === 'ui') {
+        } else if (key === "ui") {
           result.ui = { ...target.ui, ...source.ui };
-        } else if (key === 'web3') {
+        } else if (key === "web3") {
           result.web3 = { ...target.web3, ...source.web3 };
         }
       } else {
-        if (key === 'environment' && typeof sourceValue === 'string') {
+        if (key === "environment" && typeof sourceValue === "string") {
           result.environment = sourceValue as Environment;
-        } else if (key === 'version' && typeof sourceValue === 'string') {
+        } else if (key === "version" && typeof sourceValue === "string") {
           result.version = sourceValue;
-        } else if (key === 'buildTimestamp' && typeof sourceValue === 'number') {
+        } else if (
+          key === "buildTimestamp" &&
+          typeof sourceValue === "number"
+        ) {
           result.buildTimestamp = sourceValue;
         }
         // Do not assign for any other keys (strict type safety)
@@ -648,10 +667,11 @@ export class ProductionConfigurationService {
 
   /** Create singleton instance */
   private static instance?: ProductionConfigurationService;
-  
+
   static getInstance(): ProductionConfigurationService {
     if (!ProductionConfigurationService.instance) {
-      ProductionConfigurationService.instance = new ProductionConfigurationService();
+      ProductionConfigurationService.instance =
+        new ProductionConfigurationService();
     }
     return ProductionConfigurationService.instance;
   }

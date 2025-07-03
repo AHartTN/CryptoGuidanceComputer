@@ -1,8 +1,12 @@
 // Apollo DSKY - Real-time Blockchain Event Service
 // Enterprise-grade blockchain event monitoring and processing
 
-import { WebSocketService, SubscriptionType, WebSocketState } from './WebSocketService';
-import { CacheService, CacheStrategy } from '../cache/CacheService';
+import {
+  WebSocketService,
+  SubscriptionType,
+  WebSocketState,
+} from "./WebSocketService";
+import { CacheService, CacheStrategy } from "../cache/CacheService";
 
 /** Block Event Data */
 export interface IBlockEvent {
@@ -26,7 +30,7 @@ export interface ITransactionEvent {
   gasPrice: string;
   gasLimit: string;
   gasUsed?: string;
-  status: 'pending' | 'confirmed' | 'failed';
+  status: "pending" | "confirmed" | "failed";
   blockNumber?: number;
   blockHash?: string;
   timestamp: number;
@@ -78,8 +82,14 @@ export class RealTimeBlockchainService {
   private wsService: WebSocketService;
   private cache: CacheService;
   private subscriptions: Map<string, string> = new Map();
-  private eventHistory: Map<string, IBlockEvent[] | ITransactionEvent[] | IGasPriceEvent[] | INetworkStatsEvent[]> = new Map();
-  
+  private eventHistory: Map<
+    string,
+    | IBlockEvent[]
+    | ITransactionEvent[]
+    | IGasPriceEvent[]
+    | INetworkStatsEvent[]
+  > = new Map();
+
   // Event callbacks
   private onBlockEvent?: (event: IBlockEvent) => void;
   private onTransactionEvent?: (event: ITransactionEvent) => void;
@@ -89,18 +99,18 @@ export class RealTimeBlockchainService {
 
   constructor(private config: IBlockchainEventConfig) {
     this.wsService = new WebSocketService({
-      url: 'wss://eth-mainnet.alchemyapi.io/v2/demo/ws',
+      url: "wss://eth-mainnet.alchemyapi.io/v2/demo/ws",
       reconnectAttempts: 3,
       reconnectInterval: 2000,
       heartbeatInterval: 60000,
       maxMessageQueue: 50,
-      enableCompression: false
+      enableCompression: false,
     });
     this.cache = new CacheService({
       strategy: CacheStrategy.LRU,
       maxSize: 2000,
       defaultTTL: 600000, // 10 minutes TTL
-      enableMetrics: true
+      enableMetrics: true,
     });
 
     this.setupEventListeners();
@@ -111,20 +121,20 @@ export class RealTimeBlockchainService {
   async initialize(): Promise<void> {
     try {
       await this.wsService.connect();
-      
+
       // Subscribe to configured event types
       if (this.config.monitorBlocks) {
         await this.subscribeToBlocks();
       }
-      
+
       if (this.config.monitorTransactions) {
         await this.subscribeToTransactions();
       }
-      
+
       if (this.config.monitorGasPrices) {
         await this.subscribeToGasPrices();
       }
-      
+
       if (this.config.monitorNetworkStats) {
         await this.subscribeToNetworkStats();
       }
@@ -133,10 +143,14 @@ export class RealTimeBlockchainService {
       for (const address of this.config.watchedAddresses) {
         await this.watchAddress(address);
       }
-      
-      console.log('[BlockchainEvents] Initialized with', this.subscriptions.size, 'subscriptions');
+
+      console.log(
+        "[BlockchainEvents] Initialized with",
+        this.subscriptions.size,
+        "subscriptions",
+      );
     } catch (error) {
-      console.error('[BlockchainEvents] Initialization failed:', error);
+      console.error("[BlockchainEvents] Initialization failed:", error);
       throw error;
     }
   }
@@ -146,11 +160,12 @@ export class RealTimeBlockchainService {
     const subscriptionId = this.wsService.subscribe({
       type: SubscriptionType.BLOCK_HEADERS,
       callback: (data) => this.handleBlockEvent(data),
-      errorCallback: (error) => console.error('[BlockchainEvents] Block subscription error:', error)
+      errorCallback: (error) =>
+        console.error("[BlockchainEvents] Block subscription error:", error),
     });
 
-    this.subscriptions.set('blocks', subscriptionId);
-    console.log('[BlockchainEvents] Subscribed to block events');
+    this.subscriptions.set("blocks", subscriptionId);
+    console.log("[BlockchainEvents] Subscribed to block events");
   }
 
   /** Subscribe to pending transaction events */
@@ -158,11 +173,15 @@ export class RealTimeBlockchainService {
     const subscriptionId = this.wsService.subscribe({
       type: SubscriptionType.PENDING_TRANSACTIONS,
       callback: (data) => this.handleTransactionEvent(data),
-      errorCallback: (error) => console.error('[BlockchainEvents] Transaction subscription error:', error)
+      errorCallback: (error) =>
+        console.error(
+          "[BlockchainEvents] Transaction subscription error:",
+          error,
+        ),
     });
 
-    this.subscriptions.set('transactions', subscriptionId);
-    console.log('[BlockchainEvents] Subscribed to transaction events');
+    this.subscriptions.set("transactions", subscriptionId);
+    console.log("[BlockchainEvents] Subscribed to transaction events");
   }
 
   /** Subscribe to gas price updates */
@@ -170,11 +189,15 @@ export class RealTimeBlockchainService {
     const subscriptionId = this.wsService.subscribe({
       type: SubscriptionType.GAS_PRICES,
       callback: (data) => this.handleGasPriceEvent(data),
-      errorCallback: (error) => console.error('[BlockchainEvents] Gas price subscription error:', error)
+      errorCallback: (error) =>
+        console.error(
+          "[BlockchainEvents] Gas price subscription error:",
+          error,
+        ),
     });
 
-    this.subscriptions.set('gasPrice', subscriptionId);
-    console.log('[BlockchainEvents] Subscribed to gas price events');
+    this.subscriptions.set("gasPrice", subscriptionId);
+    console.log("[BlockchainEvents] Subscribed to gas price events");
   }
 
   /** Subscribe to network statistics */
@@ -182,17 +205,29 @@ export class RealTimeBlockchainService {
     const subscriptionId = this.wsService.subscribe({
       type: SubscriptionType.NETWORK_STATS,
       callback: (data: unknown) => {
-        if (typeof data === 'object' && data !== null && 'chainId' in data && 'networkName' in data) {
+        if (
+          typeof data === "object" &&
+          data !== null &&
+          "chainId" in data &&
+          "networkName" in data
+        ) {
           this.handleNetworkStatsEvent(data as INetworkStatsEvent);
         } else {
-          console.error('[BlockchainEvents] Invalid network stats event data:', data);
+          console.error(
+            "[BlockchainEvents] Invalid network stats event data:",
+            data,
+          );
         }
       },
-      errorCallback: (error) => console.error('[BlockchainEvents] Network stats subscription error:', error)
+      errorCallback: (error) =>
+        console.error(
+          "[BlockchainEvents] Network stats subscription error:",
+          error,
+        ),
     });
 
-    this.subscriptions.set('networkStats', subscriptionId);
-    console.log('[BlockchainEvents] Subscribed to network stats events');
+    this.subscriptions.set("networkStats", subscriptionId);
+    console.log("[BlockchainEvents] Subscribed to network stats events");
   }
 
   /** Watch specific address for transactions */
@@ -201,55 +236,72 @@ export class RealTimeBlockchainService {
       type: SubscriptionType.WALLET_TRANSACTIONS,
       params: { address: address.toLowerCase() },
       callback: (data: unknown) => {
-        if (typeof data === 'object' && data !== null && 'hash' in data && 'from' in data) {
+        if (
+          typeof data === "object" &&
+          data !== null &&
+          "hash" in data &&
+          "from" in data
+        ) {
           this.handleAddressEvent(address, data as ITransactionEvent);
         } else {
-          console.error(`[BlockchainEvents] Invalid address event data for ${address}:`, data);
+          console.error(
+            `[BlockchainEvents] Invalid address event data for ${address}:`,
+            data,
+          );
         }
       },
-      errorCallback: (error) => console.error(`[BlockchainEvents] Address ${address} subscription error:`, error)
+      errorCallback: (error) =>
+        console.error(
+          `[BlockchainEvents] Address ${address} subscription error:`,
+          error,
+        ),
     });
 
     this.subscriptions.set(`address:${address}`, subscriptionId);
-    console.log('[BlockchainEvents] Watching address', address);
+    console.log("[BlockchainEvents] Watching address", address);
   }
 
   /** Stop watching specific address */
   unwatchAddress(address: string): void {
     const subscriptionKey = `address:${address}`;
     const subscriptionId = this.subscriptions.get(subscriptionKey);
-    
+
     if (subscriptionId) {
       this.wsService.unsubscribe(subscriptionId);
       this.subscriptions.delete(subscriptionKey);
-      console.log('[BlockchainEvents] Stopped watching address', address);
+      console.log("[BlockchainEvents] Stopped watching address", address);
     }
   }
 
   /** Get latest block data */
   getLatestBlock(): IBlockEvent | null {
-    return this.cache.get('block:latest') as IBlockEvent | null;
+    return this.cache.get("block:latest") as IBlockEvent | null;
   }
 
   /** Get latest gas prices */
   getLatestGasPrices(): IGasPriceEvent | null {
-    return this.cache.get('gas:latest') as IGasPriceEvent | null;
+    return this.cache.get("gas:latest") as IGasPriceEvent | null;
   }
 
   /** Get latest network stats */
   getLatestNetworkStats(): INetworkStatsEvent | null {
-    return this.cache.get('network:latest') as INetworkStatsEvent | null;
+    return this.cache.get("network:latest") as INetworkStatsEvent | null;
   }
 
   /** Get event history by type */
-  getEventHistory(eventType: string, limit?: number): (IBlockEvent | ITransactionEvent | IGasPriceEvent | INetworkStatsEvent)[] {
+  getEventHistory(
+    eventType: string,
+    limit?: number,
+  ): (IBlockEvent | ITransactionEvent | IGasPriceEvent | INetworkStatsEvent)[] {
     const history = this.eventHistory.get(eventType) || [];
     return limit ? history.slice(-limit) : history;
   }
 
   /** Get transactions for a specific address */
   getAddressTransactions(address: string, limit?: number): ITransactionEvent[] {
-    const transactions = this.eventHistory.get(`address:${address}`) as ITransactionEvent[] || [];
+    const transactions =
+      (this.eventHistory.get(`address:${address}`) as ITransactionEvent[]) ||
+      [];
     return limit ? transactions.slice(-limit) : transactions;
   }
 
@@ -264,7 +316,10 @@ export class RealTimeBlockchainService {
       websocket: this.wsService.getStats(),
       subscriptions: this.subscriptions.size,
       watchedAddresses: this.config.watchedAddresses.length,
-      eventHistorySize: Array.from(this.eventHistory.values()).reduce((sum, history) => sum + history.length, 0)
+      eventHistorySize: Array.from(this.eventHistory.values()).reduce(
+        (sum, history) => sum + history.length,
+        0,
+      ),
     };
   }
 
@@ -285,13 +340,13 @@ export class RealTimeBlockchainService {
 
   /** Initialize event history storage */
   private initializeEventHistory(): void {
-    this.eventHistory.set('blocks', []);
-    this.eventHistory.set('transactions', []);
-    this.eventHistory.set('gasPrices', []);
-    this.eventHistory.set('networkStats', []);
-    
+    this.eventHistory.set("blocks", []);
+    this.eventHistory.set("transactions", []);
+    this.eventHistory.set("gasPrices", []);
+    this.eventHistory.set("networkStats", []);
+
     // Initialize history for watched addresses
-    this.config.watchedAddresses.forEach(address => {
+    this.config.watchedAddresses.forEach((address) => {
       this.eventHistory.set(`address:${address}`, []);
     });
   }
@@ -306,12 +361,12 @@ export class RealTimeBlockchainService {
         }
       },
       onError: (error) => {
-        console.error('[BlockchainEvents] WebSocket error:', error);
+        console.error("[BlockchainEvents] WebSocket error:", error);
       },
       onReconnect: () => {
-        console.log('[BlockchainEvents] Reconnected, resubscribing to events');
+        console.log("[BlockchainEvents] Reconnected, resubscribing to events");
         this.initialize();
-      }
+      },
     });
   }
 
@@ -320,31 +375,40 @@ export class RealTimeBlockchainService {
     try {
       const d = data as { [key: string]: unknown };
       const blockEvent: IBlockEvent = {
-        number: typeof d.number === 'string' ? parseInt(d.number, 16) : (d.number as number),
+        number:
+          typeof d.number === "string"
+            ? parseInt(d.number, 16)
+            : (d.number as number),
         hash: d.hash as string,
-        timestamp: typeof d.timestamp === 'string' ? parseInt(d.timestamp, 16) * 1000 : (d.timestamp as number),
+        timestamp:
+          typeof d.timestamp === "string"
+            ? parseInt(d.timestamp, 16) * 1000
+            : (d.timestamp as number),
         gasLimit: d.gasLimit as string,
         gasUsed: d.gasUsed as string,
-        transactionCount: Array.isArray(d.transactions) ? d.transactions.length : (typeof d.transactionCount === 'number' ? d.transactionCount : 0),
+        transactionCount: Array.isArray(d.transactions)
+          ? d.transactions.length
+          : typeof d.transactionCount === "number"
+            ? d.transactionCount
+            : 0,
         miner: d.miner as string,
         difficulty: d.difficulty as string,
-        totalDifficulty: d.totalDifficulty as string
+        totalDifficulty: d.totalDifficulty as string,
       };
 
       // Cache the block
       this.cache.set(`block:${blockEvent.number}`, blockEvent);
-      this.cache.set('block:latest', blockEvent);
+      this.cache.set("block:latest", blockEvent);
 
       // Add to history
-      this.addToHistory('blocks', blockEvent);
+      this.addToHistory("blocks", blockEvent);
 
       // Notify listeners
       if (this.onBlockEvent) {
         this.onBlockEvent(blockEvent);
       }
-
     } catch (error) {
-      console.error('[BlockchainEvents] Failed to process block event:', error);
+      console.error("[BlockchainEvents] Failed to process block event:", error);
     }
   }
 
@@ -352,8 +416,10 @@ export class RealTimeBlockchainService {
   private handleTransactionEvent(data: unknown): void {
     try {
       const d = data as { [key: string]: unknown };
-      const validStatus = (val: unknown): val is 'pending' | 'confirmed' | 'failed' =>
-        val === 'pending' || val === 'confirmed' || val === 'failed';
+      const validStatus = (
+        val: unknown,
+      ): val is "pending" | "confirmed" | "failed" =>
+        val === "pending" || val === "confirmed" || val === "failed";
       const txEvent: ITransactionEvent = {
         hash: d.hash as string,
         from: d.from as string,
@@ -362,22 +428,30 @@ export class RealTimeBlockchainService {
         gasPrice: d.gasPrice as string,
         gasLimit: (d.gas as string) ?? (d.gasLimit as string),
         gasUsed: d.gasUsed as string,
-        status: validStatus(d.status) ? (d.status as 'pending' | 'confirmed' | 'failed') : 'pending',
-        blockNumber: d.blockNumber ? (typeof d.blockNumber === 'string' ? parseInt(d.blockNumber, 16) : (d.blockNumber as number)) : undefined,
+        status: validStatus(d.status)
+          ? (d.status as "pending" | "confirmed" | "failed")
+          : "pending",
+        blockNumber: d.blockNumber
+          ? typeof d.blockNumber === "string"
+            ? parseInt(d.blockNumber, 16)
+            : (d.blockNumber as number)
+          : undefined,
         blockHash: d.blockHash as string,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
       // Cache the transaction
       this.cache.set(`tx:${txEvent.hash}`, txEvent);
 
       // Add to history
-      this.addToHistory('transactions', txEvent);
+      this.addToHistory("transactions", txEvent);
 
       // Check if this affects any watched addresses
-      this.config.watchedAddresses.forEach(address => {
-        if (txEvent.from.toLowerCase() === address.toLowerCase() || 
-            txEvent.to?.toLowerCase() === address.toLowerCase()) {
+      this.config.watchedAddresses.forEach((address) => {
+        if (
+          txEvent.from.toLowerCase() === address.toLowerCase() ||
+          txEvent.to?.toLowerCase() === address.toLowerCase()
+        ) {
           this.addToHistory(`address:${address}`, txEvent);
         }
       });
@@ -386,9 +460,11 @@ export class RealTimeBlockchainService {
       if (this.onTransactionEvent) {
         this.onTransactionEvent(txEvent);
       }
-
     } catch (error) {
-      console.error('[BlockchainEvents] Failed to process transaction event:', error);
+      console.error(
+        "[BlockchainEvents] Failed to process transaction event:",
+        error,
+      );
     }
   }
 
@@ -397,27 +473,29 @@ export class RealTimeBlockchainService {
     try {
       const d = data as { [key: string]: unknown };
       const gasPriceEvent: IGasPriceEvent = {
-        slow: (d.slow as string) ?? '',
-        standard: (d.standard as string) ?? '',
-        fast: (d.fast as string) ?? '',
-        instant: (d.instant as string) ?? '',
+        slow: (d.slow as string) ?? "",
+        standard: (d.standard as string) ?? "",
+        fast: (d.fast as string) ?? "",
+        instant: (d.instant as string) ?? "",
         baseFee: d.baseFee as string,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
       // Cache the gas prices
-      this.cache.set('gas:latest', gasPriceEvent);
+      this.cache.set("gas:latest", gasPriceEvent);
 
       // Add to history
-      this.addToHistory('gasPrices', gasPriceEvent);
+      this.addToHistory("gasPrices", gasPriceEvent);
 
       // Notify listeners
       if (this.onGasPriceEvent) {
         this.onGasPriceEvent(gasPriceEvent);
       }
-
     } catch (error) {
-      console.error('[BlockchainEvents] Failed to process gas price event:', error);
+      console.error(
+        "[BlockchainEvents] Failed to process gas price event:",
+        error,
+      );
     }
   }
 
@@ -432,22 +510,24 @@ export class RealTimeBlockchainService {
         difficulty: data.difficulty as string,
         pendingTransactions: data.pendingTransactions as number,
         activeNodes: data.activeNodes as number,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
       // Cache the network stats
-      this.cache.set('network:latest', networkStatsEvent);
+      this.cache.set("network:latest", networkStatsEvent);
 
       // Add to history
-      this.addToHistory('networkStats', networkStatsEvent);
+      this.addToHistory("networkStats", networkStatsEvent);
 
       // Notify listeners
       if (this.onNetworkStatsEvent) {
         this.onNetworkStatsEvent(networkStatsEvent);
       }
-
     } catch (error) {
-      console.error('[BlockchainEvents] Failed to process network stats event:', error);
+      console.error(
+        "[BlockchainEvents] Failed to process network stats event:",
+        error,
+      );
     }
   }
 
@@ -458,22 +538,32 @@ export class RealTimeBlockchainService {
   }
 
   /** Add event to history with size limit */
-  private addToHistory(eventType: string, event: IBlockEvent | ITransactionEvent | IGasPriceEvent | INetworkStatsEvent): void {
+  private addToHistory(
+    eventType: string,
+    event:
+      | IBlockEvent
+      | ITransactionEvent
+      | IGasPriceEvent
+      | INetworkStatsEvent,
+  ): void {
     let history = this.eventHistory.get(eventType);
     if (!history) {
-      if (eventType === 'blocks') {
+      if (eventType === "blocks") {
         history = [] as IBlockEvent[];
-      } else if (eventType === 'transactions' || eventType.startsWith('address:')) {
+      } else if (
+        eventType === "transactions" ||
+        eventType.startsWith("address:")
+      ) {
         history = [] as ITransactionEvent[];
-      } else if (eventType === 'gasPrices') {
+      } else if (eventType === "gasPrices") {
         history = [] as IGasPriceEvent[];
-      } else if (eventType === 'networkStats') {
+      } else if (eventType === "networkStats") {
         history = [] as INetworkStatsEvent[];
       } else {
         history = [];
       }
     }
-    (history as typeof event[]).push(event);
+    (history as (typeof event)[]).push(event);
     // Limit history size
     if (history.length > this.config.maxEventHistory) {
       history.shift();
@@ -498,7 +588,7 @@ export class RealTimeBlockchainService {
       monitorNetworkStats: true,
       watchedAddresses,
       eventFilters: [],
-      maxEventHistory: 1000
+      maxEventHistory: 1000,
     };
     return new RealTimeBlockchainService(config);
   }

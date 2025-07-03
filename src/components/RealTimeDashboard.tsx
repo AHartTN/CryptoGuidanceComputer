@@ -1,59 +1,73 @@
-// Apollo DSKY - Real-time Dashboard Component
-// Enterprise-grade real-time data visualization and monitoring
+/**
+ * @file RealTimeDashboard.tsx
+ * @description Real-time dashboard for Apollo DSKY Crypto Guidance Computer.
+ * Displays live price feeds, blockchain status, alerts, and DSKY updates.
+ *
+ * @module RealTimeDashboard
+ */
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { useDSKYRealTime } from '../hooks/useRealTimeData';
-import { SecurityService } from '../services/security/SecurityService';
-import { IDashboardConfig } from '../interfaces/IDashboardConfig';
-import { IAlertFormData } from '../interfaces/IAlertFormData';
-import type { IPriceAlert } from '../interfaces/IPriceAlert';
+import React, { useState, useEffect, useCallback } from "react";
+import { useDSKYRealTime } from "../hooks/useRealTimeData";
+import { SecurityService } from "../services/security/SecurityService";
+import { IDashboardConfig } from "../interfaces/IDashboardConfig";
+import { IAlertFormData } from "../interfaces/IAlertFormData";
+import type { IPriceAlert } from "../interfaces/IPriceAlert";
+import "../styles/realtime-dashboard.css";
 
-/** Real-Time Dashboard Component */
+/**
+ * RealTimeDashboard component.
+ * Renders the real-time dashboard with price feeds, blockchain status, alerts, and DSKY updates.
+ *
+ * @param {Object} props - Component props.
+ * @param {string[]} [props.watchedAddresses] - Addresses to watch for blockchain events.
+ * @param {(field: string, value: string) => void} [props.onDSKYUpdate] - Callback for DSKY field updates.
+ * @returns {JSX.Element} The rendered real-time dashboard.
+ */
 export const RealTimeDashboard: React.FC<{
   watchedAddresses?: string[];
   onDSKYUpdate?: (field: string, value: string) => void;
-}> = ({ 
-  watchedAddresses = [], 
-  onDSKYUpdate 
-}) => {
+}> = ({ watchedAddresses = [], onDSKYUpdate }) => {
   const [config, setConfig] = useState<IDashboardConfig>({
     showPrices: true,
     showBlockchain: true,
     showAlerts: true,
     showAnalytics: false,
     updateInterval: 1000,
-    compactMode: false
+    compactMode: false,
   });
 
   const [alertForm, setAlertForm] = useState<IAlertFormData>({
-    symbol: 'BTC',
-    condition: 'above',
-    threshold: 0
+    symbol: "BTC",
+    condition: "above",
+    threshold: 0,
   });
 
   const [showAddAlert, setShowAddAlert] = useState(false);
   const [securityService] = useState(() => SecurityService.createForDSKY());
 
-  // Use real-time data hook
   const realTimeData = useDSKYRealTime(watchedAddresses);
 
-  /** Handle DSKY field updates */
   useEffect(() => {
     if (!onDSKYUpdate || realTimeData.dskyUpdates.length === 0) return;
 
-    const latestUpdate = realTimeData.dskyUpdates[realTimeData.dskyUpdates.length - 1];
+    const latestUpdate =
+      realTimeData.dskyUpdates[realTimeData.dskyUpdates.length - 1];
     onDSKYUpdate(latestUpdate.field, latestUpdate.value);
   }, [realTimeData.dskyUpdates, onDSKYUpdate]);
 
-  /** Add price alert */
   const handleAddAlert = useCallback(() => {
     const validation = securityService.validateInput(alertForm, [
-      { field: 'symbol', type: 'string', required: true, pattern: /^[A-Z]{2,10}$/ },
-      { field: 'threshold', type: 'number', required: true, min: 0 }
+      {
+        field: "symbol",
+        type: "string",
+        required: true,
+        pattern: /^[A-Z]{2,10}$/,
+      },
+      { field: "threshold", type: "number", required: true, min: 0 },
     ]);
 
     if (!validation.isValid) {
-      console.error('Invalid alert form:', validation.errors);
+      console.error("Invalid alert form:", validation.errors);
       return;
     }
 
@@ -64,26 +78,28 @@ export const RealTimeDashboard: React.FC<{
       threshold: alertForm.threshold,
       enabled: true,
       callback: (data) => {
-        console.log(`[Alert] ${alertForm.symbol} ${alertForm.condition} ${alertForm.threshold}: ${data.price}`);
-      }
+        console.log(
+          `[Alert] ${alertForm.symbol} ${alertForm.condition} ${alertForm.threshold}: ${data.price}`,
+        );
+      },
     };
 
     realTimeData.addPriceAlert(alert);
     setShowAddAlert(false);
-    setAlertForm({ symbol: 'BTC', condition: 'above', threshold: 0 });
+    setAlertForm({ symbol: "BTC", condition: "above", threshold: 0 });
   }, [alertForm, realTimeData, securityService]);
 
-  /** Remove price alert */
-  const handleRemoveAlert = useCallback((alertId: string) => {
-    realTimeData.removePriceAlert(alertId);
-  }, [realTimeData]);
+  const handleRemoveAlert = useCallback(
+    (alertId: string) => {
+      realTimeData.removePriceAlert(alertId);
+    },
+    [realTimeData],
+  );
 
-  /** Toggle configuration option */
   const toggleConfig = useCallback((key: keyof IDashboardConfig) => {
-    setConfig(prev => ({ ...prev, [key]: !prev[key] }));
+    setConfig((prev) => ({ ...prev, [key]: !prev[key] }));
   }, []);
 
-  /** Format price for display */
   const formatPrice = useCallback((price: number): string => {
     if (price >= 1000000) {
       return `$${(price / 1000000).toFixed(2)}M`;
@@ -96,43 +112,46 @@ export const RealTimeDashboard: React.FC<{
     }
   }, []);
 
-  /** Format change percentage */
   const formatChange = useCallback((change: number): string => {
-    const sign = change >= 0 ? '+' : '';
+    const sign = change >= 0 ? "+" : "";
     return `${sign}${change.toFixed(2)}%`;
   }, []);
 
-  /** Get status color */
   const getStatusColor = useCallback((connected: boolean): string => {
-    return connected ? '#00FF41' : '#FF0080';
+    return connected ? "#00FF41" : "#FF0080";
   }, []);
 
-  /** Connection Status Component */
   const ConnectionStatus: React.FC = () => (
     <div className="connection-status">
       <div className="status-item">
         <span className="status-label">Price Feeds:</span>
-        <span 
+        <span
           className="status-indicator"
-          style={{ color: getStatusColor(realTimeData.connectionStatus.priceFeeds) }}
+          style={{
+            color: getStatusColor(realTimeData.connectionStatus.priceFeeds),
+          }}
         >
-          {realTimeData.connectionStatus.priceFeeds ? '●' : '○'}
+          {realTimeData.connectionStatus.priceFeeds ? "●" : "○"}
         </span>
       </div>
       <div className="status-item">
         <span className="status-label">Blockchain:</span>
-        <span 
+        <span
           className="status-indicator"
-          style={{ color: getStatusColor(realTimeData.connectionStatus.blockchain) }}
+          style={{
+            color: getStatusColor(realTimeData.connectionStatus.blockchain),
+          }}
         >
-          {realTimeData.connectionStatus.blockchain ? '●' : '○'}
+          {realTimeData.connectionStatus.blockchain ? "●" : "○"}
         </span>
       </div>
       <div className="status-item">
         <span className="status-label">Overall:</span>
-        <span 
+        <span
           className="status-indicator"
-          style={{ color: getStatusColor(realTimeData.connectionStatus.overall) }}
+          style={{
+            color: getStatusColor(realTimeData.connectionStatus.overall),
+          }}
         >
           {realTimeData.getConnectionIndicator()}
         </span>
@@ -140,7 +159,6 @@ export const RealTimeDashboard: React.FC<{
     </div>
   );
 
-  /** Price Grid Component */
   const PriceGrid: React.FC = () => (
     <div className="price-grid">
       <h3>Cryptocurrency Prices</h3>
@@ -152,13 +170,13 @@ export const RealTimeDashboard: React.FC<{
               <span className="price-value">{formatPrice(data.price)}</span>
             </div>
             <div className="price-details">
-              <span 
-                className={`price-change ${data.changePercent24h >= 0 ? 'positive' : 'negative'}`}
+              <span
+                className={`price-change ${(data.changePercent24h ?? 0) >= 0 ? "positive" : "negative"}`}
               >
-                {formatChange(data.changePercent24h)}
+                {formatChange(data.changePercent24h ?? 0)}
               </span>
               <span className="price-volume">
-                Vol: {data.volume24h ? formatPrice(data.volume24h) : 'N/A'}
+                Vol: {data.volume24h ? formatPrice(data.volume24h) : "N/A"}
               </span>
             </div>
           </div>
@@ -167,11 +185,10 @@ export const RealTimeDashboard: React.FC<{
     </div>
   );
 
-  /** Blockchain Info Component */
   const BlockchainInfo: React.FC = () => (
     <div className="blockchain-info">
       <h3>Blockchain Status</h3>
-      
+
       {realTimeData.latestBlock && (
         <div className="info-section">
           <h4>Latest Block</h4>
@@ -181,7 +198,9 @@ export const RealTimeDashboard: React.FC<{
           </div>
           <div className="info-item">
             <span>Hash:</span>
-            <span className="hash">{realTimeData.latestBlock.hash.slice(0, 10)}...</span>
+            <span className="hash">
+              {realTimeData.latestBlock.hash.slice(0, 10)}...
+            </span>
           </div>
           <div className="info-item">
             <span>Transactions:</span>
@@ -189,7 +208,12 @@ export const RealTimeDashboard: React.FC<{
           </div>
           <div className="info-item">
             <span>Gas Used:</span>
-            <span>{(parseInt(realTimeData.latestBlock.gasUsed) / 1000000).toFixed(1)}M</span>
+            <span>
+              {(parseInt(realTimeData.latestBlock.gasUsed) / 1000000).toFixed(
+                1,
+              )}
+              M
+            </span>
           </div>
         </div>
       )}
@@ -200,19 +224,27 @@ export const RealTimeDashboard: React.FC<{
           <div className="gas-prices">
             <div className="gas-item">
               <span>Slow:</span>
-              <span>{parseFloat(realTimeData.latestGasPrices.slow).toFixed(1)}</span>
+              <span>
+                {parseFloat(realTimeData.latestGasPrices.slow).toFixed(1)}
+              </span>
             </div>
             <div className="gas-item">
               <span>Standard:</span>
-              <span>{parseFloat(realTimeData.latestGasPrices.standard).toFixed(1)}</span>
+              <span>
+                {parseFloat(realTimeData.latestGasPrices.standard).toFixed(1)}
+              </span>
             </div>
             <div className="gas-item">
               <span>Fast:</span>
-              <span>{parseFloat(realTimeData.latestGasPrices.fast).toFixed(1)}</span>
+              <span>
+                {parseFloat(realTimeData.latestGasPrices.fast).toFixed(1)}
+              </span>
             </div>
             <div className="gas-item">
               <span>Instant:</span>
-              <span>{parseFloat(realTimeData.latestGasPrices.instant).toFixed(1)}</span>
+              <span>
+                {parseFloat(realTimeData.latestGasPrices.instant).toFixed(1)}
+              </span>
             </div>
           </div>
         </div>
@@ -220,32 +252,30 @@ export const RealTimeDashboard: React.FC<{
     </div>
   );
 
-  /** Alerts Panel Component */
   const AlertsPanel: React.FC = () => (
     <div className="alerts-panel">
       <div className="alerts-header">
         <h3>Price Alerts</h3>
-        <button 
-          className="add-alert-btn"
-          onClick={() => setShowAddAlert(true)}
-        >
+        <button className="add-alert-btn" onClick={() => setShowAddAlert(true)}>
           + Add Alert
         </button>
       </div>
 
       <div className="alerts-list">
-        {realTimeData.priceAlerts.map(alert => (
+        {realTimeData.priceAlerts.map((alert) => (
           <div key={alert.id} className="alert-item">
             <div className="alert-info">
               <span className="alert-symbol">{alert.symbol}</span>
               <span className="alert-condition">
                 {alert.condition} {alert.threshold}
               </span>
-              <span className={`alert-status ${alert.enabled ? 'enabled' : 'disabled'}`}>
-                {alert.enabled ? 'ON' : 'OFF'}
+              <span
+                className={`alert-status ${alert.enabled ? "enabled" : "disabled"}`}
+              >
+                {alert.enabled ? "ON" : "OFF"}
               </span>
             </div>
-            <button 
+            <button
               className="remove-alert-btn"
               onClick={() => handleRemoveAlert(alert.id)}
             >
@@ -259,9 +289,11 @@ export const RealTimeDashboard: React.FC<{
         <div className="add-alert-form">
           <h4>Add Price Alert</h4>
           <div className="form-row">
-            <select 
+            <select
               value={alertForm.symbol}
-              onChange={(e) => setAlertForm(prev => ({ ...prev, symbol: e.target.value }))}
+              onChange={(e) =>
+                setAlertForm((prev) => ({ ...prev, symbol: e.target.value }))
+              }
             >
               <option value="BTC">Bitcoin (BTC)</option>
               <option value="ETH">Ethereum (ETH)</option>
@@ -269,9 +301,14 @@ export const RealTimeDashboard: React.FC<{
               <option value="DOT">Polkadot (DOT)</option>
               <option value="MATIC">Polygon (MATIC)</option>
             </select>
-            <select 
+            <select
               value={alertForm.condition}
-              onChange={(e) => setAlertForm(prev => ({ ...prev, condition: e.target.value as IAlertFormData['condition'] }))}
+              onChange={(e) =>
+                setAlertForm((prev) => ({
+                  ...prev,
+                  condition: e.target.value as IAlertFormData["condition"],
+                }))
+              }
             >
               <option value="above">Above</option>
               <option value="below">Below</option>
@@ -279,11 +316,16 @@ export const RealTimeDashboard: React.FC<{
             </select>
           </div>
           <div className="form-row">
-            <input 
+            <input
               type="number"
               placeholder="Threshold"
               value={alertForm.threshold}
-              onChange={(e) => setAlertForm(prev => ({ ...prev, threshold: parseFloat(e.target.value) || 0 }))}
+              onChange={(e) =>
+                setAlertForm((prev) => ({
+                  ...prev,
+                  threshold: parseFloat(e.target.value) || 0,
+                }))
+              }
             />
           </div>
           <div className="form-actions">
@@ -295,84 +337,91 @@ export const RealTimeDashboard: React.FC<{
     </div>
   );
 
-  /** Events Timeline Component */
   const EventsTimeline: React.FC = () => (
     <div className="events-timeline">
       <h3>Recent Events</h3>
       <div className="events-list">
-        {realTimeData.recentEvents.slice(-10).reverse().map((event, index) => (
-          <div key={`${event.timestamp}-${index}`} className="event-item">
-            <div className="event-time">
-              {new Date(event.timestamp).toLocaleTimeString()}
+        {realTimeData.recentEvents
+          .slice(-10)
+          .reverse()
+          .map((event, index) => (
+            <div key={`${event.timestamp}-${index}`} className="event-item">
+              <div className="event-time">
+                {new Date(event.timestamp).toLocaleTimeString()}
+              </div>
+              <div className="event-type">{event.type}</div>
+              <div className="event-source">{event.source}</div>
             </div>
-            <div className="event-type">{event.type}</div>
-            <div className="event-source">{event.source}</div>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );
 
-  /** DSKY Updates Component */
   const DSKYUpdatesPanel: React.FC = () => (
     <div className="dsky-updates">
       <h3>DSKY Updates</h3>
       <div className="updates-list">
-        {realTimeData.dskyUpdates.slice(-5).reverse().map((update, index) => (
-          <div key={`${update.field}-${index}`} className="update-item">
-            <span className="update-field">{update.field.toUpperCase()}:</span>
-            <span className="update-value">{update.value}</span>
-            <span className={`update-priority ${update.priority?.toLowerCase()}`}>
-              {update.priority}
-            </span>
-          </div>
-        ))}
+        {realTimeData.dskyUpdates
+          .slice(-5)
+          .reverse()
+          .map((update, index) => (
+            <div key={`${update.field}-${index}`} className="update-item">
+              <span className="update-field">
+                {update.field.toUpperCase()}:
+              </span>
+              <span className="update-value">{update.value}</span>
+              <span
+                className={`update-priority ${update.priority?.toLowerCase()}`}
+              >
+                {update.priority}
+              </span>
+            </div>
+          ))}
       </div>
     </div>
   );
 
-  /** Configuration Panel Component */
   const ConfigPanel: React.FC = () => (
     <div className="config-panel">
       <h3>Dashboard Configuration</h3>
       <div className="config-options">
         <label>
-          <input 
+          <input
             type="checkbox"
             checked={config.showPrices}
-            onChange={() => toggleConfig('showPrices')}
+            onChange={() => toggleConfig("showPrices")}
           />
           Show Prices
         </label>
         <label>
-          <input 
+          <input
             type="checkbox"
             checked={config.showBlockchain}
-            onChange={() => toggleConfig('showBlockchain')}
+            onChange={() => toggleConfig("showBlockchain")}
           />
           Show Blockchain
         </label>
         <label>
-          <input 
+          <input
             type="checkbox"
             checked={config.showAlerts}
-            onChange={() => toggleConfig('showAlerts')}
+            onChange={() => toggleConfig("showAlerts")}
           />
           Show Alerts
         </label>
         <label>
-          <input 
+          <input
             type="checkbox"
             checked={config.showAnalytics}
-            onChange={() => toggleConfig('showAnalytics')}
+            onChange={() => toggleConfig("showAnalytics")}
           />
           Show Analytics
         </label>
         <label>
-          <input 
+          <input
             type="checkbox"
             checked={config.compactMode}
-            onChange={() => toggleConfig('compactMode')}
+            onChange={() => toggleConfig("compactMode")}
           />
           Compact Mode
         </label>
@@ -382,9 +431,11 @@ export const RealTimeDashboard: React.FC<{
 
   if (realTimeData.isLoading) {
     return (
-      <div className="real-time-dashboard loading">
-        <div className="loading-message">
-          Initializing real-time data services...
+      <div className="app-content">
+        <div className="real-time-dashboard loading">
+          <div className="loading-message">
+            Initializing real-time data services...
+          </div>
         </div>
       </div>
     );
@@ -392,59 +443,63 @@ export const RealTimeDashboard: React.FC<{
 
   if (realTimeData.error) {
     return (
-      <div className="real-time-dashboard error">
-        <div className="error-message">
-          Error: {realTimeData.error}
+      <div className="app-content">
+        <div className="real-time-dashboard error">
+          <div className="error-message">Error: {realTimeData.error}</div>
+          <button onClick={realTimeData.connect}>Retry Connection</button>
         </div>
-        <button onClick={realTimeData.connect}>Retry Connection</button>
       </div>
     );
   }
 
   return (
-    <div className={`real-time-dashboard ${config.compactMode ? 'compact' : ''}`}>
-      <div className="dashboard-header">
-        <h2>Apollo DSKY Real-Time Dashboard</h2>
-        <ConnectionStatus />
-      </div>
-
-      <div className="dashboard-content">
-        {config.showPrices && (
-          <div className="dashboard-section">
-            <PriceGrid />
-          </div>
-        )}
-
-        {config.showBlockchain && (
-          <div className="dashboard-section">
-            <BlockchainInfo />
-          </div>
-        )}
-
-        {config.showAlerts && (
-          <div className="dashboard-section">
-            <AlertsPanel />
-          </div>
-        )}
-
-        <div className="dashboard-section">
-          <EventsTimeline />
+    <div className="app-content">
+      <div
+        className={`real-time-dashboard ${config.compactMode ? "compact" : ""}`}
+      >
+        <div className="dashboard-header">
+          <h2>Apollo DSKY Real-Time Dashboard</h2>
+          <ConnectionStatus />
         </div>
 
-        <div className="dashboard-section">
-          <DSKYUpdatesPanel />
+        <div className="dashboard-content">
+          {config.showPrices && (
+            <div className="dashboard-section">
+              <PriceGrid />
+            </div>
+          )}
+
+          {config.showBlockchain && (
+            <div className="dashboard-section">
+              <BlockchainInfo />
+            </div>
+          )}
+
+          {config.showAlerts && (
+            <div className="dashboard-section">
+              <AlertsPanel />
+            </div>
+          )}
+
+          <div className="dashboard-section">
+            <EventsTimeline />
+          </div>
+
+          <div className="dashboard-section">
+            <DSKYUpdatesPanel />
+          </div>
+
+          <div className="dashboard-section">
+            <ConfigPanel />
+          </div>
         </div>
 
-        <div className="dashboard-section">
-          <ConfigPanel />
-        </div>
-      </div>
-
-      <div className="dashboard-footer">
-        <div className="stats">
-          Connected: {realTimeData.isConnected ? 'YES' : 'NO'} | 
-          Events: {realTimeData.recentEvents.length} | 
-          Alerts: {realTimeData.priceAlerts.length}
+        <div className="dashboard-footer">
+          <div className="stats">
+            Connected: {realTimeData.isConnected ? "YES" : "NO"} | Events:{" "}
+            {realTimeData.recentEvents.length} | Alerts:{" "}
+            {realTimeData.priceAlerts.length}
+          </div>
         </div>
       </div>
     </div>

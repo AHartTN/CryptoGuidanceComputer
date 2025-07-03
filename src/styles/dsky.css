@@ -1,5 +1,4 @@
-/* Apollo DSKY Authentic Styling */
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono:wght@400;700&family=Orbitron:wght@400;700;900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Share+Tech+Mono:wght@400;700&family=Orbitron:wght@400;700;900&display=swap");
 
 :root {
   --dsky-green: #00ff41;
@@ -23,7 +22,8 @@
   padding: 0;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -33,13 +33,12 @@ html, body {
 }
 
 body {
-  font-family: 'Orbitron', 'Share Tech Mono', monospace;
+  font-family: "Orbitron", "Share Tech Mono", monospace;
   background: radial-gradient(ellipse at center, #111111 0%, #000000 70%);
   color: var(--dsky-green);
   font-weight: 400;
 }
 
-/* Main DSKY Container */
 .dsky-container {
   min-height: 100vh;
   background: var(--dsky-dark);
@@ -49,12 +48,17 @@ body {
   padding: 20px;
 }
 
-/* Apollo DSKY Main Grid Layout - Authentic Compact Rectangular Layout */
 .dsky-panel {
-  background: 
+  background:
     linear-gradient(145deg, #2a2a2a 0%, #1a1a1a 40%, #0f0f0f 100%),
     radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.03), transparent),
-    repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255, 255, 255, 0.005) 2px, rgba(255, 255, 255, 0.005) 4px);
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.005) 2px,
+      rgba(255, 255, 255, 0.005) 4px
+    );
   border: 3px solid var(--dsky-metal);
   border-top: 3px solid rgba(255, 255, 255, 0.1);
   border-left: 3px solid rgba(255, 255, 255, 0.05);
@@ -63,7 +67,7 @@ body {
   max-width: 700px;
   width: 100%;
   height: 420px;
-  box-shadow: 
+  box-shadow:
     0 0 20px rgba(0, 255, 65, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
     inset 0 -1px 0 rgba(0, 0, 0, 0.5),
@@ -96,46 +100,55 @@ body {
 }
 
 .dsky-panel::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -3px;
   left: -3px;
   right: -3px;
   bottom: -3px;
-  background: linear-gradient(45deg, var(--dsky-green), var(--dsky-blue), var(--dsky-green));
+  background: linear-gradient(
+    45deg,
+    var(--dsky-green),
+    var(--dsky-blue),
+    var(--dsky-green)
+  );
   border-radius: 12px;
   z-index: -1;
   opacity: 0.2;
 }
 
 .dsky-panel::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
   border-radius: 6px 6px 0 0;
 }
 
-/* Add corner rivets for authentic hardware look */
 .dsky-panel {
   position: relative;
 }
 
 .dsky-panel::before {
-  content: '';
+  content: "";
   position: absolute;
   width: 8px;
   height: 8px;
-  background: 
+  background:
     radial-gradient(circle, #4a4a4a 30%, #2a2a2a 70%),
     linear-gradient(45deg, rgba(255, 255, 255, 0.2), transparent);
   border-radius: 50%;
   top: 8px;
   left: 8px;
-  box-shadow: 
+  box-shadow:
     inset 0 1px 2px rgba(255, 255, 255, 0.3),
     inset 0 -1px 2px rgba(0, 0, 0, 0.3),
     0 1px 1px rgba(0, 0, 0, 0.2);
@@ -144,37 +157,45 @@ body {
 .display-area::before,
 .keyboard::before,
 .warning-lights::before {
-  content: '';
+  content: "";
   position: absolute;
   width: 4px;
   height: 4px;
-  background: 
-    radial-gradient(circle, #3a3a3a 30%, #1a1a1a 70%);
+  background: radial-gradient(circle, #3a3a3a 30%, #1a1a1a 70%);
   border-radius: 50%;
   top: 4px;
   left: 4px;
-  box-shadow: 
+  box-shadow:
     inset 0 1px 1px rgba(255, 255, 255, 0.2),
     inset 0 -1px 1px rgba(0, 0, 0, 0.3);
 }
 
-/* Add subtle animations for authentic feel */
 @keyframes displayFlicker {
-  0%, 100% { opacity: 1; }
-  98% { opacity: 0.98; }
-  99% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  98% {
+    opacity: 0.98;
+  }
+  99% {
+    opacity: 1;
+  }
 }
 
 @keyframes warningPulse {
-  0%, 50%, 100% { 
-    box-shadow: 
+  0%,
+  50%,
+  100% {
+    box-shadow:
       0 0 12px rgba(255, 170, 0, 0.6),
       inset 0 0 8px rgba(255, 170, 0, 0.3),
       inset 0 1px 0 rgba(255, 255, 255, 0.2),
       0 0 6px rgba(255, 170, 0, 0.4);
   }
-  25%, 75% { 
-    box-shadow: 
+  25%,
+  75% {
+    box-shadow:
       0 0 18px rgba(255, 170, 0, 0.8),
       inset 0 0 12px rgba(255, 170, 0, 0.4),
       inset 0 1px 0 rgba(255, 255, 255, 0.3),
@@ -182,34 +203,47 @@ body {
   }
 }
 
-.display-value, .register-value {
+.display-value,
+.register-value {
   animation: displayFlicker 8s infinite;
 }
 
 .warning-light.active {
   animation: warningPulse 2s infinite;
 }
-.dsky-header { grid-area: header; }
-.dsky-display-area { grid-area: display-area; }
-.dsky-warning-lights { grid-area: warning-lights; }
-.dsky-keypad-section { grid-area: keyboard; }
-.dsky-status-section { grid-area: status; }
-
-/* Apollo DSKY Header - Compact */
+.dsky-header {
+  grid-area: header;
+}
+.dsky-display-area {
+  grid-area: display-area;
+}
+.dsky-warning-lights {
+  grid-area: warning-lights;
+}
+.dsky-keypad-section {
+  grid-area: keyboard;
+}
+.dsky-status-section {
+  grid-area: status;
+}
 .dsky-header {
   grid-column: 1 / -1;
   text-align: center;
   padding: 8px;
-  background: linear-gradient(145deg, rgba(0, 0, 0, 0.8), rgba(26, 26, 26, 0.8));
+  background: linear-gradient(
+    145deg,
+    rgba(0, 0, 0, 0.8),
+    rgba(26, 26, 26, 0.8)
+  );
   border: 1px solid var(--dsky-border);
   border-radius: 4px;
-  box-shadow: 
+  box-shadow:
     inset 0 0 10px rgba(0, 0, 0, 0.5),
     0 0 8px rgba(0, 255, 65, 0.1);
 }
 
 .dsky-title {
-  font-family: 'Orbitron', monospace;
+  font-family: "Orbitron", monospace;
   font-size: 1.1rem;
   font-weight: 900;
   color: var(--dsky-green);
@@ -219,7 +253,7 @@ body {
 }
 
 .dsky-subtitle {
-  font-family: 'Orbitron', monospace;
+  font-family: "Orbitron", monospace;
   font-size: 0.7rem;
   font-weight: 700;
   color: var(--dsky-amber);
@@ -229,7 +263,7 @@ body {
 }
 
 .dsky-model {
-  font-family: 'Orbitron', monospace;
+  font-family: "Orbitron", monospace;
   font-size: 0.6rem;
   font-weight: 600;
   color: var(--dsky-cyan);
@@ -237,7 +271,6 @@ body {
   letter-spacing: 1px;
 }
 
-/* Program/Verb/Noun Section */
 .prog-verb-noun-section {
   grid-area: prog-verb-noun;
   background: rgba(0, 0, 0, 0.6);
@@ -247,7 +280,6 @@ body {
   height: fit-content;
 }
 
-/* Registers Section */
 .registers-section {
   grid-area: registers;
   background: rgba(0, 0, 0, 0.6);
@@ -257,7 +289,6 @@ body {
   height: fit-content;
 }
 
-/* Common Display Elements */
 .display-row {
   display: flex;
   justify-content: space-between;
@@ -274,12 +305,12 @@ body {
   color: var(--dsky-amber);
   font-weight: 700;
   letter-spacing: 1px;
-  font-family: 'Orbitron', monospace;
+  font-family: "Orbitron", monospace;
   min-width: 50px;
 }
 
 .display-value {
-  font-family: 'Orbitron', monospace;
+  font-family: "Orbitron", monospace;
   font-size: 1.6rem;
   font-weight: 900;
   color: var(--dsky-green);
@@ -301,7 +332,6 @@ body {
   margin-bottom: 0;
 }
 
-/* Warning Lights - Compact Vertical Apollo Style */
 .warning-lights {
   grid-area: warning-lights;
   display: flex;
@@ -311,18 +341,18 @@ body {
   background: rgba(0, 0, 0, 0.7);
   border: 1px solid var(--dsky-border);
   border-radius: 4px;
-  box-shadow: 
+  box-shadow:
     inset 0 0 8px rgba(0, 0, 0, 0.8),
     0 0 5px rgba(0, 255, 65, 0.1);
 }
 
 .warning-light {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
   font-size: 0.5rem;
   font-weight: 700;
   padding: 3px 2px;
   text-align: center;
-  background: 
+  background:
     linear-gradient(145deg, rgba(0, 0, 0, 0.95), rgba(20, 20, 20, 0.8)),
     radial-gradient(ellipse at center, rgba(50, 50, 50, 0.3), transparent);
   border: 1px solid var(--dsky-border);
@@ -338,7 +368,7 @@ body {
   align-items: center;
   justify-content: center;
   line-height: 1;
-  box-shadow: 
+  box-shadow:
     inset 0 0 8px rgba(0, 0, 0, 0.8),
     inset 0 1px 0 rgba(255, 255, 255, 0.02),
     0 1px 2px rgba(0, 0, 0, 0.3);
@@ -346,30 +376,37 @@ body {
 
 .warning-light.active {
   color: var(--dsky-amber);
-  background: 
+  background:
     linear-gradient(145deg, rgba(255, 170, 0, 0.3), rgba(255, 170, 0, 0.1)),
-    radial-gradient(ellipse at center, rgba(255, 200, 0, 0.4), rgba(255, 170, 0, 0.2));
+    radial-gradient(
+      ellipse at center,
+      rgba(255, 200, 0, 0.4),
+      rgba(255, 170, 0, 0.2)
+    );
   border-color: var(--dsky-amber);
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   border-left: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 
+  box-shadow:
     0 0 12px rgba(255, 170, 0, 0.6),
     inset 0 0 8px rgba(255, 170, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     0 0 6px rgba(255, 170, 0, 0.4);
-  text-shadow: 
+  text-shadow:
     0 0 8px var(--dsky-amber),
     0 0 12px rgba(255, 170, 0, 0.8);
 }
 
-/* Compact Display Area - Authentic Apollo Style */
 .display-area {
   grid-area: display-area;
-  background: linear-gradient(145deg, rgba(0, 0, 0, 0.9), rgba(20, 20, 20, 0.8));
+  background: linear-gradient(
+    145deg,
+    rgba(0, 0, 0, 0.9),
+    rgba(20, 20, 20, 0.8)
+  );
   border: 2px solid var(--dsky-border);
   border-radius: 6px;
   padding: 10px;
-  box-shadow: 
+  box-shadow:
     inset 0 0 20px rgba(0, 0, 0, 0.8),
     0 0 10px rgba(0, 255, 65, 0.1),
     inset 0 2px 0 rgba(255, 255, 255, 0.05),
@@ -406,7 +443,7 @@ body {
 }
 
 .display-label {
-  font-family: 'Orbitron', monospace;
+  font-family: "Orbitron", monospace;
   font-size: 0.8rem;
   color: var(--dsky-amber);
   font-weight: 700;
@@ -415,16 +452,16 @@ body {
 }
 
 .display-value {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
   font-size: 1.3rem;
   font-weight: 900;
   color: var(--dsky-green);
-  text-shadow: 
+  text-shadow:
     0 0 8px var(--dsky-green),
     0 0 12px rgba(0, 255, 65, 0.8),
     0 0 16px rgba(0, 255, 65, 0.6);
   letter-spacing: 2px;
-  background: 
+  background:
     linear-gradient(145deg, rgba(0, 0, 0, 0.95), rgba(5, 5, 5, 0.9)),
     radial-gradient(ellipse at center, rgba(0, 20, 0, 0.3), transparent);
   padding: 6px 10px;
@@ -434,7 +471,7 @@ body {
   border-left: 2px solid rgba(255, 255, 255, 0.05);
   min-width: 55px;
   text-align: center;
-  box-shadow: 
+  box-shadow:
     inset 0 0 10px rgba(0, 0, 0, 0.9),
     inset 0 2px 4px rgba(0, 0, 0, 0.8),
     0 0 5px rgba(0, 255, 65, 0.3),
@@ -458,7 +495,7 @@ body {
 }
 
 .register-label {
-  font-family: 'Orbitron', monospace;
+  font-family: "Orbitron", monospace;
   font-size: 0.8rem;
   color: var(--dsky-amber);
   font-weight: 700;
@@ -467,15 +504,15 @@ body {
 }
 
 .register-value {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
   font-size: 1.2rem;
   font-weight: 900;
   color: var(--dsky-green);
-  text-shadow: 
+  text-shadow:
     0 0 8px var(--dsky-green),
     0 0 12px rgba(0, 255, 65, 0.8);
   letter-spacing: 2px;
-  background: 
+  background:
     linear-gradient(145deg, rgba(0, 0, 0, 0.95), rgba(5, 5, 5, 0.9)),
     radial-gradient(ellipse at center, rgba(0, 20, 0, 0.3), transparent);
   padding: 6px 10px;
@@ -485,14 +522,13 @@ body {
   border-left: 2px solid rgba(255, 255, 255, 0.05);
   min-width: 70px;
   text-align: center;
-  box-shadow: 
+  box-shadow:
     inset 0 0 10px rgba(0, 0, 0, 0.9),
     inset 0 2px 4px rgba(0, 0, 0, 0.8),
     0 0 5px rgba(0, 255, 65, 0.3),
     0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-/* Displays Section */
 .displays {
   grid-area: displays;
   background: rgba(0, 0, 0, 0.6);
@@ -535,12 +571,12 @@ body {
   color: var(--dsky-amber);
   font-weight: 700;
   letter-spacing: 1px;
-  font-family: 'Orbitron', monospace;
+  font-family: "Orbitron", monospace;
   min-width: 50px;
 }
 
 .register-value {
-  font-family: 'Orbitron', monospace;
+  font-family: "Orbitron", monospace;
   font-size: 1.6rem;
   font-weight: 900;
   color: var(--dsky-green);
@@ -554,17 +590,20 @@ body {
   text-align: center;
 }
 
-/* DSKY Keyboard - Authentic Apollo Layout */
 .keyboard {
   grid-area: keyboard;
-  background: linear-gradient(145deg, rgba(0, 0, 0, 0.8), rgba(20, 20, 20, 0.9));
+  background: linear-gradient(
+    145deg,
+    rgba(0, 0, 0, 0.8),
+    rgba(20, 20, 20, 0.9)
+  );
   border: 2px solid var(--dsky-border);
   border-radius: 6px;
   padding: 6px;
   display: flex;
   flex-direction: column;
   gap: 3px;
-  box-shadow: 
+  box-shadow:
     inset 0 0 10px rgba(0, 0, 0, 0.8),
     0 0 8px rgba(0, 255, 65, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
@@ -585,11 +624,11 @@ body {
 }
 
 .key {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
   font-size: 0.7rem;
   font-weight: 700;
   color: var(--dsky-white);
-  background: 
+  background:
     linear-gradient(145deg, #4a4a4a, #2a2a2a),
     radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.1), transparent);
   border: 1px solid var(--dsky-border);
@@ -604,36 +643,37 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 
+  box-shadow:
     0 2px 3px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
     inset 0 -1px 0 rgba(0, 0, 0, 0.2);
 }
 
 .key:hover {
-  background: 
+  background:
     linear-gradient(145deg, #5a5a5a, #3a3a3a),
     radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.15), transparent);
   border-color: var(--dsky-green);
-  box-shadow: 
+  box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.4),
     0 0 6px rgba(0, 255, 65, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .key:active {
-  background: 
+  background:
     linear-gradient(145deg, #2a2a2a, #4a4a4a),
     radial-gradient(ellipse at 70% 70%, rgba(0, 255, 65, 0.2), transparent);
   color: var(--dsky-green);
   transform: translateY(1px);
-  box-shadow: 
+  box-shadow:
     inset 0 2px 4px rgba(0, 0, 0, 0.6),
     0 0 8px rgba(0, 255, 65, 0.4);
 }
 
-.verb-key, .noun-key {
-  background: 
+.verb-key,
+.noun-key {
+  background:
     linear-gradient(145deg, #ffbb33, #cc8800),
     radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.2), transparent);
   color: var(--dsky-dark);
@@ -642,24 +682,25 @@ body {
   min-width: 40px;
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   border-left: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 
+  box-shadow:
     0 2px 3px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     inset 0 -1px 0 rgba(0, 0, 0, 0.2);
 }
 
-.verb-key:hover, .noun-key:hover {
-  background: 
+.verb-key:hover,
+.noun-key:hover {
+  background:
     linear-gradient(145deg, #ffcc44, #dd9900),
     radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.25), transparent);
-  box-shadow: 
+  box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.5),
     0 0 8px rgba(255, 170, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .control-key {
-  background: 
+  background:
     linear-gradient(145deg, #0099dd, #006699),
     radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.2), transparent);
   color: var(--dsky-white);
@@ -668,24 +709,24 @@ body {
   min-width: 35px;
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   border-left: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 
+  box-shadow:
     0 2px 3px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     inset 0 -1px 0 rgba(0, 0, 0, 0.2);
 }
 
 .control-key:hover {
-  background: 
+  background:
     linear-gradient(145deg, #00aaee, #0077aa),
     radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.25), transparent);
-  box-shadow: 
+  box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.5),
     0 0 8px rgba(0, 170, 255, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .reset-key {
-  background: 
+  background:
     linear-gradient(145deg, #ff7733, #cc4400),
     radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.2), transparent);
   color: var(--dsky-white);
@@ -693,17 +734,17 @@ body {
   font-size: 0.6rem;
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   border-left: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 
+  box-shadow:
     0 2px 3px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     inset 0 -1px 0 rgba(0, 0, 0, 0.2);
 }
 
 .reset-key:hover {
-  background: 
+  background:
     linear-gradient(145deg, #ff8844, #dd5500),
     radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.25), transparent);
-  box-shadow: 
+  box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.5),
     0 0 8px rgba(255, 102, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.25);
@@ -714,7 +755,6 @@ body {
   min-width: auto;
 }
 
-/* Status Display - Compact */
 .status-display {
   grid-area: status;
   background: rgba(0, 0, 0, 0.6);
@@ -726,12 +766,11 @@ body {
 
 .status-compact {
   text-align: center;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
   color: var(--dsky-green);
   font-weight: 600;
 }
 
-/* Debug Panel */
 .debug-panel {
   grid-area: debug;
   margin-top: 20px;
@@ -739,7 +778,7 @@ body {
   background: rgba(0, 0, 0, 0.8);
   border: 2px solid var(--dsky-border);
   border-radius: 8px;
-  box-shadow: 
+  box-shadow:
     inset 0 0 20px rgba(0, 0, 0, 0.5),
     0 0 10px rgba(0, 255, 255, 0.1);
 }
@@ -776,7 +815,7 @@ body {
 .debug-value {
   color: var(--dsky-green);
   font-weight: 700;
-  font-family: 'Orbitron', monospace;
+  font-family: "Orbitron", monospace;
   text-align: right;
   text-shadow: 0 0 5px var(--dsky-green);
 }
@@ -794,7 +833,6 @@ body {
   text-shadow: 0 0 5px var(--dsky-blue);
 }
 
-/* Register Display Section */
 .register-display-section {
   display: flex;
   flex-direction: column;
@@ -820,7 +858,7 @@ body {
 
 .register-sign,
 .register-digit {
-  font-family: 'Orbitron', monospace;
+  font-family: "Orbitron", monospace;
   font-size: 1.4rem;
   font-weight: 900;
   color: var(--dsky-green);
@@ -829,8 +867,7 @@ body {
   text-align: center;
 }
 
-/* Authentic DSKY Keypad */
-.dsky-keypad-authentic {
+.keypad {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
@@ -848,28 +885,28 @@ body {
   border: 2px solid var(--dsky-border);
   border-radius: 6px;
   color: var(--dsky-white);
-  font-family: 'Orbitron', monospace;
+  font-family: "Orbitron", monospace;
   font-weight: 700;
   font-size: 0.9rem;
   padding: 15px 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   min-height: 50px;
-  box-shadow: 
+  box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.3),
     inset 0 1px 2px rgba(255, 255, 255, 0.1);
 }
 
 .key-button:hover {
   background: #555555;
-  box-shadow: 
+  box-shadow:
     0 0 8px rgba(0, 255, 0, 0.3),
     inset 0 1px 2px rgba(255, 255, 255, 0.2);
 }
 
 .key-button:active {
   transform: translateY(1px);
-  box-shadow: 
+  box-shadow:
     inset 0 2px 4px rgba(0, 0, 0, 0.5),
     0 0 12px rgba(0, 255, 0, 0.4);
 }
@@ -904,7 +941,6 @@ body {
   grid-column: span 1;
 }
 
-/* Info Panel Styling */
 .dsky-info-panel {
   width: 100%;
   max-width: 1200px;
@@ -1001,7 +1037,7 @@ body {
 .field-value {
   color: var(--dsky-green);
   font-weight: 700;
-  font-family: 'Orbitron', monospace;
+  font-family: "Orbitron", monospace;
 }
 
 .command-grid {
@@ -1027,48 +1063,47 @@ body {
   font-size: 0.85rem;
   color: var(--dsky-green);
   font-weight: 600;
-  font-family: 'Orbitron', monospace;
+  font-family: "Orbitron", monospace;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .dsky-container {
     padding: 15px;
   }
-  
+
   .dsky-header h1 {
     font-size: 1.8rem;
   }
-  
+
   .dsky-header h2 {
     font-size: 1rem;
   }
-  
+
   .dsky-main-panel {
     padding: 20px;
   }
-  
+
   .warning-lights-grid {
     grid-template-columns: repeat(3, 1fr);
   }
-  
+
   .main-display-section {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .dsky-info-panel {
     grid-template-columns: 1fr;
   }
-  
+
   .crypto-data-panel {
     grid-column: span 1;
   }
-  
+
   .price-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .key-button {
     font-size: 0.75rem;
     padding: 12px 6px;
@@ -1080,30 +1115,30 @@ body {
     font-size: 1.5rem;
     letter-spacing: 2px;
   }
-  
+
   .dsky-header h2 {
     font-size: 0.9rem;
   }
-  
+
   .warning-lights-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .warning-light {
     font-size: 0.6rem;
     min-width: 60px;
     padding: 3px 6px;
   }
-  
+
   .digit {
     font-size: 1.4rem;
   }
-  
+
   .register-digit,
   .register-sign {
     font-size: 1.1rem;
   }
-  
+
   .key-button {
     font-size: 0.7rem;
     padding: 10px 4px;
@@ -1111,14 +1146,13 @@ body {
   }
 }
 
-/* Authentic Apollo DSKY Display Area */
 .display-area {
   grid-area: display-area;
   background: linear-gradient(145deg, #0a0a0a 0%, #1a1a1a 100%);
   border: 3px solid var(--dsky-border);
   border-radius: 6px;
   padding: 20px;
-  box-shadow: 
+  box-shadow:
     inset 0 0 20px rgba(0, 0, 0, 0.8),
     0 0 15px rgba(0, 255, 65, 0.1);
 }
@@ -1142,7 +1176,6 @@ body {
   gap: 8px;
 }
 
-/* Updated warning lights for vertical layout */
 .warning-lights {
   grid-area: warning-lights;
   display: flex;
@@ -1152,13 +1185,13 @@ body {
   background: rgba(0, 0, 0, 0.6);
   border: 2px solid var(--dsky-border);
   border-radius: 6px;
-  box-shadow: 
+  box-shadow:
     inset 0 0 15px rgba(0, 0, 0, 0.7),
     0 0 10px rgba(0, 255, 65, 0.1);
 }
 
 .warning-light {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
   font-size: 0.75rem;
   font-weight: 700;
   padding: 8px 6px;
@@ -1176,7 +1209,6 @@ body {
   justify-content: center;
 }
 
-/* Updated keyboard section */
 .keyboard-section {
   grid-area: keyboard;
   background: rgba(0, 0, 0, 0.7);
@@ -1195,7 +1227,7 @@ body {
 }
 
 .key {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
   font-size: 1rem;
   font-weight: 700;
   color: var(--dsky-white);
@@ -1224,7 +1256,8 @@ body {
   transform: scale(0.95);
 }
 
-.verb-key, .noun-key {
+.verb-key,
+.noun-key {
   background: var(--dsky-amber);
   color: var(--dsky-dark);
   font-weight: 900;
@@ -1236,7 +1269,6 @@ body {
   font-weight: 900;
 }
 
-/* Status display at bottom */
 .status-display {
   grid-area: status;
   background: rgba(0, 0, 0, 0.6);

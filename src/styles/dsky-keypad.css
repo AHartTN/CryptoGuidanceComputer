@@ -1,26 +1,23 @@
-/* Apollo DSKY Keypad Component - Responsive */
-
-/* === Keypad Container === */
 .dsky-keypad {
   display: grid;
   grid-template-areas:
-    "special special special special"
-    "numeric numeric controls controls";
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: var(--space-md);
-  padding: var(--panel-padding);
-  background: var(--dsky-panel);
-  border: var(--panel-border-width) solid var(--dsky-border);
-  border-radius: var(--radius-md);
-  box-shadow: 
-    inset 0 0 10px rgba(0, 0, 0, 0.5),
-    0 0 8px var(--shadow-green);
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
+    "verb noun proc rset"
+    "+ seven eight nine"
+    "minus four five six"
+    "zero one two three"
+    ". key-rel entr clr";
+  grid-template-columns: repeat(4, 2.2rem);
+  grid-template-rows: repeat(5, 2.2rem);
+  gap: 0.22rem;
+  background: #181c20;
+  border: 2px solid #23272f;
+  border-radius: 8px;
+  box-shadow: 0 0 12px #00ff41aa inset;
+  padding: 0.7rem 0.5rem;
+  margin-top: 0.5rem;
+  justify-content: center;
 }
 
-/* === Numeric Keypad Grid === */
 .dsky-keypad-numeric {
   grid-area: numeric;
   display: grid;
@@ -29,7 +26,6 @@
   gap: var(--space-xs);
 }
 
-/* === Control Buttons Section === */
 .dsky-keypad-controls {
   grid-area: controls;
   display: grid;
@@ -38,7 +34,6 @@
   gap: var(--space-xs);
 }
 
-/* === Special Buttons Section === */
 .dsky-keypad-special {
   grid-area: special;
   display: grid;
@@ -46,36 +41,36 @@
   gap: var(--space-xs);
 }
 
-/* === Button Base Styles === */
 .dsky-button {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--font-size-sm);
-  color: var(--dsky-white);
-  background: linear-gradient(145deg, var(--dsky-button), var(--dsky-metal));
-  border: var(--panel-border-width) solid var(--dsky-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-sm);
+  font-family: "Share Tech Mono", "Orbitron", monospace;
+  font-size: 1.08rem;
+  color: #fff;
+  background: #23272f;
+  border: 2px solid #00ff41;
+  border-radius: 4px;
+  box-shadow:
+    0 0 8px #00ff41aa inset,
+    0 0 2px #fff;
+  text-shadow:
+    0 0 4px #00ff41,
+    0 0 2px #fff;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    box-shadow 0.15s;
   cursor: pointer;
-  transition: all var(--transition-fast);
-  text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
-  text-align: center;
-  user-select: none;
+  outline: none;
   position: relative;
   overflow: hidden;
   min-height: var(--keypad-button-size);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  width: 100%;
 }
 
-/* === Button 3D Effect === */
 .dsky-button::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -96,7 +91,6 @@
   z-index: 2;
 }
 
-/* === Numeric Button Styling === */
 .dsky-button.numeric {
   font-family: var(--font-mono);
   font-size: var(--font-size-lg);
@@ -105,7 +99,6 @@
   text-shadow: 0 0 5px var(--dsky-green);
 }
 
-/* === Control Button Styling === */
 .dsky-button.control {
   background: linear-gradient(145deg, var(--dsky-amber), #cc8800);
   color: var(--dsky-dark);
@@ -115,13 +108,12 @@
 
 .dsky-button.control:hover {
   background: linear-gradient(145deg, var(--dsky-amber), var(--dsky-orange));
-  box-shadow: 
+  box-shadow:
     0 0 15px var(--shadow-amber),
     0 4px 8px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-/* === Special Button Styling === */
 .dsky-button.special {
   background: linear-gradient(145deg, var(--dsky-blue), #0088cc);
   font-size: var(--font-size-xs);
@@ -130,16 +122,19 @@
 
 .dsky-button.special:hover {
   background: linear-gradient(145deg, var(--dsky-cyan), var(--dsky-blue));
-  box-shadow: 
+  box-shadow:
     0 0 15px rgba(0, 170, 255, 0.5),
     0 4px 8px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-/* === Button States === */
 .dsky-button:hover {
-  background: linear-gradient(145deg, var(--dsky-button-active), var(--dsky-button));
-  box-shadow: 
+  background: linear-gradient(
+    145deg,
+    var(--dsky-button-active),
+    var(--dsky-button)
+  );
+  box-shadow:
     0 0 15px var(--shadow-green),
     0 4px 8px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -148,7 +143,7 @@
 
 .dsky-button:active {
   transform: translateY(1px);
-  box-shadow: 
+  box-shadow:
     inset 0 2px 4px rgba(0, 0, 0, 0.4),
     0 1px 2px rgba(0, 0, 0, 0.2);
 }
@@ -170,14 +165,11 @@
   background: linear-gradient(145deg, var(--dsky-green), #00cc33);
   color: var(--dsky-dark);
   text-shadow: none;
-  box-shadow: 
+  box-shadow:
     inset 0 2px 4px rgba(0, 0, 0, 0.3),
     0 0 15px var(--shadow-green);
 }
 
-/* === Responsive Design === */
-
-/* Mobile Layout - Larger buttons, optimized touch */
 @media (max-width: 767px) {
   .dsky-keypad {
     padding: var(--space-md);
@@ -185,91 +177,88 @@
     min-width: unset;
     width: 100%;
   }
-  
+
   .dsky-keypad-numeric {
     gap: var(--space-sm);
     grid-template-columns: repeat(3, 1fr);
   }
-  
+
   .dsky-keypad-controls {
     gap: var(--space-sm);
     grid-template-columns: 1fr;
   }
-  
+
   .dsky-keypad-special {
     gap: var(--space-sm);
   }
-  
+
   .dsky-button {
     min-height: calc(var(--keypad-button-size) * 1.3);
     font-size: var(--font-size-md);
     padding: var(--space-md);
     border-radius: var(--radius-lg);
   }
-  
+
   .dsky-button.numeric {
     font-size: var(--font-size-xl);
   }
-  
+
   .dsky-button.special {
     min-height: calc(var(--keypad-button-size) * 1.1);
     font-size: var(--font-size-sm);
   }
 }
 
-/* Tablet Layout - Balanced sizing */
 @media (min-width: 768px) and (max-width: 1023px) {
   .dsky-keypad {
     padding: var(--space-sm);
     gap: var(--space-sm);
     min-width: 180px;
   }
-  
+
   .dsky-keypad-numeric,
   .dsky-keypad-controls {
     gap: var(--space-xs);
   }
-  
+
   .dsky-button {
     min-height: calc(var(--keypad-button-size) * 0.9);
     font-size: var(--font-size-sm);
     padding: var(--space-sm);
   }
-  
+
   .dsky-button.numeric {
     font-size: var(--font-size-md);
   }
-  
+
   .dsky-button.special {
     min-height: calc(var(--keypad-button-size) * 0.7);
     font-size: calc(var(--font-size-xs) * 0.9);
   }
 }
 
-/* Desktop Layout - Compact authentic size */
 @media (min-width: 1024px) {
   .dsky-keypad {
     padding: var(--panel-padding);
     gap: var(--space-sm);
     min-width: 220px;
   }
-  
+
   .dsky-button {
     min-height: var(--keypad-button-size);
     font-size: var(--font-size-sm);
   }
-  
+
   .dsky-button.numeric {
     font-size: var(--font-size-lg);
   }
-  
+
   .dsky-button.special {
     min-height: calc(var(--keypad-button-size) * 0.8);
     font-size: var(--font-size-xs);
   }
 }
 
-/* === Focus and Accessibility === */
 .dsky-button:focus-visible {
   outline: 2px solid var(--dsky-green);
   outline-offset: 2px;
@@ -279,12 +268,11 @@
 .dsky-button[aria-pressed="true"] {
   background: linear-gradient(145deg, var(--dsky-green), #00cc33);
   color: var(--dsky-dark);
-  box-shadow: 
+  box-shadow:
     inset 0 2px 4px rgba(0, 0, 0, 0.3),
     0 0 15px var(--shadow-green);
 }
 
-/* === Button Labels === */
 .dsky-button-label {
   font-size: calc(var(--font-size-xs) * 0.8);
   color: var(--dsky-white);
@@ -294,63 +282,60 @@
   line-height: var(--line-height-tight);
 }
 
-/* === High Contrast Support === */
 @media (prefers-contrast: high) {
   .dsky-button {
     border-width: 3px;
     font-weight: 900;
   }
-  
+
   .dsky-button.numeric {
     background: #000000;
     color: #00ff00;
   }
-  
+
   .dsky-button.control {
     background: #ffaa00;
     color: #000000;
   }
 }
 
-/* === Reduced Motion Support === */
 @media (prefers-reduced-motion: reduce) {
   .dsky-button {
     transition: none;
   }
-  
+
   .dsky-button:hover,
   .dsky-button:active {
     transform: none;
   }
-  
+
   .dsky-button::before {
     background: none;
   }
 }
 
-/* === Touch Device Optimizations === */
 @media (hover: none) and (pointer: coarse) {
   .dsky-button {
     min-height: calc(var(--keypad-button-size) * 1.2);
     padding: var(--space-md);
   }
-  
+
   .dsky-button:hover {
     transform: none;
   }
-    .dsky-button:active {
+  .dsky-button:active {
     transform: scale(0.98);
   }
 }
 
-.dsky-keypad-btn:active, .dsky-keypad-btn.active {
+.dsky-keypad-btn:active,
+.dsky-keypad-btn.active {
   background: var(--dsky-button-active);
   color: var(--dsky-cyan);
   border-color: var(--dsky-cyan);
   box-shadow: 0 0 12px var(--dsky-cyan);
-  }
+}
 
-/* === Responsive Keypad Layout === */
 @media (max-width: 767px) {
   .dsky-keypad {
     grid-template-areas:
@@ -359,11 +344,11 @@
     grid-template-columns: 2fr 1fr;
     gap: var(--space-sm);
   }
-  
+
   .dsky-keypad-special {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .dsky-button {
     min-height: calc(var(--keypad-button-size) * 0.8);
     font-size: var(--font-size-xs);
@@ -379,7 +364,7 @@
       "controls";
     grid-template-columns: 1fr;
   }
-  
+
   .dsky-keypad-special {
     grid-template-columns: repeat(3, 1fr);
   }

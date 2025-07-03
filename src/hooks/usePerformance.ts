@@ -1,9 +1,18 @@
 // Apollo DSKY - Advanced Performance Hook
 // React hook for performance monitoring and optimization
 
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { PerformanceMonitoringService, MetricType, IPerformanceAlert, IPerformanceStats, ISystemResourceInfo } from '../services/monitoring/PerformanceMonitoringService';
-import { ApplicationLoggingService, LogCategory } from '../services/logging/ApplicationLoggingService';
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import {
+  PerformanceMonitoringService,
+  MetricType,
+  IPerformanceAlert,
+  IPerformanceStats,
+  ISystemResourceInfo,
+} from "../services/monitoring/PerformanceMonitoringService";
+import {
+  ApplicationLoggingService,
+  LogCategory,
+} from "../services/logging/ApplicationLoggingService";
 
 /** Performance Hook Configuration */
 export interface IUsePerformanceConfig {
@@ -25,15 +34,15 @@ export interface IUsePerformanceState {
   errorRate: number;
   // Statistics
   stats: { [key in MetricType]?: IPerformanceStats };
-  
+
   // Alerts
   alerts: IPerformanceAlert[];
   recentAlerts: IPerformanceAlert[];
-  
+
   // Status
   isMonitoring: boolean;
   lastUpdate: number;
-    // System resources
+  // System resources
   systemResources: ISystemResourceInfo | null;
 }
 
@@ -42,47 +51,59 @@ export interface IUsePerformanceActions {
   // Monitoring controls
   startMonitoring: () => void;
   stopMonitoring: () => void;
-  
+
   // Metrics
   recordMetric: (type: MetricType, value: number, name?: string) => void;
   startTimer: (operation: string) => () => void;
   measureAsync: <T>(operation: string, fn: () => Promise<T>) => Promise<T>;
-  
+
   // Alerts
   addAlert: (alert: IPerformanceAlert) => void;
   removeAlert: (alertId: string) => void;
   clearAlerts: () => void;
-    // Utilities
+  // Utilities
   getReport: () => Record<string, unknown>;
   exportMetrics: () => string;
   clearMetrics: () => void;
 }
 
 /** Performance Hook Return Type */
-export interface IUsePerformanceReturn extends IUsePerformanceState, IUsePerformanceActions {}
+export interface IUsePerformanceReturn
+  extends IUsePerformanceState,
+    IUsePerformanceActions {}
 
 /** Advanced Performance Monitoring Hook */
-export const usePerformance = (config: Partial<IUsePerformanceConfig> = {}): IUsePerformanceReturn => {
+export const usePerformance = (
+  config: Partial<IUsePerformanceConfig> = {},
+): IUsePerformanceReturn => {
   // Configuration with defaults
-  const finalConfig = useMemo(() => ({
-    enableMonitoring: true,
-    enableComponentTracking: true,
-    enableApiTracking: true,
-    enableErrorTracking: true,
-    sampleRate: 0.1, // 10% sampling by default
-    ...config
-  }), [config]);
+  const finalConfig = useMemo(
+    () => ({
+      enableMonitoring: true,
+      enableComponentTracking: true,
+      enableApiTracking: true,
+      enableErrorTracking: true,
+      sampleRate: 0.1, // 10% sampling by default
+      ...config,
+    }),
+    [config],
+  );
 
   // Services
-  const [performanceService] = useState(() => new PerformanceMonitoringService({
-    sampleRate: finalConfig.sampleRate,
-    alertThresholds: finalConfig.alertThresholds,
-    enableResourceMonitoring: true,
-    enableErrorTracking: finalConfig.enableErrorTracking,
-    enableNetworkMonitoring: finalConfig.enableApiTracking
-  }));
+  const [performanceService] = useState(
+    () =>
+      new PerformanceMonitoringService({
+        sampleRate: finalConfig.sampleRate,
+        alertThresholds: finalConfig.alertThresholds,
+        enableResourceMonitoring: true,
+        enableErrorTracking: finalConfig.enableErrorTracking,
+        enableNetworkMonitoring: finalConfig.enableApiTracking,
+      }),
+  );
 
-  const [loggingService] = useState(() => ApplicationLoggingService.createForDSKY());
+  const [loggingService] = useState(() =>
+    ApplicationLoggingService.createForDSKY(),
+  );
 
   // State
   const [state, setState] = useState<IUsePerformanceState>({
@@ -95,7 +116,7 @@ export const usePerformance = (config: Partial<IUsePerformanceConfig> = {}): IUs
     recentAlerts: [],
     isMonitoring: false,
     lastUpdate: 0,
-    systemResources: null
+    systemResources: null,
   });
   // Refs
   const isInitialized = useRef(false);
@@ -107,9 +128,9 @@ export const usePerformance = (config: Partial<IUsePerformanceConfig> = {}): IUs
     try {
       const stats = performanceService.getAllStats();
       const systemResources = performanceService.getSystemResources();
-      const alerts = Array.from(performanceService['alerts'].values());
+      const alerts = Array.from(performanceService["alerts"].values());
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         responseTime: stats[MetricType.RESPONSE_TIME]?.average || 0,
         memoryUsage: systemResources.memoryUsage.percentage,
@@ -118,13 +139,14 @@ export const usePerformance = (config: Partial<IUsePerformanceConfig> = {}): IUs
         stats,
         alerts,
         systemResources,
-        lastUpdate: Date.now()
-      }));    } catch (error) {
+        lastUpdate: Date.now(),
+      }));
+    } catch (error) {
       loggingService.error(
-        'Failed to update performance metrics',
+        "Failed to update performance metrics",
         LogCategory.PERFORMANCE,
         error instanceof Error ? error : new Error(String(error)),
-        { component: finalConfig.componentName }
+        { component: finalConfig.componentName },
       );
     }
   }, [performanceService, loggingService, finalConfig]);
@@ -133,7 +155,7 @@ export const usePerformance = (config: Partial<IUsePerformanceConfig> = {}): IUs
   const startMonitoring = useCallback(() => {
     if (!finalConfig.enableMonitoring) return;
 
-    setState(prev => ({ ...prev, isMonitoring: true }));
+    setState((prev) => ({ ...prev, isMonitoring: true }));
 
     // Start update timer
     updateTimer.current = setInterval(() => {
@@ -147,12 +169,13 @@ export const usePerformance = (config: Partial<IUsePerformanceConfig> = {}): IUs
         MetricType.COMPONENT_RENDER_TIME,
         mountDuration,
         `mount_${finalConfig.componentName}`,
-        finalConfig.componentName
+        finalConfig.componentName,
       );
-    }    loggingService.info(
-      'Performance monitoring started',
+    }
+    loggingService.info(
+      "Performance monitoring started",
       LogCategory.PERFORMANCE,
-      { component: finalConfig.componentName }
+      { component: finalConfig.componentName },
     );
   }, [finalConfig, performanceService, loggingService, updateMetrics]);
 
@@ -160,7 +183,7 @@ export const usePerformance = (config: Partial<IUsePerformanceConfig> = {}): IUs
   const initialize = useCallback(() => {
     if (isInitialized.current) return;
 
-    console.log('[usePerformance] Initializing performance monitoring...');
+    console.log("[usePerformance] Initializing performance monitoring...");
 
     // Setup event callbacks
     performanceService.setEventCallbacks({
@@ -169,106 +192,127 @@ export const usePerformance = (config: Partial<IUsePerformanceConfig> = {}): IUs
           metric.name,
           metric.value,
           finalConfig.componentName || metric.component,
-          { type: metric.type, unit: metric.unit }
+          { type: metric.type, unit: metric.unit },
         );
       },
       onAlertTriggered: (alert, metric) => {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
-          recentAlerts: [...prev.recentAlerts.slice(-9), alert]
+          recentAlerts: [...prev.recentAlerts.slice(-9), alert],
         }));
 
         loggingService.warn(
           `Performance alert triggered: ${alert.metric} ${alert.condition} ${alert.threshold}`,
           LogCategory.PERFORMANCE,
-          { alert, metric, component: finalConfig.componentName }
-        );      },
+          { alert, metric, component: finalConfig.componentName },
+        );
+      },
       onPerformanceIssue: (issue) => {
         loggingService.error(
           `Performance issue detected: ${
-            typeof issue === 'object' && issue && 'message' in issue
+            typeof issue === "object" && issue && "message" in issue
               ? (issue as { message: string }).message
               : String(issue)
           }`,
           LogCategory.PERFORMANCE,
           issue instanceof Error ? issue : undefined,
-          { issue, component: finalConfig.componentName }
+          { issue, component: finalConfig.componentName },
         );
-      }
+      },
     });
 
     // Initialize monitoring metrics
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      isInitialized: true
+      isInitialized: true,
     }));
 
     if (finalConfig.enableMonitoring) {
       startMonitoring();
-    }    isInitialized.current = true;
+    }
+    isInitialized.current = true;
   }, [performanceService, loggingService, finalConfig, startMonitoring]); // Removed startMonitoring from deps
 
   /** Stop monitoring */
   const stopMonitoring = useCallback(() => {
-    setState(prev => ({ ...prev, isMonitoring: false }));    if (updateTimer.current) {
+    setState((prev) => ({ ...prev, isMonitoring: false }));
+    if (updateTimer.current) {
       clearInterval(updateTimer.current);
       updateTimer.current = null;
     }
 
     loggingService.info(
-      'Performance monitoring stopped',
+      "Performance monitoring stopped",
       LogCategory.PERFORMANCE,
-      { component: finalConfig.componentName }
+      { component: finalConfig.componentName },
     );
   }, [loggingService, finalConfig]);
 
   /** Record metric */
-  const recordMetric = useCallback((type: MetricType, value: number, name?: string) => {
-    performanceService.recordMetric(
-      type,
-      value,
-      name,
-      finalConfig.componentName,
-      undefined,
-      { timestamp: Date.now() }
-    );
-  }, [performanceService, finalConfig]);
+  const recordMetric = useCallback(
+    (type: MetricType, value: number, name?: string) => {
+      performanceService.recordMetric(
+        type,
+        value,
+        name,
+        finalConfig.componentName,
+        undefined,
+        { timestamp: Date.now() },
+      );
+    },
+    [performanceService, finalConfig],
+  );
 
   /** Start timer */
-  const startTimer = useCallback((operation: string) => {
-    return performanceService.startTimer(operation, finalConfig.componentName);
-  }, [performanceService, finalConfig]);
+  const startTimer = useCallback(
+    (operation: string) => {
+      return performanceService.startTimer(
+        operation,
+        finalConfig.componentName,
+      );
+    },
+    [performanceService, finalConfig],
+  );
 
   /** Measure async operation */
-  const measureAsync = useCallback(async <T>(operation: string, fn: () => Promise<T>): Promise<T> => {
-    return performanceService.measureApiCall(operation, fn);
-  }, [performanceService]);
+  const measureAsync = useCallback(
+    async <T>(operation: string, fn: () => Promise<T>): Promise<T> => {
+      return performanceService.measureApiCall(operation, fn);
+    },
+    [performanceService],
+  );
 
   /** Add alert */
-  const addAlert = useCallback((alert: IPerformanceAlert) => {
-    performanceService.addAlert(alert);
-    setState(prev => ({
-      ...prev,
-      alerts: [...prev.alerts, alert]
-    }));
-  }, [performanceService]);
+  const addAlert = useCallback(
+    (alert: IPerformanceAlert) => {
+      performanceService.addAlert(alert);
+      setState((prev) => ({
+        ...prev,
+        alerts: [...prev.alerts, alert],
+      }));
+    },
+    [performanceService],
+  );
 
   /** Remove alert */
-  const removeAlert = useCallback((alertId: string) => {
-    performanceService.removeAlert(alertId);
-    setState(prev => ({
-      ...prev,
-      alerts: prev.alerts.filter(a => a.id !== alertId)
-    }));
-  }, [performanceService]);
+  const removeAlert = useCallback(
+    (alertId: string) => {
+      performanceService.removeAlert(alertId);
+      setState((prev) => ({
+        ...prev,
+        alerts: prev.alerts.filter((a) => a.id !== alertId),
+      }));
+    },
+    [performanceService],
+  );
 
   /** Clear alerts */
   const clearAlerts = useCallback(() => {
-    state.alerts.forEach(alert => performanceService.removeAlert(alert.id));
-    setState(prev => ({
+    state.alerts.forEach((alert) => performanceService.removeAlert(alert.id));
+    setState((prev) => ({
       ...prev,
       alerts: [],
-      recentAlerts: []
+      recentAlerts: [],
     }));
   }, [performanceService, state.alerts]);
 
@@ -286,10 +330,10 @@ export const usePerformance = (config: Partial<IUsePerformanceConfig> = {}): IUs
   /** Clear metrics */
   const clearMetrics = useCallback(() => {
     performanceService.cleanup();
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       stats: {},
-      lastUpdate: Date.now()
+      lastUpdate: Date.now(),
     }));
   }, [performanceService]);
 
@@ -304,17 +348,18 @@ export const usePerformance = (config: Partial<IUsePerformanceConfig> = {}): IUs
 
   // Measure component render time
   useEffect(() => {
-    if (!finalConfig.enableComponentTracking || !finalConfig.componentName) return;
+    if (!finalConfig.enableComponentTracking || !finalConfig.componentName)
+      return;
 
     const renderStart = performance.now();
-    
+
     return () => {
       const renderDuration = performance.now() - renderStart;
       performanceService.recordMetric(
         MetricType.COMPONENT_RENDER_TIME,
         renderDuration,
         `render_${finalConfig.componentName}`,
-        finalConfig.componentName
+        finalConfig.componentName,
       );
     };
   });
@@ -322,7 +367,7 @@ export const usePerformance = (config: Partial<IUsePerformanceConfig> = {}): IUs
   return {
     // State
     ...state,
-    
+
     // Actions
     startMonitoring,
     stopMonitoring,
@@ -334,7 +379,7 @@ export const usePerformance = (config: Partial<IUsePerformanceConfig> = {}): IUs
     clearAlerts,
     getReport,
     exportMetrics,
-    clearMetrics
+    clearMetrics,
   };
 };
 
@@ -345,7 +390,7 @@ export const useComponentPerformance = (componentName: string) => {
     enableComponentTracking: true,
     enableApiTracking: false,
     componentName,
-    sampleRate: 0.05 // 5% sampling for components
+    sampleRate: 0.05, // 5% sampling for components
   });
 };
 
@@ -355,7 +400,7 @@ export const useApiPerformance = () => {
     enableMonitoring: true,
     enableComponentTracking: false,
     enableApiTracking: true,
-    sampleRate: 0.2 // 20% sampling for API calls
+    sampleRate: 0.2, // 20% sampling for API calls
   });
 };
 
@@ -367,53 +412,53 @@ export const useDSKYPerformance = () => {
     enableComponentTracking: true,
     enableApiTracking: true,
     enableErrorTracking: true,
-    componentName: 'DSKY',
+    componentName: "DSKY",
     sampleRate: 0.1,
     alertThresholds: {
-      [MetricType.RESPONSE_TIME]: 3000,  // 3 seconds
-      [MetricType.MEMORY_USAGE]: 75,     // 75%
-      [MetricType.ERROR_RATE]: 5         // 5%
-    }
+      [MetricType.RESPONSE_TIME]: 3000, // 3 seconds
+      [MetricType.MEMORY_USAGE]: 75, // 75%
+      [MetricType.ERROR_RATE]: 5, // 5%
+    },
   });
 
   // Add DSKY-specific alerts only once on mount
   useEffect(() => {
     const dskyAlerts: IPerformanceAlert[] = [
       {
-        id: 'dsky_response_time',
+        id: "dsky_response_time",
         metric: MetricType.RESPONSE_TIME,
         threshold: 5000,
-        condition: 'above',
+        condition: "above",
         enabled: true,
         callback: (metric) => {
-          console.warn('[DSKY] Slow response time detected:', metric.value);
-        }
+          console.warn("[DSKY] Slow response time detected:", metric.value);
+        },
       },
       {
-        id: 'dsky_memory_usage',
+        id: "dsky_memory_usage",
         metric: MetricType.MEMORY_USAGE,
         threshold: 80,
-        condition: 'above',
+        condition: "above",
         enabled: true,
         callback: (metric) => {
-          console.warn('[DSKY] High memory usage detected:', metric.value);
-        }
+          console.warn("[DSKY] High memory usage detected:", metric.value);
+        },
       },
       {
-        id: 'dsky_error_rate',
+        id: "dsky_error_rate",
         metric: MetricType.ERROR_RATE,
         threshold: 3,
-        condition: 'above',
+        condition: "above",
         enabled: true,
         callback: (metric) => {
-          console.error('[DSKY] High error rate detected:', metric.value);
-        }
-      }
+          console.error("[DSKY] High error rate detected:", metric.value);
+        },
+      },
     ];
 
-    dskyAlerts.forEach(alert => performance.addAlert(alert));
+    dskyAlerts.forEach((alert) => performance.addAlert(alert));
     return () => {
-      dskyAlerts.forEach(alert => performance.removeAlert(alert.id));
+      dskyAlerts.forEach((alert) => performance.removeAlert(alert.id));
     };
   }, [performance]); // Only run when performance instance changes
 

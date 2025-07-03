@@ -1,13 +1,18 @@
-import { STATUS_MESSAGES, INPUT_CONFIG, BUTTON_LABELS } from '../../constants/DSKYConstants';
-import type { IDSKYState } from '../../interfaces/IDSKYState';
-import { InputMode } from '../../interfaces/InputMode';
-import type { IInputState } from '../../interfaces/IInputState';
-import type { IInputResult } from '../../interfaces/IInputResult';
+import {
+  STATUS_MESSAGES,
+  INPUT_CONFIG,
+  BUTTON_LABELS,
+} from "../../constants/DSKYConstants";
+import type { IDSKYState } from "../../interfaces/IDSKYState";
+import { InputMode } from "../../interfaces/InputMode";
+import type { IInputState } from "../../interfaces/IInputState";
+import type { IInputResult } from "../../interfaces/IInputResult";
 
-export class DSKYInputHandler {handleKeyPress(
-    key: string, 
-    currentInputState: IInputState, 
-    currentDSKYState: IDSKYState
+export class DSKYInputHandler {
+  handleKeyPress(
+    key: string,
+    currentInputState: IInputState,
+    currentDSKYState: IDSKYState,
   ): IInputResult {
     switch (key) {
       case BUTTON_LABELS.VERB:
@@ -45,52 +50,60 @@ export class DSKYInputHandler {handleKeyPress(
       [InputMode.Verb]: STATUS_MESSAGES.VERB_MODE_ACTIVATED,
       [InputMode.Noun]: STATUS_MESSAGES.NOUN_MODE_ACTIVATED,
       [InputMode.Prog]: STATUS_MESSAGES.PROC_MODE_ACTIVATED,
-      [InputMode.Data]: '',
-      [InputMode.None]: ''
+      [InputMode.Data]: "",
+      [InputMode.None]: "",
     };
 
     return {
-      newInputState: { mode: newMode, currentInput: '' },
+      newInputState: { mode: newMode, currentInput: "" },
       statusMessage: statusMessages[newMode],
-      dskyUpdates: { keyRel: true }
+      dskyUpdates: { keyRel: true },
     };
   }
 
   private handleClear(): IInputResult {
     return {
-      newInputState: { mode: InputMode.None, currentInput: '' },
+      newInputState: { mode: InputMode.None, currentInput: "" },
       statusMessage: STATUS_MESSAGES.INPUT_CLEARED,
-      dskyUpdates: { keyRel: false, oprErr: false }
+      dskyUpdates: { keyRel: false, oprErr: false },
     };
   }
 
   private handleEnter(
-    currentInputState: IInputState, 
-    currentDSKYState: IDSKYState
+    currentInputState: IInputState,
+    currentDSKYState: IDSKYState,
   ): IInputResult {
     const { mode, currentInput } = currentInputState;
 
     if (!mode || !currentInput) {
-      return { newInputState: { mode: InputMode.None, currentInput: '' } };
+      return { newInputState: { mode: InputMode.None, currentInput: "" } };
     }
 
-    const paddedInput = currentInput.padStart(INPUT_CONFIG.MAX_INPUT_LENGTH, INPUT_CONFIG.DEFAULT_PADDING);
+    const paddedInput = currentInput.padStart(
+      INPUT_CONFIG.MAX_INPUT_LENGTH,
+      INPUT_CONFIG.DEFAULT_PADDING,
+    );
     const dskyUpdates: Partial<IDSKYState> = {
       [mode]: paddedInput,
-      keyRel: false
+      keyRel: false,
     };
 
     const result: IInputResult = {
-      newInputState: { mode: InputMode.None, currentInput: '' },
+      newInputState: { mode: InputMode.None, currentInput: "" },
       statusMessage: STATUS_MESSAGES.FIELD_UPDATED(mode, paddedInput),
-      dskyUpdates
+      dskyUpdates,
     };
 
-    
-    if (mode === InputMode.Noun && currentDSKYState.verb !== '00') {
-      result.shouldExecuteCommand = { verb: currentDSKYState.verb, noun: paddedInput };
-    } else if (mode === InputMode.Verb && currentDSKYState.noun !== '00') {
-      result.shouldExecuteCommand = { verb: paddedInput, noun: currentDSKYState.noun };
+    if (mode === InputMode.Noun && currentDSKYState.verb !== "00") {
+      result.shouldExecuteCommand = {
+        verb: currentDSKYState.verb,
+        noun: paddedInput,
+      };
+    } else if (mode === InputMode.Verb && currentDSKYState.noun !== "00") {
+      result.shouldExecuteCommand = {
+        verb: paddedInput,
+        noun: currentDSKYState.noun,
+      };
     }
 
     return result;
@@ -98,46 +111,56 @@ export class DSKYInputHandler {handleKeyPress(
 
   private handleKeyRelease(): IInputResult {
     return {
-      newInputState: { mode: InputMode.None, currentInput: '' },
-      dskyUpdates: { keyRel: false }
+      newInputState: { mode: InputMode.None, currentInput: "" },
+      dskyUpdates: { keyRel: false },
     };
   }
 
   private handleReset(): IInputResult {
     return {
-      newInputState: { mode: InputMode.None, currentInput: '' },
+      newInputState: { mode: InputMode.None, currentInput: "" },
       statusMessage: STATUS_MESSAGES.SYSTEM_RESET,
       dskyUpdates: {
-        verb: '00',
-        noun: '00',
-        prog: '00',
-        reg1: '00000',
-        reg2: '00000',
-        reg3: '00000',
+        verb: "00",
+        noun: "00",
+        prog: "00",
+        reg1: "00000",
+        reg2: "00000",
+        reg3: "00000",
         keyRel: false,
-        oprErr: false
-      }
+        oprErr: false,
+      },
     };
   }
 
-  private handleSignInput(key: string, currentInputState: IInputState): IInputResult {
+  private handleSignInput(
+    key: string,
+    currentInputState: IInputState,
+  ): IInputResult {
     const { mode, currentInput } = currentInputState;
 
     if (mode && currentInput.length < INPUT_CONFIG.MAX_INPUT_LENGTH) {
       return {
-        newInputState: { mode, currentInput: currentInput + key }
+        newInputState: { mode, currentInput: currentInput + key },
       };
     }
 
     return { newInputState: currentInputState };
   }
 
-  private handleNumericInput(key: string, currentInputState: IInputState): IInputResult {
+  private handleNumericInput(
+    key: string,
+    currentInputState: IInputState,
+  ): IInputResult {
     const { mode, currentInput } = currentInputState;
 
-    if (/\d/.test(key) && mode && currentInput.length < INPUT_CONFIG.MAX_INPUT_LENGTH) {
+    if (
+      /\d/.test(key) &&
+      mode &&
+      currentInput.length < INPUT_CONFIG.MAX_INPUT_LENGTH
+    ) {
       return {
-        newInputState: { mode, currentInput: currentInput + key }
+        newInputState: { mode, currentInput: currentInput + key },
       };
     }
 

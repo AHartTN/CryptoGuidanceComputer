@@ -1,3 +1,8 @@
+/**
+ * @file IWeb3State.ts
+ * @description Interface for Web3 state (connection, account, network, balance).
+ */
+
 export interface IWeb3State {
   /** Connection status */
   isConnected: boolean;

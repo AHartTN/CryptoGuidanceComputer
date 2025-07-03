@@ -4,9 +4,9 @@
  */
 
 export enum CacheStrategy {
-  LRU = 'LRU',
-  FIFO = 'FIFO',
-  TTL = 'TTL'
+  LRU = "LRU",
+  FIFO = "FIFO",
+  TTL = "TTL",
 }
 
 export interface ICacheEntry<T> {
@@ -53,9 +53,9 @@ export class CacheService<T = unknown> {
     deletes: 0,
     evictions: 0,
     size: 0,
-    hitRate: 0
+    hitRate: 0,
   };
-  
+
   private cleanupTimer: NodeJS.Timeout | null = null;
   private readonly tagIndex = new Map<string, Set<string>>();
 
@@ -70,7 +70,7 @@ export class CacheService<T = unknown> {
    */
   get(key: string): T | null {
     const entry = this.cache.get(key);
-    
+
     if (!entry) {
       this.metrics.misses++;
       this.updateHitRate();
@@ -88,7 +88,7 @@ export class CacheService<T = unknown> {
     // Update access metadata
     entry.accessCount++;
     entry.lastAccessed = Date.now();
-    
+
     // Update LRU order
     if (this.config.strategy === CacheStrategy.LRU) {
       this.updateAccessOrder(key);
@@ -104,13 +104,13 @@ export class CacheService<T = unknown> {
    */
   set(key: string, value: T, options: ICacheOptions = {}): void {
     const ttl = options.ttl || this.config.defaultTTL;
-    
+
     const entry: ICacheEntry<T> = {
       value,
       timestamp: Date.now(),
       ttl: ttl > 0 ? ttl : undefined,
       accessCount: 1,
-      lastAccessed: Date.now()
+      lastAccessed: Date.now(),
     };
 
     // Handle cache size limits
@@ -119,7 +119,7 @@ export class CacheService<T = unknown> {
     }
 
     this.cache.set(key, entry);
-    
+
     // Handle tags
     if (options.tags) {
       this.addTags(key, options.tags);
@@ -139,14 +139,14 @@ export class CacheService<T = unknown> {
    */
   delete(key: string): boolean {
     const existed = this.cache.delete(key);
-    
+
     if (existed) {
       this.removeFromAccessOrder(key);
       this.removeFromTagIndex(key);
       this.metrics.deletes++;
       this.metrics.size = this.cache.size;
     }
-    
+
     return existed;
   }
 
@@ -164,7 +164,7 @@ export class CacheService<T = unknown> {
   async getOrSet<U extends T>(
     key: string,
     factory: () => Promise<U>,
-    options: ICacheOptions = {}
+    options: ICacheOptions = {},
   ): Promise<U> {
     const cached = this.get(key);
     if (cached !== null) {
@@ -228,9 +228,9 @@ export class CacheService<T = unknown> {
    * Get cache statistics (alias for getMetrics for compatibility)
    */
   getStats(): ICacheMetrics & { size: number } {
-    return { 
+    return {
       ...this.metrics,
-      size: this.cache.size
+      size: this.cache.size,
     };
   }
 
@@ -300,16 +300,16 @@ export class CacheService<T = unknown> {
         keyToEvict = this.accessOrder[0] || null;
         break;
       }
-      
+
       case CacheStrategy.FIFO: {
         keyToEvict = this.cache.keys().next().value || null;
         break;
       }
-      
+
       case CacheStrategy.TTL: {
         // Find entry with shortest remaining TTL
         let shortestTTL = Infinity;
-        
+
         for (const [key, entry] of this.cache.entries()) {
           if (entry.ttl) {
             const remaining = entry.ttl - (Date.now() - entry.timestamp);
@@ -364,7 +364,7 @@ export class CacheManager {
 
   static getCache<T>(
     name: string,
-    config: Partial<ICacheConfig> = {}
+    config: Partial<ICacheConfig> = {},
   ): CacheService<T> {
     if (!this.caches.has(name)) {
       const defaultConfig: ICacheConfig = {
@@ -372,12 +372,12 @@ export class CacheManager {
         defaultTTL: 300000, // 5 minutes
         strategy: CacheStrategy.LRU,
         enableMetrics: true,
-        ...config
+        ...config,
       };
-      
+
       this.caches.set(name, new CacheService<T>(defaultConfig));
     }
-    
+
     return this.caches.get(name)! as CacheService<T>;
   }
 

@@ -1,6 +1,3 @@
-/* Apollo DSKY - Performance Dashboard Styles */
-/* Advanced performance monitoring interface styling */
-
 .performance-dashboard {
   position: fixed;
   top: 50%;
@@ -10,13 +7,13 @@
   max-width: 1400px;
   height: 85vh;
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-  border: 2px solid #00FF41;
+  border: 2px solid #00ff41;
   border-radius: 8px;
-  box-shadow: 
+  box-shadow:
     0 0 30px rgba(0, 255, 65, 0.3),
     inset 0 0 50px rgba(0, 255, 65, 0.05);
-  color: #00FF41;
-  font-family: 'Courier New', monospace;
+  color: #00ff41;
+  font-family: "Courier New", monospace;
   display: flex;
   flex-direction: column;
   z-index: 9999;
@@ -29,14 +26,13 @@
   font-size: 0.9em;
 }
 
-/* Dashboard Header */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
   background: rgba(0, 255, 65, 0.05);
-  border-bottom: 1px solid #00FF41;
+  border-bottom: 1px solid #00ff41;
 }
 
 .dashboard-header h2 {
@@ -62,14 +58,14 @@
 .toggle-control input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: #00FF41;
+  accent-color: #00ff41;
 }
 
 .export-btn,
 .close-btn {
   background: transparent;
-  border: 1px solid #00FF41;
-  color: #00FF41;
+  border: 1px solid #00ff41;
+  color: #00ff41;
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
@@ -90,17 +86,16 @@
   font-weight: bold;
 }
 
-/* Dashboard Tabs */
 .dashboard-tabs {
   display: flex;
-  border-bottom: 1px solid #00FF41;
+  border-bottom: 1px solid #00ff41;
   background: rgba(0, 0, 0, 0.3);
 }
 
 .tab-btn {
   background: transparent;
   border: none;
-  color: #00FF41;
+  color: #00ff41;
   padding: 1rem 1.5rem;
   cursor: pointer;
   font-family: inherit;
@@ -118,18 +113,16 @@
 .tab-btn.active {
   opacity: 1;
   background: rgba(0, 255, 65, 0.1);
-  box-shadow: inset 0 -2px 0 #00FF41;
+  box-shadow: inset 0 -2px 0 #00ff41;
   font-weight: bold;
 }
 
-/* Dashboard Content */
 .dashboard-content {
   flex: 1;
   padding: 1.5rem;
   overflow-y: auto;
 }
 
-/* Overview Tab */
 .performance-overview {
   display: flex;
   flex-direction: column;
@@ -151,7 +144,7 @@
 }
 
 .performance-card:hover {
-  border-color: #00FF41;
+  border-color: #00ff41;
   box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
 }
 
@@ -187,7 +180,6 @@
   opacity: 0.8;
 }
 
-/* Performance Chart */
 .performance-chart {
   background: rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(0, 255, 65, 0.3);
@@ -218,7 +210,6 @@
   text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
 }
 
-/* Metrics Tab */
 .performance-metrics {
   display: flex;
   flex-direction: column;
@@ -269,7 +260,6 @@
   opacity: 0.9;
 }
 
-/* Alerts Tab */
 .performance-alerts {
   display: flex;
   flex-direction: column;
@@ -289,8 +279,8 @@
 
 .clear-alerts-btn {
   background: transparent;
-  border: 1px solid #FF8000;
-  color: #FF8000;
+  border: 1px solid #ff8000;
+  color: #ff8000;
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
@@ -345,7 +335,7 @@
 }
 
 .alert-status.enabled {
-  color: #00FF41;
+  color: #00ff41;
   font-size: 0.8rem;
 }
 
@@ -367,7 +357,7 @@
   right: 0.5rem;
   background: transparent;
   border: none;
-  color: #FF0080;
+  color: #ff0080;
   font-size: 1.2rem;
   cursor: pointer;
   width: 24px;
@@ -413,7 +403,6 @@
   min-width: 100px;
 }
 
-/* System Tab */
 .performance-system {
   display: flex;
   flex-direction: column;
@@ -493,7 +482,6 @@
   opacity: 0.8;
 }
 
-/* Dashboard Footer */
 .dashboard-footer {
   padding: 1rem 1.5rem;
   border-top: 1px solid rgba(0, 255, 65, 0.3);
@@ -508,17 +496,16 @@
   opacity: 0.8;
 }
 
-/* Responsive Design */
 @media (max-width: 1200px) {
   .performance-dashboard {
     width: 95vw;
     height: 90vh;
   }
-  
+
   .performance-cards {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   }
-  
+
   .metrics-grid {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
@@ -530,30 +517,30 @@
     gap: 1rem;
     text-align: center;
   }
-  
+
   .dashboard-controls {
     flex-wrap: wrap;
     justify-content: center;
   }
-  
+
   .dashboard-tabs {
     flex-wrap: wrap;
   }
-  
+
   .tab-btn {
     flex: 1;
     min-width: 100px;
   }
-  
+
   .performance-cards {
     grid-template-columns: 1fr;
   }
-  
+
   .info-grid,
   .config-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .footer-info {
     flex-direction: column;
     gap: 0.5rem;
@@ -561,18 +548,22 @@
   }
 }
 
-/* Animations */
 @keyframes pulse {
-  0% { opacity: 0.8; }
-  50% { opacity: 1; }
-  100% { opacity: 0.8; }
+  0% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.8;
+  }
 }
 
 .performance-card:hover .card-value {
   animation: pulse 2s ease-in-out infinite;
 }
 
-/* Scrollbar Styling */
 .dashboard-content::-webkit-scrollbar {
   width: 8px;
 }

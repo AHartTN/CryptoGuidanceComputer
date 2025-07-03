@@ -1,40 +1,86 @@
-/* Apollo DSKY Responsive Layout System */
-
-/* === Main Container Layout === */
 .dsky-container {
-  min-height: 100vh;
   background: var(--dsky-dark);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: block;
   padding: var(--space-md);
 }
 
-/* === DSKY Main Panel === */
+.dsky-main-panel-wrapper {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+}
+
+.dsky-panel {
+  background: linear-gradient(145deg, #181c20 80%, #23272f 100%);
+  border: 4px solid #00ff41;
+  border-radius: 18px;
+  box-shadow:
+    0 0 32px 0 #00ff4133,
+    0 0 0 4px #23272f,
+    0 0 60px 0 #00ff4133 inset;
+  padding: 2.5rem 2.5rem 2rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  min-width: 340px;
+  max-width: 700px;
+  width: 100%;
+}
+
+.dsky-panel-grid {
+  display: grid;
+  grid-template-areas:
+    "status display"
+    "keypad display"
+    "keypad output";
+  grid-template-columns: 180px 1fr;
+  grid-template-rows: min-content 1fr min-content;
+  gap: 2.2rem 2.5rem;
+  width: 100%;
+  margin-top: 1.5rem;
+  min-height: 480px;
+}
+
 .dsky-main {
-  width: var(--dsky-max-width);
-  max-width: 100%;
-  min-width: var(--dsky-min-width);
+  width: 100%;
+  max-width: 700px;
+  min-width: 320px;
   aspect-ratio: var(--dsky-aspect-ratio);
   background: var(--dsky-panel);
   border: var(--panel-border-width) solid var(--dsky-border);
   border-radius: var(--radius-lg);
-  padding: var(--panel-padding);
-  box-shadow: 
-    0 0 20px rgba(0, 255, 65, 0.1),
-    inset 0 0 20px rgba(0, 0, 0, 0.3);  display: grid;
+  padding: 2.5rem 2.5rem 2rem 2.5rem;
+  box-shadow:
+    0 0 32px 0 #00ff4133,
+    0 0 0 2px #23272f;
+  display: grid;
   grid-template-areas:
     "header header"
     "warnings display"
     "keypad keypad"
     "status status";
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 160px 1fr;
   grid-template-rows: auto 1fr auto auto;
-  gap: var(--panel-gap);
+  gap: 1.5rem;
   position: relative;
 }
 
-/* === Grid Area Assignments === */
+.dsky-header,
+.dsky-keypad,
+.dsky-display-area {
+  font-size: 1.18rem;
+}
+
+.dsky-keypad {
+  padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+}
+
 .dsky-header {
   grid-area: header;
   width: 100%;
@@ -60,7 +106,6 @@
   width: 100%;
 }
 
-/* === Display Area Layout === */
 .dsky-display-area {
   display: grid;
   grid-template-areas:
@@ -68,7 +113,7 @@
     "registers";
   grid-template-rows: auto 1fr;
   gap: var(--space-sm);
-  min-height: 0; /* Allow grid items to shrink */
+  min-height: 0;
 }
 
 .dsky-prog-verb-noun {
@@ -79,9 +124,6 @@
   grid-area: registers;
 }
 
-/* === Responsive Layout Adjustments === */
-
-/* Mobile Layout (Stack Vertically) */
 @media (max-width: 767px) {
   .dsky-main {
     aspect-ratio: unset;
@@ -96,42 +138,40 @@
     grid-template-rows: auto auto 1fr auto auto;
     padding: var(--space-sm);
   }
-  
+
   .dsky-warning-lights {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(var(--warning-light-size), 1fr));
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(var(--warning-light-size), 1fr)
+    );
     gap: var(--space-xs);
     justify-items: center;
   }
 }
 
-/* Tablet Layout (Adjust proportions) */
 @media (min-width: 768px) and (max-width: 1023px) {
   .dsky-main {
     grid-template-columns: minmax(80px, auto) 1fr;
   }
 }
 
-/* Desktop Layout (Optimal proportions) */
 @media (min-width: 1024px) {
   .dsky-main {
     grid-template-columns: minmax(100px, 15%) 1fr;
   }
 }
 
-/* Large Screen Layout (Maximum size constraints) */
 @media (min-width: 1200px) {
   .dsky-container {
     padding: var(--space-2xl);
   }
-  
+
   .dsky-main {
     max-width: 1000px;
   }
 }
 
-/* === Container Query Fallbacks === */
-/* For when container queries aren't supported */
 .dsky-main[data-size="small"] {
   grid-template-areas:
     "header"
@@ -151,7 +191,6 @@
   grid-template-columns: minmax(100px, 15%) 1fr minmax(250px, 30%);
 }
 
-/* === Flexible Sizing Utilities === */
 .dsky-flex-container {
   display: flex;
   flex-direction: column;
@@ -185,7 +224,6 @@
   gap: var(--space-sm);
 }
 
-/* === Focus and Accessibility === */
 .focus-visible:focus-visible {
   outline: 2px solid var(--dsky-green);
   outline-offset: 2px;
@@ -195,31 +233,216 @@
   box-shadow: 0 0 0 3px var(--shadow-green);
 }
 
-/* === High Contrast Support === */
 @media (prefers-contrast: high) {
   .dsky-main {
     border-width: 3px;
   }
-  
+
   .dsky-display {
     border-width: 2px;
   }
-  
+
   .dsky-button {
     border-width: 2px;
   }
 }
 
-/* === Reduced Motion Support === */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  
+
   .animate-flicker,
   .animate-pulse {
     animation: none;
+  }
+}
+
+.dsky-panel-grid {
+  display: grid;
+  grid-template-areas:
+    "status display"
+    "keypad display"
+    "keypad output";
+  grid-template-columns: 180px 1fr;
+  grid-template-rows: min-content 1fr min-content;
+  gap: 2.2rem 2.5rem;
+  width: 100%;
+  margin-top: 1.5rem;
+  min-height: 480px;
+}
+
+.dsky-main[data-size="small"] {
+  grid-template-areas:
+    "header"
+    "warnings"
+    "display"
+    "keypad"
+    "status";
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto 1fr auto auto;
+}
+
+.dsky-main[data-size="medium"] {
+  grid-template-columns: minmax(80px, auto) 1fr minmax(200px, auto);
+}
+
+.dsky-main[data-size="large"] {
+  grid-template-columns: minmax(100px, 15%) 1fr minmax(250px, 30%);
+}
+
+.dsky-flex-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-height: 0;
+}
+
+.dsky-flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.dsky-flex-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.dsky-grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--space-sm);
+}
+
+.dsky-grid-equal {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: var(--space-sm);
+}
+
+.focus-visible:focus-visible {
+  outline: 2px solid var(--dsky-green);
+  outline-offset: 2px;
+}
+
+.focus-ring:focus {
+  box-shadow: 0 0 0 3px var(--shadow-green);
+}
+
+@media (prefers-contrast: high) {
+  .dsky-main {
+    border-width: 3px;
+  }
+
+  .dsky-display {
+    border-width: 2px;
+  }
+
+  .dsky-button {
+    border-width: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .animate-flicker,
+  .animate-pulse {
+    animation: none;
+  }
+}
+
+.dsky-auth-panel-wrapper {
+  width: 100vw;
+  min-height: 100vh;
+  background: #181c20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 0;
+}
+.dsky-auth-panel {
+  background: linear-gradient(145deg, #181c20 80%, #23272f 100%);
+  border: 4px solid #00ff41;
+  border-radius: 18px;
+  box-shadow:
+    0 0 32px 0 #00ff4133,
+    0 0 0 4px #23272f,
+    0 0 60px 0 #00ff4133 inset;
+  padding: 2.5rem 2.5rem 2rem 2.5rem;
+  min-width: 340px;
+  max-width: 700px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.dsky-auth-grid {
+  display: grid;
+  grid-template-areas:
+    "warning display"
+    "status display"
+    "keypad display"
+    "output output";
+  grid-template-columns: 170px 1fr;
+  grid-template-rows: 60px 120px 180px 120px;
+  gap: 1.2rem 2.2rem;
+  width: 100%;
+  margin-top: 1.5rem;
+  min-height: 540px;
+}
+.dsky-auth-warning-group {
+  grid-area: warning;
+  align-self: start;
+}
+.dsky-auth-status-group {
+  grid-area: status;
+  align-self: start;
+}
+.dsky-auth-display-group {
+  grid-area: display;
+  align-self: start;
+}
+.dsky-auth-keypad-group {
+  grid-area: keypad;
+  align-self: end;
+}
+.dsky-auth-output-group {
+  grid-area: output;
+  align-self: end;
+}
+@media (max-width: 700px) {
+  .dsky-auth-panel {
+    padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+    min-width: 0;
+    max-width: 100vw;
+  }
+  .dsky-auth-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "warning"
+      "status"
+      "display"
+      "keypad"
+      "output";
+    gap: 1rem 0;
+    min-height: 0;
+  }
+  .dsky-auth-warning-group,
+  .dsky-auth-status-group,
+  .dsky-auth-display-group,
+  .dsky-auth-keypad-group,
+  .dsky-auth-output-group {
+    align-self: stretch;
   }
 }

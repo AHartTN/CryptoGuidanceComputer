@@ -1,9 +1,19 @@
+/**
+ * @file IBlockchainProvider.ts
+ * @description Main interface for blockchain provider implementations, including config, connection, and blockchain operations for Apollo DSKY.
+ */
+
 // Apollo DSKY - Blockchain Provider Interface
 // Enterprise-grade interface following SOLID principles
 
-import { IWalletConnection, IBlockchainData, ITransactionRequest, ITokenBalance } from './IWeb3Operations';
-import type { IGasPrice } from './IGasPrice';
-import type { IBlockchainError } from './IBlockchainError';
+import {
+  IWalletConnection,
+  IBlockchainData,
+  ITransactionRequest,
+  ITokenBalance,
+} from "./IWeb3Operations";
+import type { IGasPrice } from "./IGasPrice";
+import type { IBlockchainError } from "./IBlockchainError";
 
 /** Blockchain Network Configuration */
 export interface IBlockchainNetworkConfig {
@@ -52,8 +62,14 @@ export interface IBlockchainProvider {
   // Account Operations
   getAccounts(): Promise<string[]>;
   getBalance(address: string): Promise<string>;
-  getTokenBalance(address: string, tokenContract: string): Promise<ITokenBalance>;
-  getTokenBalances(address: string, tokenContracts: string[]): Promise<ITokenBalance[]>;
+  getTokenBalance(
+    address: string,
+    tokenContract: string,
+  ): Promise<ITokenBalance>;
+  getTokenBalances(
+    address: string,
+    tokenContracts: string[],
+  ): Promise<ITokenBalance[]>;
 
   // Network Information
   getNetworkInfo(): Promise<IBlockchainData>;

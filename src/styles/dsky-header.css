@@ -1,5 +1,3 @@
-/* Apollo DSKY Header Component Styles */
-
 .dsky-header {
   display: flex;
   flex-direction: column;
@@ -18,13 +16,18 @@
 }
 
 .dsky-header::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--dsky-green), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--dsky-green),
+    transparent
+  );
   opacity: 0.3;
 }
 
@@ -52,37 +55,35 @@
   opacity: 0.9;
 }
 
-/* Responsive design for header */
 @media (max-width: 768px) {
   .dsky-header {
     padding: 15px;
   }
-  
+
   .dsky-title {
     font-size: 1.2rem;
     letter-spacing: 2px;
   }
-  
+
   .dsky-subtitle {
     font-size: 0.8rem;
     letter-spacing: 1px;
   }
-  
+
   .dsky-model {
     font-size: 0.7rem;
   }
 }
 
-/* Responsive Header Adjustments */
 @media (max-width: 767px) {
   .dsky-header {
     padding: var(--space-sm);
   }
-  
+
   .dsky-header-title {
     font-size: var(--font-size-md);
   }
-  
+
   .dsky-header-subtitle {
     font-size: var(--font-size-xs);
   }
@@ -100,35 +101,33 @@
   }
 }
 
-/* Animation Effects */
 .dsky-header-title.animate-flicker {
   animation: headerFlicker 2s ease-in-out infinite;
 }
 
 @keyframes headerFlicker {
-  0%, 100% { 
-    opacity: 1; 
+  0%,
+  100% {
+    opacity: 1;
     text-shadow: var(--glow-green);
   }
-  50% { 
-    opacity: 0.8; 
+  50% {
+    opacity: 0.8;
     text-shadow: 0 0 5px var(--shadow-green);
   }
 }
 
-/* High Contrast Mode */
 @media (prefers-contrast: high) {
   .dsky-header {
     border-width: 3px;
   }
-  
+
   .dsky-header-title,
   .dsky-header-subtitle {
     text-shadow: none;
   }
 }
 
-/* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   .dsky-header-title.animate-flicker {
     animation: none;

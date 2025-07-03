@@ -1,0 +1,63 @@
+.dsky-warning-lights {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  align-items: flex-start;
+  padding: 0.5rem 0.2rem;
+}
+
+.dsky-warning-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dsky-warning-light {
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 50%;
+  background: #23272f;
+  border: 2px solid #444;
+  box-shadow: 0 0 6px #000 inset;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
+  position: relative;
+}
+
+.dsky-warning-light.on {
+  background: #ffaa00;
+  box-shadow:
+    0 0 16px #ffaa00,
+    0 0 4px #fff,
+    0 0 2px #ffaa00 inset;
+  border-color: #ffaa00;
+}
+
+.dsky-warning-light.pulsing {
+  animation: dsky-warning-pulse 1.2s infinite alternate;
+}
+
+@keyframes dsky-warning-pulse {
+  0% {
+    box-shadow:
+      0 0 8px #ffaa00,
+      0 0 2px #fff;
+  }
+  100% {
+    box-shadow:
+      0 0 24px #ffaa00,
+      0 0 8px #fff;
+  }
+}
+
+.dsky-warning-light-label {
+  font-family: "Share Tech Mono", "Orbitron", monospace;
+  font-size: 0.98rem;
+  color: #ffaa00;
+  text-shadow:
+    0 0 4px #ffaa00,
+    0 0 2px #fff;
+  letter-spacing: 1.2px;
+  user-select: none;
+}

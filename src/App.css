@@ -1,5 +1,24 @@
+@import "./styles/app-layout.css";
+
 .App {
   min-height: 100vh;
   margin: 0;
   padding: 0;
+}
+
+.app-content-padded {
+  color: #fff;
+  padding: 32px;
+}
+
+.status-ok { color: #00FF41 !important; }
+.status-warn { color: #FF8000 !important; }
+.status-error { color: #FF0080 !important; }
+.resource-fill {
+  background-color: #00FF41;
+  height: 100%;
+  transition: width 0.3s;
+}
+.resource-fill[data-width] {
+  width: var(--resource-width, 0%);
 }

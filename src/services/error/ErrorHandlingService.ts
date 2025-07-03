@@ -3,24 +3,24 @@
  * @description Comprehensive error management, logging, and recovery
  */
 
-import { CacheService, CacheManager } from '../cache/CacheService';
-import type { IErrorContext } from '../../interfaces/IErrorContext';
+import { CacheService, CacheManager } from "../cache/CacheService";
+import type { IErrorContext } from "../../interfaces/IErrorContext";
 
 export enum ErrorSeverity {
-  LOW = 'LOW',
-  MEDIUM = 'MEDIUM',
-  HIGH = 'HIGH',
-  CRITICAL = 'CRITICAL'
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  HIGH = "HIGH",
+  CRITICAL = "CRITICAL",
 }
 
 export enum ErrorCategory {
-  NETWORK = 'NETWORK',
-  WALLET = 'WALLET',
-  BLOCKCHAIN = 'BLOCKCHAIN',
-  USER_INPUT = 'USER_INPUT',
-  SYSTEM = 'SYSTEM',
-  API = 'API',
-  CACHE = 'CACHE'
+  NETWORK = "NETWORK",
+  WALLET = "WALLET",
+  BLOCKCHAIN = "BLOCKCHAIN",
+  USER_INPUT = "USER_INPUT",
+  SYSTEM = "SYSTEM",
+  API = "API",
+  CACHE = "CACHE",
 }
 
 export interface IErrorDetails {
@@ -68,16 +68,16 @@ export class ErrorHandlingService {
   private recoveryStrategies = new Map<string, IErrorRecoveryStrategy>();
   private cache: CacheService;
   private errorListeners: Array<(error: IErrorDetails) => void> = [];
-  
+
   private readonly maxLogSize = 1000;
   private sessionId: string;
 
   constructor() {
-    this.cache = CacheManager.getCache('error-handling', {
+    this.cache = CacheManager.getCache("error-handling", {
       maxSize: 500,
       defaultTTL: 3600000, // 1 hour
     });
-    
+
     this.sessionId = this.generateSessionId();
     this.initializeRecoveryStrategies();
     this.setupGlobalErrorHandling();
@@ -89,7 +89,7 @@ export class ErrorHandlingService {
   async reportError(
     error: Error | string,
     context?: IErrorContext,
-    source?: string
+    source?: string,
   ): Promise<IErrorDetails> {
     const errorDetails: IErrorDetails = {
       id: this.generateErrorId(),
@@ -100,11 +100,12 @@ export class ErrorHandlingService {
       stack: error instanceof Error ? error.stack : undefined,
       context,
       source,
-      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
-      url: typeof window !== 'undefined' ? window.location.href : undefined,
+      userAgent:
+        typeof navigator !== "undefined" ? navigator.userAgent : undefined,
+      url: typeof window !== "undefined" ? window.location.href : undefined,
       sessionId: this.sessionId,
       retryCount: 0,
-      recovered: false
+      recovered: false,
     };
 
     // Add to log
@@ -113,7 +114,7 @@ export class ErrorHandlingService {
     // Cache for quick access
     this.cache.set(`error_${errorDetails.id}`, errorDetails, {
       ttl: 3600000, // 1 hour
-      tags: ['errors', errorDetails.category, errorDetails.severity]
+      tags: ["errors", errorDetails.category, errorDetails.severity],
     });
 
     // Notify listeners
@@ -133,7 +134,7 @@ export class ErrorHandlingService {
   private async attemptRecovery(errorDetails: IErrorDetails): Promise<boolean> {
     const strategyKey = `${errorDetails.category}_${errorDetails.severity}`;
     const strategy = this.recoveryStrategies.get(strategyKey);
-    
+
     if (!strategy) {
       console.warn(`No recovery strategy for ${strategyKey}`);
       return false;
@@ -160,21 +161,20 @@ export class ErrorHandlingService {
               break;
             }
           } catch (actionError) {
-            console.error('Recovery action failed:', actionError);
+            console.error("Recovery action failed:", actionError);
           }
         }
 
         attempts++;
         errorDetails.retryCount = attempts;
-        
       } catch (recoveryError) {
-        console.error('Recovery attempt failed:', recoveryError);
+        console.error("Recovery attempt failed:", recoveryError);
         attempts++;
       }
     }
 
     errorDetails.recovered = recovered;
-    
+
     // Update cached error
     this.cache.set(`error_${errorDetails.id}`, errorDetails);
 
@@ -191,16 +191,16 @@ export class ErrorHandlingService {
    */
   private async escalateError(
     errorDetails: IErrorDetails,
-    strategy: IErrorRecoveryStrategy
+    strategy: IErrorRecoveryStrategy,
   ): Promise<void> {
-    console.error('Error escalated:', errorDetails);
+    console.error("Error escalated:", errorDetails);
 
     // Update severity to critical
     errorDetails.severity = ErrorSeverity.CRITICAL;
 
     // Notify user with appropriate message
-    if (typeof window !== 'undefined') {
-      this.showUserNotification(strategy.userMessage, 'error');
+    if (typeof window !== "undefined") {
+      this.showUserNotification(strategy.userMessage, "error");
     }
 
     // In a real application, this would:
@@ -217,29 +217,33 @@ export class ErrorHandlingService {
     const totalErrors = this.errorLog.length;
     const errorsByCategory = {} as Record<ErrorCategory, number>;
     const errorsBySeverity = {} as Record<ErrorSeverity, number>;
-    
+
     // Initialize counters
-    Object.values(ErrorCategory).forEach(cat => errorsByCategory[cat] = 0);
-    Object.values(ErrorSeverity).forEach(sev => errorsBySeverity[sev] = 0);
+    Object.values(ErrorCategory).forEach((cat) => (errorsByCategory[cat] = 0));
+    Object.values(ErrorSeverity).forEach((sev) => (errorsBySeverity[sev] = 0));
 
     // Count errors
-    this.errorLog.forEach(error => {
+    this.errorLog.forEach((error) => {
       errorsByCategory[error.category]++;
       errorsBySeverity[error.severity]++;
     });
 
     // Calculate recovery rate
-    const recoveredErrors = this.errorLog.filter(e => e.recovered).length;
+    const recoveredErrors = this.errorLog.filter((e) => e.recovered).length;
     const recoveryRate = totalErrors > 0 ? recoveredErrors / totalErrors : 0;
 
     // Recent errors (last 10)
     const recentErrors = this.errorLog.slice(-10);
 
     // Average resolution time (for recovered errors)
-    const recoveredWithTime = this.errorLog.filter(e => e.recovered && e.retryCount);
-    const averageResolutionTime = recoveredWithTime.length > 0
-      ? recoveredWithTime.reduce((sum, e) => sum + (e.retryCount || 0), 0) / recoveredWithTime.length
-      : 0;
+    const recoveredWithTime = this.errorLog.filter(
+      (e) => e.recovered && e.retryCount,
+    );
+    const averageResolutionTime =
+      recoveredWithTime.length > 0
+        ? recoveredWithTime.reduce((sum, e) => sum + (e.retryCount || 0), 0) /
+          recoveredWithTime.length
+        : 0;
 
     return {
       totalErrors,
@@ -247,7 +251,7 @@ export class ErrorHandlingService {
       errorsBySeverity,
       recentErrors,
       recoveryRate,
-      averageResolutionTime
+      averageResolutionTime,
     };
   }
 
@@ -256,7 +260,7 @@ export class ErrorHandlingService {
    */
   clearLog(): void {
     this.errorLog = [];
-    this.cache.invalidateByTag('errors');
+    this.cache.invalidateByTag("errors");
   }
 
   /**
@@ -280,120 +284,172 @@ export class ErrorHandlingService {
    * Get errors by category
    */
   getErrorsByCategory(category: ErrorCategory): IErrorDetails[] {
-    return this.errorLog.filter(e => e.category === category);
+    return this.errorLog.filter((e) => e.category === category);
   }
 
   /**
    * Get errors by severity
    */
   getErrorsBySeverity(severity: ErrorSeverity): IErrorDetails[] {
-    return this.errorLog.filter(e => e.severity === severity);
+    return this.errorLog.filter((e) => e.severity === severity);
   }
 
   // Private methods
 
   private initializeRecoveryStrategies(): void {
     // Network error recovery
-    this.recoveryStrategies.set(`${ErrorCategory.NETWORK}_${ErrorSeverity.MEDIUM}`, {
-      category: ErrorCategory.NETWORK,
-      severity: ErrorSeverity.MEDIUM,
-      maxRetries: 3,
-      retryDelay: 1000,
-      backoffMultiplier: 2,
-      recoveryActions: [
-        () => this.checkNetworkConnection(),
-        () => this.retryNetworkRequest(),
-        () => this.useAlternativeEndpoint()
-      ],
-      userMessage: 'Network connection issue. Attempting to reconnect...',
-      escalationThreshold: 3
-    });
+    this.recoveryStrategies.set(
+      `${ErrorCategory.NETWORK}_${ErrorSeverity.MEDIUM}`,
+      {
+        category: ErrorCategory.NETWORK,
+        severity: ErrorSeverity.MEDIUM,
+        maxRetries: 3,
+        retryDelay: 1000,
+        backoffMultiplier: 2,
+        recoveryActions: [
+          () => this.checkNetworkConnection(),
+          () => this.retryNetworkRequest(),
+          () => this.useAlternativeEndpoint(),
+        ],
+        userMessage: "Network connection issue. Attempting to reconnect...",
+        escalationThreshold: 3,
+      },
+    );
 
     // Wallet error recovery
-    this.recoveryStrategies.set(`${ErrorCategory.WALLET}_${ErrorSeverity.HIGH}`, {
-      category: ErrorCategory.WALLET,
-      severity: ErrorSeverity.HIGH,
-      maxRetries: 2,
-      retryDelay: 2000,
-      backoffMultiplier: 1.5,
-      recoveryActions: [
-        () => this.refreshWalletConnection(),
-        () => this.requestWalletReconnection()
-      ],
-      userMessage: 'Wallet connection lost. Please check MetaMask...',
-      escalationThreshold: 2
-    });
+    this.recoveryStrategies.set(
+      `${ErrorCategory.WALLET}_${ErrorSeverity.HIGH}`,
+      {
+        category: ErrorCategory.WALLET,
+        severity: ErrorSeverity.HIGH,
+        maxRetries: 2,
+        retryDelay: 2000,
+        backoffMultiplier: 1.5,
+        recoveryActions: [
+          () => this.refreshWalletConnection(),
+          () => this.requestWalletReconnection(),
+        ],
+        userMessage: "Wallet connection lost. Please check MetaMask...",
+        escalationThreshold: 2,
+      },
+    );
 
     // Blockchain error recovery
-    this.recoveryStrategies.set(`${ErrorCategory.BLOCKCHAIN}_${ErrorSeverity.MEDIUM}`, {
-      category: ErrorCategory.BLOCKCHAIN,
-      severity: ErrorSeverity.MEDIUM,
-      maxRetries: 5,
-      retryDelay: 3000,
-      backoffMultiplier: 1.2,
-      recoveryActions: [
-        () => this.retryBlockchainOperation(),
-        () => this.adjustGasPrice(),
-        () => this.useAlternativeRPC()
-      ],
-      userMessage: 'Blockchain operation failed. Retrying with adjusted parameters...',
-      escalationThreshold: 3
-    });
+    this.recoveryStrategies.set(
+      `${ErrorCategory.BLOCKCHAIN}_${ErrorSeverity.MEDIUM}`,
+      {
+        category: ErrorCategory.BLOCKCHAIN,
+        severity: ErrorSeverity.MEDIUM,
+        maxRetries: 5,
+        retryDelay: 3000,
+        backoffMultiplier: 1.2,
+        recoveryActions: [
+          () => this.retryBlockchainOperation(),
+          () => this.adjustGasPrice(),
+          () => this.useAlternativeRPC(),
+        ],
+        userMessage:
+          "Blockchain operation failed. Retrying with adjusted parameters...",
+        escalationThreshold: 3,
+      },
+    );
 
     // API error recovery
-    this.recoveryStrategies.set(`${ErrorCategory.API}_${ErrorSeverity.MEDIUM}`, {
-      category: ErrorCategory.API,
-      severity: ErrorSeverity.MEDIUM,
-      maxRetries: 4,
-      retryDelay: 1500,
-      backoffMultiplier: 1.3,
-      recoveryActions: [
-        () => this.retryAPICall(),
-        () => this.useBackupAPI(),
-        () => this.useCachedData()
-      ],
-      userMessage: 'API service temporarily unavailable. Using cached data...',
-      escalationThreshold: 3
-    });
+    this.recoveryStrategies.set(
+      `${ErrorCategory.API}_${ErrorSeverity.MEDIUM}`,
+      {
+        category: ErrorCategory.API,
+        severity: ErrorSeverity.MEDIUM,
+        maxRetries: 4,
+        retryDelay: 1500,
+        backoffMultiplier: 1.3,
+        recoveryActions: [
+          () => this.retryAPICall(),
+          () => this.useBackupAPI(),
+          () => this.useCachedData(),
+        ],
+        userMessage:
+          "API service temporarily unavailable. Using cached data...",
+        escalationThreshold: 3,
+      },
+    );
   }
 
-  private categorizeError(error: Error | string, _context?: IErrorContext): ErrorCategory {
+  private categorizeError(
+    error: Error | string,
+    _context?: IErrorContext,
+  ): ErrorCategory {
     const message = error instanceof Error ? error.message : error;
     const lowerMessage = message.toLowerCase();
 
-    if (lowerMessage.includes('network') || lowerMessage.includes('fetch') || lowerMessage.includes('timeout')) {
+    if (
+      lowerMessage.includes("network") ||
+      lowerMessage.includes("fetch") ||
+      lowerMessage.includes("timeout")
+    ) {
       return ErrorCategory.NETWORK;
     }
-    if (lowerMessage.includes('wallet') || lowerMessage.includes('metamask') || lowerMessage.includes('account')) {
+    if (
+      lowerMessage.includes("wallet") ||
+      lowerMessage.includes("metamask") ||
+      lowerMessage.includes("account")
+    ) {
       return ErrorCategory.WALLET;
     }
-    if (lowerMessage.includes('gas') || lowerMessage.includes('transaction') || lowerMessage.includes('blockchain')) {
+    if (
+      lowerMessage.includes("gas") ||
+      lowerMessage.includes("transaction") ||
+      lowerMessage.includes("blockchain")
+    ) {
       return ErrorCategory.BLOCKCHAIN;
     }
-    if (lowerMessage.includes('api') || lowerMessage.includes('endpoint') || lowerMessage.includes('service')) {
+    if (
+      lowerMessage.includes("api") ||
+      lowerMessage.includes("endpoint") ||
+      lowerMessage.includes("service")
+    ) {
       return ErrorCategory.API;
     }
-    if (lowerMessage.includes('input') || lowerMessage.includes('validation') || lowerMessage.includes('invalid')) {
+    if (
+      lowerMessage.includes("input") ||
+      lowerMessage.includes("validation") ||
+      lowerMessage.includes("invalid")
+    ) {
       return ErrorCategory.USER_INPUT;
     }
-    if (lowerMessage.includes('cache')) {
+    if (lowerMessage.includes("cache")) {
       return ErrorCategory.CACHE;
     }
 
     return ErrorCategory.SYSTEM;
   }
 
-  private assessSeverity(error: Error | string, _context?: IErrorContext): ErrorSeverity {
+  private assessSeverity(
+    error: Error | string,
+    _context?: IErrorContext,
+  ): ErrorSeverity {
     const message = error instanceof Error ? error.message : error;
     const lowerMessage = message.toLowerCase();
 
-    if (lowerMessage.includes('critical') || lowerMessage.includes('fatal') || lowerMessage.includes('crash')) {
+    if (
+      lowerMessage.includes("critical") ||
+      lowerMessage.includes("fatal") ||
+      lowerMessage.includes("crash")
+    ) {
       return ErrorSeverity.CRITICAL;
     }
-    if (lowerMessage.includes('connection') || lowerMessage.includes('authorization') || lowerMessage.includes('authentication')) {
+    if (
+      lowerMessage.includes("connection") ||
+      lowerMessage.includes("authorization") ||
+      lowerMessage.includes("authentication")
+    ) {
       return ErrorSeverity.HIGH;
     }
-    if (lowerMessage.includes('timeout') || lowerMessage.includes('retry') || lowerMessage.includes('temporary')) {
+    if (
+      lowerMessage.includes("timeout") ||
+      lowerMessage.includes("retry") ||
+      lowerMessage.includes("temporary")
+    ) {
       return ErrorSeverity.MEDIUM;
     }
 
@@ -402,7 +458,7 @@ export class ErrorHandlingService {
 
   private addToLog(errorDetails: IErrorDetails): void {
     this.errorLog.push(errorDetails);
-    
+
     // Maintain log size
     if (this.errorLog.length > this.maxLogSize) {
       this.errorLog = this.errorLog.slice(-this.maxLogSize);
@@ -410,29 +466,37 @@ export class ErrorHandlingService {
   }
 
   private notifyListeners(errorDetails: IErrorDetails): void {
-    this.errorListeners.forEach(listener => {
+    this.errorListeners.forEach((listener) => {
       try {
         listener(errorDetails);
       } catch (listenerError) {
-        console.error('Error listener failed:', listenerError);
+        console.error("Error listener failed:", listenerError);
       }
     });
   }
 
   private setupGlobalErrorHandling(): void {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       // Catch unhandled promise rejections
-      window.addEventListener('unhandledrejection', (event) => {
-        this.reportError(event.reason, { type: 'unhandledrejection' }, 'global');
+      window.addEventListener("unhandledrejection", (event) => {
+        this.reportError(
+          event.reason,
+          { type: "unhandledrejection" },
+          "global",
+        );
       });
 
       // Catch JavaScript errors
-      window.addEventListener('error', (event) => {
-        this.reportError(event.error || event.message, {
-          filename: event.filename,
-          lineno: event.lineno,
-          colno: event.colno
-        }, 'global');
+      window.addEventListener("error", (event) => {
+        this.reportError(
+          event.error || event.message,
+          {
+            filename: event.filename,
+            lineno: event.lineno,
+            colno: event.colno,
+          },
+          "global",
+        );
       });
     }
   }
@@ -446,10 +510,13 @@ export class ErrorHandlingService {
   }
 
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  private showUserNotification(message: string, type: 'error' | 'warning' | 'info'): void {
+  private showUserNotification(
+    message: string,
+    type: "error" | "warning" | "info",
+  ): void {
     // In a real application, this would show a toast or modal
     console.log(`[${type.toUpperCase()}] ${message}`);
   }
@@ -457,7 +524,7 @@ export class ErrorHandlingService {
   // Recovery action implementations
   private async checkNetworkConnection(): Promise<boolean> {
     try {
-      const response = await fetch('/api/health', { method: 'HEAD' });
+      const response = await fetch("/api/health", { method: "HEAD" });
       return response.ok;
     } catch {
       return false;

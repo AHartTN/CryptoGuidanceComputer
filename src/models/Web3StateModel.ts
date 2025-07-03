@@ -1,101 +1,105 @@
 /**
- * @fileoverview Web3 State Models
- * @description Data models for Web3 state management
+ * @file Web3StateModel.ts
+ * @description Model for managing Web3 wallet connection state and related operations.
  */
 
-import type { IWalletConnectionState } from '../interfaces/IWeb3';
-import type { IMetaMaskEthereumProvider } from '../interfaces/IMetaMaskEthereumProvider';
+import type { IWalletConnectionState } from "../interfaces/IWeb3";
+import type { IMetaMaskEthereumProvider } from "../interfaces/IMetaMaskEthereumProvider";
 
-/**
- * Default Web3 state configuration
- */
 export const DEFAULT_WEB3_STATE: IWalletConnectionState = {
   isConnected: false,
   address: null,
   balance: null,
   chainId: null,
-  provider: undefined
+  provider: undefined,
 };
 
-/**
- * Web3 State Model class with validation and utilities
- */
 export class Web3StateModel {
-  constructor(private state: IWalletConnectionState = { ...DEFAULT_WEB3_STATE }) {}
+  /**
+   * Create a new Web3StateModel instance.
+   * @param state - Initial wallet connection state
+   */
+  constructor(
+    private state: IWalletConnectionState = { ...DEFAULT_WEB3_STATE }
+  ) {}
 
   /**
-   * Get current state
+   * Get a copy of the current wallet connection state.
    */
   getState(): IWalletConnectionState {
     return { ...this.state };
   }
 
   /**
-   * Update connection state
+   * Set the wallet as connected with address, chain, and provider.
    */
-  setConnected(address: string, chainId: number, provider: IMetaMaskEthereumProvider | undefined): void {
+  setConnected(
+    address: string,
+    chainId: number,
+    provider: IMetaMaskEthereumProvider | undefined
+  ): void {
     this.state = {
       ...this.state,
       isConnected: true,
       address,
       chainId,
-      provider
+      provider,
     };
   }
 
   /**
-   * Set balance
+   * Update the wallet balance.
    */
   setBalance(balance: string): void {
     this.state = { ...this.state, balance };
   }
 
   /**
-   * Disconnect
+   * Disconnect the wallet and reset state.
    */
   disconnect(): void {
     this.state = { ...DEFAULT_WEB3_STATE };
   }
 
   /**
-   * Update network
+   * Update the connected network chain ID.
    */
   updateNetwork(chainId: number): void {
     this.state = { ...this.state, chainId };
   }
 
   /**
-   * Check if wallet is connected
+   * Returns true if the wallet is connected and has an address.
    */
   isWalletConnected(): boolean {
     return this.state.isConnected && !!this.state.address;
   }
 
   /**
-   * Get formatted address
+   * Get the formatted wallet address, showing only the first 6 and last 4 characters.
    */
   getFormattedAddress(): string {
-    if (!this.state.address) return 'Not Connected';
+    if (!this.state.address) return "Not Connected";
     return `${this.state.address.slice(0, 6)}...${this.state.address.slice(-4)}`;
   }
 
   /**
-   * Get formatted balance
+   * Get the formatted wallet balance in ETH, or "N/A" if not available.
    */
   getFormattedBalance(): string {
-    if (!this.state.balance) return 'N/A';
+    if (!this.state.balance) return "N/A";
     return `${parseFloat(this.state.balance).toFixed(4)} ETH`;
   }
 
   /**
-   * Validate Ethereum address
+   * Validate if the given address is a correct Ethereum address.
    */
   isValidAddress(address: string): boolean {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
   }
 
   /**
-   * Validate chain ID
+   * Check if the given chain ID is a positive integer.
    */
   isValidChainId(chainId: number): boolean {
     return Number.isInteger(chainId) && chainId > 0;

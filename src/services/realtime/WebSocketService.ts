@@ -1,39 +1,39 @@
 // Apollo DSKY - WebSocket Service for Real-time Data
 // Enterprise-grade WebSocket management following SOLID principles
 
-import { CacheService, CacheStrategy } from '../cache/CacheService';
-import type { IRealTimeDataPayload } from '../../interfaces/IRealTimeDataPayload';
+import { CacheService, CacheStrategy } from "../cache/CacheService";
+import type { IRealTimeDataPayload } from "../../interfaces/IRealTimeDataPayload";
 
 /** WebSocket Connection States */
 export enum WebSocketState {
-  DISCONNECTED = 'DISCONNECTED',
-  CONNECTING = 'CONNECTING', 
-  CONNECTED = 'CONNECTED',
-  RECONNECTING = 'RECONNECTING',
-  ERROR = 'ERROR'
+  DISCONNECTED = "DISCONNECTED",
+  CONNECTING = "CONNECTING",
+  CONNECTED = "CONNECTED",
+  RECONNECTING = "RECONNECTING",
+  ERROR = "ERROR",
 }
 
 /** WebSocket Message Types */
 export enum MessageType {
-  PRICE_UPDATE = 'PRICE_UPDATE',
-  BLOCK_UPDATE = 'BLOCK_UPDATE',
-  TRANSACTION_UPDATE = 'TRANSACTION_UPDATE',
-  GAS_UPDATE = 'GAS_UPDATE',
-  NETWORK_STATUS = 'NETWORK_STATUS',
-  WALLET_UPDATE = 'WALLET_UPDATE',
-  HEARTBEAT = 'HEARTBEAT',
-  SUBSCRIBE = 'SUBSCRIBE',
-  UNSUBSCRIBE = 'UNSUBSCRIBE'
+  PRICE_UPDATE = "PRICE_UPDATE",
+  BLOCK_UPDATE = "BLOCK_UPDATE",
+  TRANSACTION_UPDATE = "TRANSACTION_UPDATE",
+  GAS_UPDATE = "GAS_UPDATE",
+  NETWORK_STATUS = "NETWORK_STATUS",
+  WALLET_UPDATE = "WALLET_UPDATE",
+  HEARTBEAT = "HEARTBEAT",
+  SUBSCRIBE = "SUBSCRIBE",
+  UNSUBSCRIBE = "UNSUBSCRIBE",
 }
 
 /** Subscription Types */
 export enum SubscriptionType {
-  CRYPTO_PRICES = 'CRYPTO_PRICES',
-  BLOCK_HEADERS = 'BLOCK_HEADERS',
-  PENDING_TRANSACTIONS = 'PENDING_TRANSACTIONS',
-  GAS_PRICES = 'GAS_PRICES',
-  WALLET_TRANSACTIONS = 'WALLET_TRANSACTIONS',
-  NETWORK_STATS = 'NETWORK_STATS'
+  CRYPTO_PRICES = "CRYPTO_PRICES",
+  BLOCK_HEADERS = "BLOCK_HEADERS",
+  PENDING_TRANSACTIONS = "PENDING_TRANSACTIONS",
+  GAS_PRICES = "GAS_PRICES",
+  WALLET_TRANSACTIONS = "WALLET_TRANSACTIONS",
+  NETWORK_STATS = "NETWORK_STATS",
 }
 
 /** WebSocket Message Interface */
@@ -95,11 +95,12 @@ export class WebSocketService {
   private onReconnect?: () => void;
 
   constructor(private config: IWebSocketConfig) {
-    this.stats = this.initializeStats();    this.cache = new CacheService({
+    this.stats = this.initializeStats();
+    this.cache = new CacheService({
       strategy: CacheStrategy.LRU,
       maxSize: 1000,
       defaultTTL: 60000, // 1 minute TTL for real-time data
-      enableMetrics: true
+      enableMetrics: true,
     });
   }
 
@@ -115,13 +116,16 @@ export class WebSocketService {
       bytesReceived: 0,
       bytesSent: 0,
       lastHeartbeat: null,
-      latency: null
+      latency: null,
     };
   }
 
   /** Connect to WebSocket server */
   async connect(): Promise<void> {
-    if (this.state === WebSocketState.CONNECTING || this.state === WebSocketState.CONNECTED) {
+    if (
+      this.state === WebSocketState.CONNECTING ||
+      this.state === WebSocketState.CONNECTED
+    ) {
       return;
     }
 
@@ -134,12 +138,12 @@ export class WebSocketService {
       // Wait for connection to open
       await new Promise<void>((resolve, reject) => {
         if (!this.ws) {
-          reject(new Error('WebSocket not initialized'));
+          reject(new Error("WebSocket not initialized"));
           return;
         }
 
         const timeout = setTimeout(() => {
-          reject(new Error('Connection timeout'));
+          reject(new Error("Connection timeout"));
         }, 10000);
 
         this.ws.onopen = () => {
@@ -149,23 +153,22 @@ export class WebSocketService {
 
         this.ws.onerror = () => {
           clearTimeout(timeout);
-          reject(new Error('Connection failed'));
+          reject(new Error("Connection failed"));
         };
       });
 
       this.setState(WebSocketState.CONNECTED);
       this.stats.connectTime = Date.now();
       this.stats.reconnectAttempts = 0;
-      
+
       // Start heartbeat
       this.startHeartbeat();
-      
+
       // Process queued messages
       this.processMessageQueue();
-      
+
       // Resubscribe to all subscriptions
       this.resubscribeAll();
-
     } catch (error) {
       this.setState(WebSocketState.ERROR);
       this.handleError(error as Error);
@@ -177,15 +180,15 @@ export class WebSocketService {
   async disconnect(): Promise<void> {
     this.setState(WebSocketState.DISCONNECTED);
     this.stats.disconnectTime = Date.now();
-    
+
     this.stopHeartbeat();
     this.stopReconnect();
-    
+
     if (this.ws) {
-      this.ws.close(1000, 'Normal closure');
+      this.ws.close(1000, "Normal closure");
       this.ws = null;
     }
-    
+
     this.subscriptions.clear();
     this.messageQueue = [];
   }
@@ -202,9 +205,9 @@ export class WebSocketService {
         data: {
           id,
           type: subscription.type,
-          params: subscription.params
+          params: subscription.params,
         },
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     }
 
@@ -223,7 +226,7 @@ export class WebSocketService {
       this.sendMessage({
         type: MessageType.UNSUBSCRIBE,
         data: { id: subscriptionId },
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     }
   }
@@ -267,7 +270,7 @@ export class WebSocketService {
     try {
       const messageStr = JSON.stringify(message);
       this.ws.send(messageStr);
-      
+
       this.stats.messagesSent++;
       this.stats.bytesSent += messageStr.length;
     } catch (error) {
@@ -280,17 +283,17 @@ export class WebSocketService {
     if (!this.ws) return;
 
     this.ws.onopen = () => {
-      console.log('[WS] Connected to', this.config.url);
+      console.log("[WS] Connected to", this.config.url);
     };
 
     this.ws.onclose = (event) => {
-      console.log('[WS] Disconnected:', event.code, event.reason);
+      console.log("[WS] Disconnected:", event.code, event.reason);
       this.handleDisconnect();
     };
 
     this.ws.onerror = (error) => {
-      console.error('[WS] Error:', error);
-      this.handleError(new Error('WebSocket error'));
+      console.error("[WS] Error:", error);
+      this.handleError(new Error("WebSocket error"));
     };
 
     this.ws.onmessage = (event) => {
@@ -302,7 +305,7 @@ export class WebSocketService {
   private handleMessage(event: MessageEvent): void {
     try {
       const message: IWebSocketMessage = JSON.parse(event.data);
-      
+
       this.stats.messagesReceived++;
       this.stats.bytesReceived += event.data.length;
 
@@ -311,36 +314,36 @@ export class WebSocketService {
         case MessageType.HEARTBEAT:
           this.handleHeartbeat(message);
           break;
-          
+
         case MessageType.PRICE_UPDATE:
           this.handlePriceUpdate(message);
           break;
-          
+
         case MessageType.BLOCK_UPDATE:
           this.handleBlockUpdate(message);
           break;
-          
+
         case MessageType.TRANSACTION_UPDATE:
           this.handleTransactionUpdate(message);
           break;
-          
+
         case MessageType.GAS_UPDATE:
           this.handleGasUpdate(message);
           break;
-          
+
         case MessageType.NETWORK_STATUS:
           this.handleNetworkStatus(message);
           break;
-          
+
         case MessageType.WALLET_UPDATE:
           this.handleWalletUpdate(message);
           break;
-          
+
         default:
-          console.warn('[WS] Unknown message type:', message.type);
+          console.warn("[WS] Unknown message type:", message.type);
       }
     } catch (error) {
-      console.error('[WS] Failed to parse message:', error);
+      console.error("[WS] Failed to parse message:", error);
     }
   }
 
@@ -348,7 +351,7 @@ export class WebSocketService {
   private handleHeartbeat(message: IWebSocketMessage): void {
     const now = Date.now();
     this.stats.lastHeartbeat = now;
-    
+
     // Calculate latency if timestamp is provided
     if (message.timestamp) {
       this.stats.latency = now - message.timestamp;
@@ -358,7 +361,7 @@ export class WebSocketService {
     this.sendMessage({
       type: MessageType.HEARTBEAT,
       data: { pong: true },
-      timestamp: now
+      timestamp: now,
     });
   }
 
@@ -366,20 +369,25 @@ export class WebSocketService {
   private handlePriceUpdate(message: IWebSocketMessage): void {
     // Type guard for price data
     if (
-      typeof message.data === 'object' &&
+      typeof message.data === "object" &&
       message.data !== null &&
-      'symbol' in message.data &&
-      'price' in message.data &&
-      'change' in message.data &&
-      'volume' in message.data
+      "symbol" in message.data &&
+      "price" in message.data &&
+      "change" in message.data &&
+      "volume" in message.data
     ) {
-      const { symbol, price, change, volume } = message.data as { symbol: string; price: number; change: number; volume: number };
+      const { symbol, price, change, volume } = message.data as {
+        symbol: string;
+        price: number;
+        change: number;
+        volume: number;
+      };
       // Cache the price data
       this.cache.set(`price:${symbol}`, {
         price,
         change,
         volume,
-        timestamp: message.timestamp
+        timestamp: message.timestamp,
       });
       // Notify subscribers
       this.notifySubscribers(SubscriptionType.CRYPTO_PRICES, message.data);
@@ -389,9 +397,16 @@ export class WebSocketService {
   /** Handle block update messages */
   private handleBlockUpdate(message: IWebSocketMessage): void {
     const blockData = message.data;
-    if (typeof blockData === 'object' && blockData !== null && 'number' in blockData) {
-      this.cache.set(`block:${(blockData as { number: number }).number}`, blockData);
-      this.cache.set('block:latest', blockData);
+    if (
+      typeof blockData === "object" &&
+      blockData !== null &&
+      "number" in blockData
+    ) {
+      this.cache.set(
+        `block:${(blockData as { number: number }).number}`,
+        blockData,
+      );
+      this.cache.set("block:latest", blockData);
       this.notifySubscribers(SubscriptionType.BLOCK_HEADERS, blockData);
     }
   }
@@ -399,9 +414,12 @@ export class WebSocketService {
   /** Handle transaction update messages */
   private handleTransactionUpdate(message: IWebSocketMessage): void {
     const txData = message.data;
-    if (typeof txData === 'object' && txData !== null && 'hash' in txData) {
+    if (typeof txData === "object" && txData !== null && "hash" in txData) {
       this.cache.set(`tx:${(txData as { hash: string }).hash}`, txData);
-      if ('status' in txData && (txData as { status: string }).status === 'pending') {
+      if (
+        "status" in txData &&
+        (txData as { status: string }).status === "pending"
+      ) {
         this.notifySubscribers(SubscriptionType.PENDING_TRANSACTIONS, txData);
       } else {
         this.notifySubscribers(SubscriptionType.WALLET_TRANSACTIONS, txData);
@@ -412,8 +430,8 @@ export class WebSocketService {
   /** Handle gas update messages */
   private handleGasUpdate(message: IWebSocketMessage): void {
     const gasData = message.data;
-    if (typeof gasData === 'object' && gasData !== null) {
-      this.cache.set('gas:current', gasData);
+    if (typeof gasData === "object" && gasData !== null) {
+      this.cache.set("gas:current", gasData);
       this.notifySubscribers(SubscriptionType.GAS_PRICES, gasData);
     }
   }
@@ -421,7 +439,7 @@ export class WebSocketService {
   /** Handle network status messages */
   private handleNetworkStatus(message: IWebSocketMessage): void {
     const statusData = message.data;
-    if (typeof statusData === 'object' && statusData !== null) {
+    if (typeof statusData === "object" && statusData !== null) {
       this.notifySubscribers(SubscriptionType.NETWORK_STATS, statusData);
     }
   }
@@ -429,14 +447,24 @@ export class WebSocketService {
   /** Handle wallet update messages */
   private handleWalletUpdate(message: IWebSocketMessage): void {
     const walletData = message.data;
-    if (typeof walletData === 'object' && walletData !== null && 'address' in walletData) {
-      this.cache.set(`wallet:${(walletData as { address: string }).address}`, walletData);
+    if (
+      typeof walletData === "object" &&
+      walletData !== null &&
+      "address" in walletData
+    ) {
+      this.cache.set(
+        `wallet:${(walletData as { address: string }).address}`,
+        walletData,
+      );
       this.notifySubscribers(SubscriptionType.WALLET_TRANSACTIONS, walletData);
     }
   }
 
   /** Notify subscribers of updates */
-  private notifySubscribers(type: SubscriptionType, data: IRealTimeDataPayload): void {
+  private notifySubscribers(
+    type: SubscriptionType,
+    data: IRealTimeDataPayload,
+  ): void {
     this.subscriptions.forEach((subscription) => {
       if (subscription.type === type) {
         try {
@@ -445,7 +473,7 @@ export class WebSocketService {
           if (subscription.errorCallback) {
             subscription.errorCallback(error as Error);
           } else {
-            console.error('[WS] Subscription callback error:', error);
+            console.error("[WS] Subscription callback error:", error);
           }
         }
       }
@@ -466,8 +494,8 @@ export class WebSocketService {
 
   /** Handle WebSocket errors */
   private handleError(error: Error): void {
-    console.error('[WS] Error:', error);
-    
+    console.error("[WS] Error:", error);
+
     if (this.onError) {
       this.onError(error);
     }
@@ -481,18 +509,20 @@ export class WebSocketService {
 
     const delay = Math.min(
       this.config.reconnectInterval * Math.pow(2, this.reconnectAttempts - 1),
-      30000 // Max 30 seconds
+      30000, // Max 30 seconds
     );
 
     this.reconnectTimer = setTimeout(() => {
       console.log(`[WS] Reconnecting... (attempt ${this.reconnectAttempts})`);
-      this.connect().then(() => {
-        if (this.onReconnect) {
-          this.onReconnect();
-        }
-      }).catch(() => {
-        // Will be handled by handleDisconnect
-      });
+      this.connect()
+        .then(() => {
+          if (this.onReconnect) {
+            this.onReconnect();
+          }
+        })
+        .catch(() => {
+          // Will be handled by handleDisconnect
+        });
     }, delay);
   }
 
@@ -508,12 +538,12 @@ export class WebSocketService {
   /** Start heartbeat timer */
   private startHeartbeat(): void {
     this.stopHeartbeat();
-    
+
     this.heartbeatTimer = setInterval(() => {
       this.sendMessage({
         type: MessageType.HEARTBEAT,
         data: { ping: true },
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     }, this.config.heartbeatInterval);
   }
@@ -544,9 +574,9 @@ export class WebSocketService {
         data: {
           id,
           type: subscription.type,
-          params: subscription.params
+          params: subscription.params,
         },
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     });
   }
