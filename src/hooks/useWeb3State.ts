@@ -4,8 +4,10 @@
  */
 
 import { useState, useCallback } from 'react';
-import type { IWeb3State, IWeb3Actions, IWeb3StateManager } from '../types';
-import { INITIAL_WEB3_STATE } from '../constants';
+import type { IWeb3State } from '../interfaces/IWeb3State';
+import type { IWeb3Actions } from '../interfaces/IWeb3Actions';
+import type { IWeb3StateManager } from '../interfaces/IWeb3StateManager';
+import { INITIAL_WEB3_STATE } from '../constants/INITIAL_WEB3_STATE.ts';
 
 /**
  * Custom hook for Web3 state management
@@ -15,7 +17,7 @@ export const useWeb3State = (): IWeb3StateManager => {
   const [state, setState] = useState<IWeb3State>(INITIAL_WEB3_STATE);
 
   const updateConnection = useCallback((account: string, network?: string) => {
-    setState(prev => ({
+    setState((prev: IWeb3State) => ({
       ...prev,
       isConnected: true,
       account,
@@ -24,11 +26,11 @@ export const useWeb3State = (): IWeb3StateManager => {
   }, []);
 
   const updateBalance = useCallback((balance: string) => {
-    setState(prev => ({ ...prev, balance }));
+    setState((prev: IWeb3State) => ({ ...prev, balance }));
   }, []);
 
   const updateNetwork = useCallback((network: string) => {
-    setState(prev => ({ ...prev, network }));
+    setState((prev: IWeb3State) => ({ ...prev, network }));
   }, []);
 
   const disconnect = useCallback(() => {

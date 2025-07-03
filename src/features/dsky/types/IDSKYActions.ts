@@ -1,0 +1,1 @@
+// DELETED: This file is obsolete. Use src/interfaces/IDSKYActions.ts instead.

@@ -3,7 +3,8 @@
  * @description Service for fetching cryptocurrency prices using CoinGecko API
  */
 
-import type { ICoinInfo, IBatchPriceResult } from '../types';
+import type { ICoinInfo } from '../interfaces/ICoinInfo';
+import type { IBatchPriceResult } from '../interfaces/IBatchPriceResult';
 
 /**
  * CoinGecko API response interfaces
@@ -18,7 +19,7 @@ interface ICoinGeckoCoinData {
  * CoinGecko API configuration
  */
 const COINGECKO_API_BASE = 'https://api.coingecko.com/api/v3';
-const REQUEST_TIMEOUT = 10000; // 10 seconds
+const REQUEST_TIMEOUT = 10000;
 const RATE_LIMIT_DELAY = 1000; // 1 second between requests
 
 /**

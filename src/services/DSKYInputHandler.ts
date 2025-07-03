@@ -1,7 +1,10 @@
 // DSKY Input Handler Service following SOLID principles
 
-import { STATUS_MESSAGES, INPUT_CONFIG, BUTTON_LABELS } from '../constants';
-import type { IDSKYState, InputMode, IInputState, IInputResult } from '../types';
+import { STATUS_MESSAGES, INPUT_CONFIG, BUTTON_LABELS } from '../constants/DSKYConstants';
+import type { IDSKYState } from '../interfaces/IDSKYState';
+import type { InputMode } from '../interfaces/InputMode';
+import type { IInputState } from '../interfaces/IInputState';
+import type { IInputResult } from '../interfaces/IInputResult';
 
 export class DSKYInputHandler {  handleKeyPress(
     key: string, 

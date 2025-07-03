@@ -4,16 +4,14 @@ import { DSKYVerb, DSKYNoun, isValidVerbNounCombination } from '../enums/DSKYEnu
 import { UnifiedWeb3Service } from './UnifiedWeb3Service';
 import { CryptoPriceService } from './CryptoPriceService';
 import { DynamicCryptoPriceService } from './DynamicCryptoPriceService';
-import type { 
-  IWalletConnection, 
-  IBlockchainData, 
-  IDSKYState, 
-  IWeb3State, 
-  ICoinListManager,
-  ICoinInfo,
-  IBatchPriceResult 
-} from '../types';
-import { STATUS_MESSAGES } from '../constants';
+import type { IWalletConnection } from '../interfaces/IWalletConnection';
+import type { IBlockchainData } from '../interfaces/IBlockchainData';
+import type { IWeb3State } from '../interfaces/IWeb3State';
+import type { ICoinListManager } from '../interfaces/ICoinListManager';
+import type { ICoinInfo } from '../interfaces/ICoinInfo';
+import type { IBatchPriceResult } from '../interfaces/IBatchPriceResult';
+import type { IDSKYState } from '../interfaces/IDSKYState';
+import { STATUS_MESSAGES } from '../constants/DSKYConstants';
 
 export interface ICommandExecutionResult {
   success: boolean;
@@ -62,8 +60,8 @@ export class DSKYCommandExecutor {
   }
 
   private async executeCommand(
-    verbNum: number, 
-    nounNum: number, 
+    verbNum: number,
+    nounNum: number,
     currentWeb3State: IWeb3State
   ): Promise<ICommandExecutionResult> {
     switch (verbNum) {
@@ -185,7 +183,7 @@ export class DSKYCommandExecutor {
   private async handleGasPrice(nounNum: number): Promise<ICommandExecutionResult> {
     if (nounNum === DSKYNoun.NOUN_GAS_PRICE) {
       const gasData = await this.web3Service.getGasPrice();
-      const gasInGwei = typeof gasData === 'object' && gasData && 'standard' in gasData 
+      const gasInGwei = typeof gasData === 'object' && gasData && 'standard' in gasData
         ? parseFloat(gasData.standard as string) / 1e9
         : 0;
       return {
@@ -202,7 +200,7 @@ export class DSKYCommandExecutor {
       return {
         success: true,
         statusMessage: STATUS_MESSAGES.WALLET_MONITORING(currentWeb3State.account),
-        dskyUpdates: { 
+        dskyUpdates: {
           reg1: currentWeb3State.account.slice(2, 7),
           reg2: currentWeb3State.account.slice(7, 12),
           reg3: currentWeb3State.account.slice(-5)
@@ -227,7 +225,7 @@ export class DSKYCommandExecutor {
   private async handleCryptoPrice(nounNum: number): Promise<ICommandExecutionResult> {
     try {
       let symbol: string;
-      
+
       // Map noun numbers to crypto symbols (legacy system)
       switch (nounNum) {
         case DSKYNoun.NOUN_CRYPTO_BITCOIN:
@@ -262,14 +260,14 @@ export class DSKYCommandExecutor {
       }
 
       const cryptoData = await this.cryptoService.getCryptoPrice(symbol);
-      const priceDisplay = cryptoData.price > 1000 
+      const priceDisplay = cryptoData.price > 1000
         ? Math.round(cryptoData.price).toString().slice(0, 5)
         : cryptoData.price.toFixed(2).slice(0, 5);
 
       return {
         success: true,
         statusMessage: STATUS_MESSAGES.CRYPTO_PRICE(cryptoData.symbol, cryptoData.price),
-        dskyUpdates: { 
+        dskyUpdates: {
           reg1: cryptoData.symbol,
           reg2: priceDisplay,
           reg3: cryptoData.change24h.toFixed(1).slice(0, 5)
@@ -298,7 +296,7 @@ export class DSKYCommandExecutor {
         return {
           success: true,
           statusMessage: `${coinCount} coins loaded. ${flaggedCount} flagged. Coins start at N200.`,
-          dskyUpdates: { 
+          dskyUpdates: {
             reg1: coinCount.toString().padStart(5, '0'),
             reg2: flaggedCount.toString().padStart(5, '0'),
             reg3: 'READY'
@@ -348,7 +346,7 @@ export class DSKYCommandExecutor {
         return {
           success: true,
           statusMessage: `${coin.symbol}: $${priceStr} (${changeNum >= 0 ? '+' : ''}${changeStr}%)`,
-          dskyUpdates: { 
+          dskyUpdates: {
             reg1: coin.symbol,
             reg2: priceStr.slice(0, 5),
             reg3: changeStr.slice(0, 5)
@@ -387,7 +385,7 @@ export class DSKYCommandExecutor {
         return {
           success: true,
           statusMessage: `${coin.symbol} ${flagStatus} for batch operations`,
-          dskyUpdates: { 
+          dskyUpdates: {
             reg1: coin.symbol,
             reg2: flagStatus.slice(0, 5),
             reg3: nounNum.toString().padStart(5, '0')
@@ -408,7 +406,7 @@ export class DSKYCommandExecutor {
     if (nounNum === DSKYNoun.NOUN_FLAGGED_COINS || nounNum === DSKYNoun.NOUN_BATCH_RESULTS) {
       try {
         const flaggedCoins = this.coinListManager.actions.getFlaggedCoins();
-        
+
         if (flaggedCoins.length === 0) {
           return {
             success: false,
@@ -419,10 +417,10 @@ export class DSKYCommandExecutor {
 
         // Get coin IDs for batch fetch
         const coinIds = flaggedCoins.map((coin: ICoinInfo) => coin.id);
-        
+
         // Fetch batch prices
         const batchResults = await this.dynamicCryptoService.getBatchPrices(coinIds);
-        
+
         // Update coin list with new prices
         batchResults.forEach((result: IBatchPriceResult) => {
           if (result.success && result.price > 0) {
@@ -440,7 +438,7 @@ export class DSKYCommandExecutor {
         return {
           success: true,
           statusMessage: `Batch complete: ${successCount} success, ${failCount} failed`,
-          dskyUpdates: { 
+          dskyUpdates: {
             reg1: successCount.toString().padStart(5, '0'),
             reg2: failCount.toString().padStart(5, '0'),
             reg3: 'DONE'
@@ -461,14 +459,14 @@ export class DSKYCommandExecutor {
     if (nounNum === DSKYNoun.NOUN_COIN_FLAGS || nounNum === DSKYNoun.NOUN_FLAGGED_COINS) {
       try {
         const flaggedCount = this.coinListManager.state.flaggedCoins.size;
-        
+
         // Clear all flags
         this.coinListManager.actions.clearAllFlags();
 
         return {
           success: true,
           statusMessage: `${flaggedCount} coin flags cleared successfully`,
-          dskyUpdates: { 
+          dskyUpdates: {
             reg1: flaggedCount.toString().padStart(5, '0'),
             reg2: 'CLEAR',
             reg3: 'ED'

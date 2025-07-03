@@ -1,0 +1,592 @@
+/* Apollo DSKY - Performance Dashboard Styles */
+/* Advanced performance monitoring interface styling */
+
+.performance-dashboard {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90vw;
+  max-width: 1400px;
+  height: 85vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  border: 2px solid #00FF41;
+  border-radius: 8px;
+  box-shadow: 
+    0 0 30px rgba(0, 255, 65, 0.3),
+    inset 0 0 50px rgba(0, 255, 65, 0.05);
+  color: #00FF41;
+  font-family: 'Courier New', monospace;
+  display: flex;
+  flex-direction: column;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.performance-dashboard.compact {
+  width: 80vw;
+  height: 70vh;
+  font-size: 0.9em;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: rgba(0, 255, 65, 0.05);
+  border-bottom: 1px solid #00FF41;
+}
+
+.dashboard-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+}
+
+.dashboard-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.toggle-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.toggle-control input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #00FF41;
+}
+
+.export-btn,
+.close-btn {
+  background: transparent;
+  border: 1px solid #00FF41;
+  color: #00FF41;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.export-btn:hover,
+.close-btn:hover {
+  background: rgba(0, 255, 65, 0.1);
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+}
+
+.close-btn {
+  padding: 0.5rem 0.75rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/* Dashboard Tabs */
+.dashboard-tabs {
+  display: flex;
+  border-bottom: 1px solid #00FF41;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: #00FF41;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  border-right: 1px solid rgba(0, 255, 65, 0.3);
+  transition: all 0.3s ease;
+  opacity: 0.7;
+}
+
+.tab-btn:hover {
+  opacity: 1;
+  background: rgba(0, 255, 65, 0.05);
+}
+
+.tab-btn.active {
+  opacity: 1;
+  background: rgba(0, 255, 65, 0.1);
+  box-shadow: inset 0 -2px 0 #00FF41;
+  font-weight: bold;
+}
+
+/* Dashboard Content */
+.dashboard-content {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+/* Overview Tab */
+.performance-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.performance-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.performance-card {
+  background: rgba(0, 255, 65, 0.03);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  border-radius: 6px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.performance-card:hover {
+  border-color: #00FF41;
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.card-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.card-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  text-shadow: 0 0 8px currentColor;
+}
+
+.card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* Performance Chart */
+.performance-chart {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  border-radius: 6px;
+  padding: 1.5rem;
+}
+
+.performance-chart h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+}
+
+.chart-placeholder {
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ascii-chart {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.ascii-chart pre {
+  margin: 0;
+  line-height: 1.2;
+  text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+}
+
+/* Metrics Tab */
+.performance-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.metric-item {
+  background: rgba(0, 255, 65, 0.03);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.metric-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.metric-header h5 {
+  margin: 0;
+  font-size: 1rem;
+  text-transform: capitalize;
+}
+
+.metric-trend {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.metric-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+/* Alerts Tab */
+.performance-alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.alerts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alerts-header h4 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.clear-alerts-btn {
+  background: transparent;
+  border: 1px solid #FF8000;
+  color: #FF8000;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.clear-alerts-btn:hover:not(:disabled) {
+  background: rgba(255, 128, 0, 0.1);
+  box-shadow: 0 0 10px rgba(255, 128, 0, 0.3);
+}
+
+.clear-alerts-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.no-alerts {
+  text-align: center;
+  padding: 2rem;
+  opacity: 0.6;
+  font-style: italic;
+}
+
+.alert-item {
+  background: rgba(255, 128, 0, 0.03);
+  border: 1px solid rgba(255, 128, 0, 0.3);
+  border-radius: 6px;
+  padding: 1rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.alert-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alert-metric {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.alert-status.enabled {
+  color: #00FF41;
+  font-size: 0.8rem;
+}
+
+.alert-status.disabled {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.alert-details {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.remove-alert-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: transparent;
+  border: none;
+  color: #FF0080;
+  font-size: 1.2rem;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.3s ease;
+}
+
+.remove-alert-btn:hover {
+  background: rgba(255, 0, 128, 0.1);
+}
+
+.recent-alerts {
+  margin-top: 1rem;
+}
+
+.recent-alerts h5 {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+}
+
+.recent-alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.recent-alert-item {
+  background: rgba(255, 0, 128, 0.03);
+  border: 1px solid rgba(255, 0, 128, 0.2);
+  border-radius: 4px;
+  padding: 0.75rem;
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+}
+
+.alert-time {
+  color: #666;
+  min-width: 100px;
+}
+
+/* System Tab */
+.performance-system {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.system-info,
+.system-resources,
+.configuration-info {
+  background: rgba(0, 255, 65, 0.03);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  border-radius: 6px;
+  padding: 1.5rem;
+}
+
+.system-info h4,
+.system-resources h4,
+.configuration-info h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+}
+
+.info-grid,
+.config-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.info-item,
+.config-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(0, 255, 65, 0.1);
+  font-size: 0.9rem;
+}
+
+.resources-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.resource-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.resource-item h5 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.resource-bar {
+  width: 100%;
+  height: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.resource-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px currentColor;
+}
+
+.resource-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+/* Dashboard Footer */
+.dashboard-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid rgba(0, 255, 65, 0.3);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.footer-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .performance-dashboard {
+    width: 95vw;
+    height: 90vh;
+  }
+  
+  .performance-cards {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+  
+  .metrics-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .dashboard-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .dashboard-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .tab-btn {
+    flex: 1;
+    min-width: 100px;
+  }
+  
+  .performance-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .info-grid,
+  .config-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .footer-info {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+}
+
+/* Animations */
+@keyframes pulse {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.8; }
+}
+
+.performance-card:hover .card-value {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Scrollbar Styling */
+.dashboard-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dashboard-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+}
+
+.dashboard-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 65, 0.3);
+  border-radius: 4px;
+}
+
+.dashboard-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 65, 0.5);
+}

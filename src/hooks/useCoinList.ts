@@ -4,7 +4,11 @@
  */
 
 import { useState, useCallback, useRef, useMemo } from 'react';
-import type { ICoinListState, ICoinListActions, ICoinListManager, ICoinInfo } from '../types';
+import type { ICoinListState } from '../interfaces/ICoinListState';
+import type { ICoinListActions } from '../interfaces/ICoinListActions';
+import type { ICoinListManager } from '../interfaces/ICoinListManager';
+import type { ICoinInfo } from '../interfaces/ICoinInfo';
+import type { ICoinInfoUpdate } from '../interfaces/ICoinInfoUpdate';
 import { DSKYNoun } from '../enums/DSKYEnums';
 
 /**
@@ -143,7 +147,7 @@ export function useCoinList(): ICoinListManager {
       const newCoinsByNoun = new Map<number, ICoinInfo>();
 
       // Update all coins to remove flags
-      prev.coinsById.forEach((coin, id) => {
+      prev.coinsById.forEach((coin: ICoinInfo, id: string) => {
         const updatedCoin = { ...coin, isFlagged: false };
         newCoinsById.set(id, updatedCoin);
         newCoinsByNoun.set(coin.nounNumber, updatedCoin);
@@ -177,7 +181,7 @@ export function useCoinList(): ICoinListManager {
    */
   const getFlaggedCoins = useCallback((): ICoinInfo[] => {
     const flaggedCoins: ICoinInfo[] = [];
-    stateRef.current.flaggedCoins.forEach(coinId => {
+    stateRef.current.flaggedCoins.forEach((coinId: string) => {
       const coin = stateRef.current.coinsById.get(coinId);
       if (coin) {
         flaggedCoins.push(coin);
@@ -189,23 +193,14 @@ export function useCoinList(): ICoinListManager {
   /**
    * Update coin price data
    */
-  const updateCoinPrice = useCallback((coinId: string, priceData: Partial<ICoinInfo>): void => {
-    setState(prev => {
+  const updateCoinPrice = useCallback((coinId: string, priceData: ICoinInfoUpdate): void => {
+    setState((prev: ICoinListState) => {
       const coin = prev.coinsById.get(coinId);
       if (!coin) return prev;
-
-      const updatedCoin = { ...coin, ...priceData, lastUpdated: new Date() };
+      const updatedCoin = { ...coin, ...priceData };
       const newCoinsById = new Map(prev.coinsById);
-      const newCoinsByNoun = new Map(prev.coinsByNoun);
-
       newCoinsById.set(coinId, updatedCoin);
-      newCoinsByNoun.set(coin.nounNumber, updatedCoin);
-
-      return {
-        ...prev,
-        coinsByNoun: newCoinsByNoun,
-        coinsById: newCoinsById
-      };
+      return { ...prev, coinsById: newCoinsById };
     });
   }, []);
   const actions: ICoinListActions = useMemo(() => ({
